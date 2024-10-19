@@ -1,14 +1,8 @@
 import math, numpy as np
 
-def decoupe(string):
+def decoupe(numb):
     '''Float from complex'''
-    out = ''
-    for i in str(string):
-        match i:
-            case '('|')': pass
-            case 'j': break
-            case _: out += i
-    return float(out)
+    return float(str(numb).split("j")[0].replace("(", "").replace(")", ""))
 
 def n_entre(n, mi, ma) -> bool:
     '''Is number between min and max'''
