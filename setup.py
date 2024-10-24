@@ -5,7 +5,7 @@ DESCRIPTION = 'Python image program'
 LONG_DESCRIPTION = 'A package to create images, manage files and more.'
 
 setup(
-        name="pyimg", 
+        name="pyimager", 
         version=VERSION,
         author="T-Sana",
         author_email="tsana.code@gmail.com",
