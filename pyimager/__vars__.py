@@ -1,6 +1,6 @@
 try: from pyimager.resolution import resolution as RES
 except: from resolution import resolution as RES
-try: from pyimager.colours import colour as COL
+try: from pyimager.colors import colour as COL
 except: from colors import colour as COL
 try: from pyimager.calculs import *
 except: from calculs import *
