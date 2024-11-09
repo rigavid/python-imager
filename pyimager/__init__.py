@@ -1,2 +1,2 @@
-try: import main as pyimager
-except: import pyimager.main as pyimager
+try: from main import *
+except: from pyimager.main import *
