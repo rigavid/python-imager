@@ -77,7 +77,7 @@ class image:
         '''Closes window'''
         if not self.is_closed(): cv2.destroyWindow(self.name)
         return
-    def setMouseCallback(self, funct, params) -> None:
+    def setMouseCallback(self, funct, params=None) -> None:
         '''event, x, y, flags, params -> None'''
         return cv2.setMouseCallback(self.name, funct, params)
     def line(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
