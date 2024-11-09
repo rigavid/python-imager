@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.0' 
+VERSION = '1.0.0' 
 DESCRIPTION = 'Python image program'
-LONG_DESCRIPTION = 'A package to create images, manage files and more.'
+LONG_DESCRIPTION = 'A package to create images, edit them and more.'
 
 setup(
         name="pyimager", 
@@ -17,6 +17,5 @@ setup(
         classifiers= [
             "Programming Language :: Python :: 3",
             "Operating System :: Linux :: Fedora",
-            "Operating System :: Microsoft :: Windows",
         ]
 )

@@ -1,13 +1,13 @@
 import math, numpy as np
 
-type numero = float | int
-type point = list[numero]
+type number = float | int
+type point = list[number]
 
-def decoupe(numb:numero) -> float:
+def decoupe(numb:number) -> float:
     '''Float from complex'''
     return float(str(numb).split("j")[0].replace("(", "").replace(")", ""))
 
-def n_entre(n:numero, mi:numero, ma:numero) -> bool:
+def n_entre(n:number, mi:number, ma:number) -> bool:
     '''Is number between min and max'''
     return mi if n < mi else ma if n > ma else n
 
@@ -19,7 +19,7 @@ def ct_cr(p1:point, p2:point, p3:point, p4:point) -> point:
     '''Get the center of a square'''
     return ct_sg(ct_sg(p1, p2), ct_sg(p3, p4))
 
-def pt_sg(p1:point, p2:point, m1:numero=1, m2:numero=1) -> point:
+def pt_sg(p1:point, p2:point, m1:number=1, m2:number=1) -> point:
     '''Get a point in a segment'''
     return ((p1[n] * m1 + p2[n] * m2) / (m1+m2) for n in [0, 1])
 
@@ -27,45 +27,42 @@ def cts(pts:list[point]) -> list[point]:
     '''Get ch, cb, cg, cd'''
     return [ct_sg(pts[0], pts[1]), ct_sg(pts[2], pts[3]), ct_sg(pts[0], pts[2]), ct_sg(pts[1], pts[3])]
 
-def coosCercle(ct:point, rayon:numero, angle:numero) -> point:
+def coosCircle(ct:point, rayon:number, angle:number) -> point:
     '''Get a point on a circle's line'''
     return [ct[0] + decoupe(str(math.cos(math.radians(angle)))) * rayon, ct[1] + decoupe(str(math.sin(math.radians(angle)))) * rayon]
 
-def coosEllipse(ct:point, rayons:list[numero], angle:numero) -> point:
+def coosEllipse(ct:point, rayons:list[number], angle:number) -> point:
     '''Get a point on an ellipse's line'''
-    p1, p2 = coosCercle(ct, min(rayons), angle), coosCercle(ct, max(rayons), angle)
+    p1, p2 = coosCircle(ct, min(rayons), angle), coosCircle(ct, max(rayons), angle)
     return (p1[0] - (p1[0] - p2[0]), p1[1]) if rayons[0]<rayons[1] else (p1[0], p1[1] - (p1[1] - p2[1]))
 
-def diff(n1:numero, n2:numero) -> numero:
-    '''Calcule la différence entre n1 et n2'''
+def diff(n1:number, n2:number) -> number:
+    '''Calculate the difference between n1 and n2'''
     return abs(n1-n2)
 
-def racine_carree(n:numero) -> float:
-    '''Get square root'''
+def square_root(n:number) -> float:
+    '''Get the square root'''
     return decoupe(math.sqrt(n))
 
 def dist(p1:point, p2:point) -> float:
-    '''Calcule la distance entre p1 et p2'''
-    return racine_carree(diff(p1[0], p2[0])**2 + diff(p1[1], p2[1])**2)
+    '''Calculates distance from p1 to p2'''
+    return square_root(diff(p1[0], p2[0])**2 + diff(p1[1], p2[1])**2)
 
 def angleEntrePoints(p1:point, p2:point) -> float:
-    '''Calcule l'angle entre p1 et p2'''
+    '''Calculate the angle between p1 and p2'''
     return math.degrees(math.atan2(diff(p1[1], p2[1]), diff(p1[0], p2[0])))
 
-def equation_2eme_degre(a:numero, b:numero, c:numero):
-    try: y1 = (-b + racine_carree(b**2 - 4*a*c)) / (2*a)
+def equation_2eme_degre(a:number, b:number, c:number):
+    try: y1 = (-b + square_root(b**2 - 4*a*c)) / (2*a)
     except: y1 = 'r'
-    try: y2 = (-b - racine_carree(b**2 - 4*a*c)) / (2*a)
+    try: y2 = (-b - square_root(b**2 - 4*a*c)) / (2*a)
     except: y2 = 'r'
     return None if y1 == 'r' and y2 == 'r' else y2 if y1 == 'r' else y1 if y2 == 'r' else y1, y2
 
-def oppose(n:numero) -> numero:
-    ''' Donne la valeur opposée de n'''
-    return(0 - n)
-
-def moyenne(elementA:numero, elementB:numero, mult_elementA:numero=1, mult_elementB:numero=1) -> numero:
-    '''Get the moyenne'''
+def moyenne(elementA:number, elementB:number, mult_elementA:number=1, mult_elementB:number=1) -> number:
+    '''Get the average from values'''
     return ((elementA * mult_elementA) + (elementB * mult_elementB)) / (mult_elementA + mult_elementB)
 
-def clicked_in(pos:point, boutton:list[point]) -> bool:
-    return pos[0] >= boutton[0][0] and pos[0] <= boutton[1][0] and pos[1] >= boutton[0][1] and pos[1] <= boutton[1][1]
+def clicked_in(pos:point, button:list[point]) -> bool:
+    """ Is pos[x, y] in button[[x, y]x[x, y]] """
+    return pos[0] >= button[0][0] and pos[0] <= button[1][0] and pos[1] >= button[0][1] and pos[1] <= button[1][1]

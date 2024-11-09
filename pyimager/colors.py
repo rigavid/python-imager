@@ -1,5 +1,5 @@
 class colour:
-    def new(hexadecimal='000000', tipe=True):
+    def new(hexadecimal='000000', tipe=False):
         '''Hexadecimal colour in RGB'''
         if type(hexadecimal) == int: hexadecimal = f'{hexadecimal:x}'
         hexadecimal = hexadecimal.replace('#','')
