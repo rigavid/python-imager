@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.6' 
+VERSION = '1.0.8' 
 DESCRIPTION = 'Python image program'
 LONG_DESCRIPTION = 'A package to create images, edit them and more.'
 

@@ -85,7 +85,7 @@ class image:
         return cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
     def rectangle(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a rectangle on the image'''
-        return cv2.rectangle(self.img, [round(p) for p in p1], colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        return cv2.rectangle(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
     def polygon(self, pts=[ct_sg(p3, ct), ct_sg(p4, ct), ct_sg(ct, ch)], couleur=COL.black, thickness=1, lineType=0):
         '''Draws a polygon on the image'''
         pts = [[round(i) for i in pt] for pt in pts]
