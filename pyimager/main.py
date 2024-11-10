@@ -6,6 +6,7 @@ except: from __vars__ import *
 try: os.environ["XDG_SESSION_TYPE"] = "xcb"
 except: ...
 
+class unreachableImage(Exception):...
 def debug_decorator(funct):
     def inner(*args, **kwargs):
         try: return funct(*args, **kwargs)
@@ -79,7 +80,8 @@ class image:
         return
     def setMouseCallback(self, funct, params=None) -> None:
         '''event, x, y, flags, params -> None'''
-        return cv2.setMouseCallback(self.name, funct, params)
+        if self.is_opened(): return cv2.setMouseCallback(self.name, funct, params)
+        else: raise unreachableImage("Maybe you forgot to build the image?")
     def line(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a line on the image'''
         return cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
