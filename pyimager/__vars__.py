@@ -4,6 +4,9 @@ try: from pyimager.colors import colour as COL
 except: from colors import colour as COL
 try: from pyimager.calculs import *
 except: from calculs import *
+try: from pyimager.fonts import *
+except: from fonts import *
+
 screen = RES.resolution
 long, haut = screen
 hg = [0, 0]

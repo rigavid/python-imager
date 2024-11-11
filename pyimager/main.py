@@ -31,21 +31,45 @@ def fusionImages(img, base_img, pos=[0, 0]):
                 if y<0 or y>=len(base_img): continue
                 base_img[y,x] = img[y_,x_]
         return base_img
-def new_img(dimensions=RES.resolution, background=COL.white, name="NewImg") -> np.array:
-    return image(name, image.new_image(dimensions=dimensions, background=background))
+def new_img(dimensions=None, background=COL.white, name="NewImg") -> np.array:
+    return image(name, image.new_image(dimensions=dimensions if type(dimensions) == [number] else RES.resolution, background=background))
 class image:
-    class button: ## TODO ##
-        def __init__(self, name="", coos=[[0,0], RES.resolution]) -> None: ...
-        def on_click(self) -> None: ...
+    class mouse:
+        def get(event, x, y, flags, params):
+            return event, x, y, flags, params
+    class button_: ## TODO if mouse.click: for bt in bts: if clicked_in(mouse.pos, bt.coos): bt.clicked()
+        def __init__(self, name="", coos=[[100,100], [300, 200]]) -> None:
+            self.name, self.coos, self.funct, self.params = name, coos, lambda:..., None
+        def defImg(self, img) -> None: self.img = img
+        def draw(self, colour=COL.red, colour2=COL.darkRed, textColour=COL.white, frameThickness=5, textThickness=3, textSize=3, textFont=FONT_HERSHEY_PLAIN, text="") -> None:
+            self.img.rectangle(*self.coos, colour, 0, 2)
+            self.img.rectangle(*self.coos, colour2, frameThickness, 2)
+            if text != "": self.img.write_centered(text, ct_sg(*self.coos), textColour, textThickness, textSize)
+        def on_click(self, funct, params=None) -> None:
+            self.funct, self.params = funct, params
+        def clicked(self) -> None: self.funct(self.params)
+        def close(self): ... ## TODO
+    def button(self, name, coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:## TODO
+        bttn = self.button_(name, coos)
+        bttn.defImg(self)
+        bttn.draw(*args, **kwargs)
+        self.buttons.append(bttn)
+        return bttn
+    def remove_button(self, bttn) -> button_ | int: ## TODO
+        try:
+            btn = self.buttons.pop(bttn)
+            btn.close()
+            return btn
+        except: return -1
     def new_image(self=None, dimensions=RES.resolution, background=COL.white) -> np.array:
         '''New image'''
         return np.full([round(v) for v in dimensions[::-1]]+[3], background[::-1], np.uint8)
     def __init__(self, name="python-image", img=None) -> None:
         self.img = np.array(self.new_image() if type(img) == type(None) else img.img if type(img) == image else img)
         self.name, self.fullscreen = name, False
-        return
+        self.buttons = []
     def __str__(self) -> str: return self.name
-    def show(self, wait=1, destroy=False, build_in_functs=True) -> int:
+    def show_(self, wait=1, destroy=False, build_in_functs=True) -> int:
         '''Show image in a window'''
         if self.fullscreen:
             cv2.namedWindow(self.name, cv2.WND_PROP_FULLSCREEN)
@@ -66,7 +90,12 @@ class image:
                 case _: return wk
             return -1
         return wk
-    def build(self) -> None: return self.show(1, False, False)
+    def build(self):
+        if self.show_(1, False, False) == -1: return self
+        else: raise unreachableImage("An error has occurred while building the image!")
+    def show(self, *args, **kwargs) -> int:
+        if self.is_opened(): return self.show_(*args, **kwargs)
+        else: raise unreachableImage("Maybe you forgot to build the image?")
     def is_closed(self) -> bool:
         '''Detect if the window is currently closed'''
         try: return cv2.getWindowProperty(self.name, cv2.WND_PROP_VISIBLE) < 1
@@ -77,17 +106,16 @@ class image:
     def close(self) -> None:
         '''Closes window'''
         if not self.is_closed(): cv2.destroyWindow(self.name)
-        return
-    def setMouseCallback(self, funct, params=None) -> None:
+    def setMouseCallback(self, funct, params=None) -> None: ## TODO Creating a second callback erases the previous one ##
         '''event, x, y, flags, params -> None'''
-        if self.is_opened(): return cv2.setMouseCallback(self.name, funct, params)
+        if self.is_opened(): cv2.setMouseCallback(self.name, funct, params)
         else: raise unreachableImage("Maybe you forgot to build the image?")
     def line(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a line on the image'''
-        return cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
     def rectangle(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a rectangle on the image'''
-        return cv2.rectangle(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.rectangle(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
     def polygon(self, pts=[ct_sg(p3, ct), ct_sg(p4, ct), ct_sg(ct, ch)], couleur=COL.black, thickness=1, lineType=0):
         '''Draws a polygon on the image'''
         pts = [[round(i) for i in pt] for pt in pts]
@@ -95,33 +123,29 @@ class image:
         couleur = couleur[::-1]; thickness = int(thickness)
         if thickness > 0: cv2.polylines(self.img, [np.array(pts, dtype=np.int32)], True, couleur, thickness, lineType)
         else: cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
-        return
-    def circle(self, ct, rayon=10, colour=COL.black, thickness=1, lineType=0) -> None:
+    def circle(self, ct, radius=10, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a circle on the image'''
-        return cv2.circle(self.img, [round(p) for p in ct], round(rayon), colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
-    def ellipse(self, ct, rayons=[10, 10], colour=COL.black, ep=1, lineType=0, anD=0, anF=360, ang=0) -> None:
+        cv2.circle(self.img, [round(p) for p in ct], round(radius), colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+    def ellipse(self, ct, radiuses=[10, 10], colour=COL.black, thickness=1, lineType=0, startAngle=0, endAngle=360, angle=0) -> None:
         '''Draws an ellipse on the image'''
-        return cv2.ellipse(self.img, [round(p) for p in ct], [round(i) for i in rayons], ang, anD, anF, colour[::-1], round(ep) if ep != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.ellipse(self.img, [round(p) for p in ct], [round(radius) for radius in radiuses], angle, startAngle, endAngle, colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
     def save_img(self, path='', fileName=None) -> None:
         '''Saves file'''
         if fileName == None: fileName = self.name
-        if path != '': r = os.getcwd(); os.chdir(path)
+        if path != '': currentWorkingDirPath = os.getcwd(); os.chdir(path)
         cv2.imwrite(fileName, self.img)
-        if path != '': os.chdir(r)
-        return
+        if path != '': os.chdir(currentWorkingDirPath)
     def open_img(self, path) -> None:
         '''Opens local file as image'''
         self.img = cv2.imdecode(np.asarray(bytearray(open(f'{path}', "rb").read()), dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-        return
     def set_img(self, img) -> None:
         '''Sets the actual image to img'''
         self.img = np.array(img, np.uint8)
-        return
     def write_centered(self, text, ct, colour=COL.red, thickness=1, fontSize=1, font=cv2.FONT_HERSHEY_SCRIPT_COMPLEX, lineType=0) -> None:
         '''Write over the image'''
-        x1, y1 = ct; x2, y2 = ct; thickness = round(thickness)
+        thickness = round(thickness)
         texts = list(enumerate(str(text).split('\n')))
-        x, y = (x1+x2)/2, (y1+y2)/2 - round(cv2.getTextSize('Agd', font, fontSize, thickness)[0][1]*(len(texts)-1))
+        x, y = ct[0], ct[1] - round(cv2.getTextSize('Agd', font, fontSize, thickness)[0][1]*(len(texts)-1))
         for i, line in texts:
             tailles = cv2.getTextSize(line, font, fontSize, thickness)
             cv2.putText(self.img, line, (round(x-tailles[0][0]/2), round(y+tailles[1]/2) + i*tailles[0][1]*2), font, fontSize, colour[::-1], thickness, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
@@ -168,16 +192,37 @@ class layout:
     def size(self) -> [int, int]:
         return self.img.size()
 
-def demo():
-    img = new_img(background=COL.black, name="Demo")
-    pt = pt_sg([0, 0], screen)
-    img.ellipse(pt, [500, 100], COL.magenta, 10, 2)
-    img.line([0, 0], screen, COL.white, 10, 2)
-    img.circle([0, 0], 100, COL.red, 0, 2)
-    img.circle(screen, 1000, COL.red, 0, 2)
-    fs = True
+def demo():## TEST
+    def button_test1(event,x,y,flgs,prms):
+        if event==cv2.EVENT_LBUTTONDOWN and clicked_in((x,y), prms.coos): print("CLICKED1")
+    def button_test2(event,x,y,flgs,prms):
+        if event==cv2.EVENT_LBUTTONDOWN and clicked_in((x,y), prms.coos): print("CLICKED2")
+    def imag():
+        img = new_img(background=COL.black, name="Demo")
+        pt = pt_sg([0, 0], screen)
+        img.ellipse(pt, [500, 100], COL.magenta, 10, 2)
+        img.line([0, 0], screen, COL.white, 10, 2)
+        img.circle([0, 0], 100, COL.red, 0, 2)
+        img.circle(screen, 1000, COL.red, 0, 2)
+        btn1 = img.button("Boutton1", text="Button1")
+        btn2 = img.button("Boutton2", [[400, 100], [700, 200]], COL.green, COL.darkGreen, text="Button2")
+        return img, btn1, btn2
+    img, btn1, btn2 = imag()
     img.build()
-    while img.is_opened(): img.show(1)
+    btn1.on_click(button_test1, btn1)
+    btn2.on_click(button_test2, btn2)
+    while img.is_opened():
+        wk = img.show(1)
+        match wk:
+            case 8:
+                RES.update()
+                fs = img.fullscreen
+                img, btn = imag()
+                img.fullscreen = fs
+            case 101: img.remove_button(btn)
+            case -1: ...
+            case _:
+                print(wk)
     return img
 
 if __name__ == "__main__":
