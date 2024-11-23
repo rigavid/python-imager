@@ -45,7 +45,7 @@ class image:
             self.img.rectangle(*self.coos, colour, 0, 2)
             self.img.rectangle(*self.coos, colour2, frameThickness, 2)
             if text != "": self.img.write_centered(text, ct_sg(*self.coos), textColour, textThickness, textSize)
-        def on_click(self, funct, params=None) -> None:
+        def on_click(self, funct, params=None) -> None: # TODO
             self.funct, self.params = funct, params
         def clicked(self) -> None: self.funct(self.params)
         def close(self): ... ## TODO
@@ -69,7 +69,7 @@ class image:
         self.name, self.fullscreen = name, False
         self.buttons = []
     def __str__(self) -> str: return self.name
-    def show_(self, wait=1, destroy=False, build_in_functs=True) -> int:
+    def show_(self, wait=1, destroy=False, built_in_functs=True) -> int:
         '''Show image in a window'''
         if self.fullscreen:
             cv2.namedWindow(self.name, cv2.WND_PROP_FULLSCREEN)
@@ -81,7 +81,7 @@ class image:
         cv2.imshow(self.name, np.array(self.img, np.uint8))
         wk = cv2.waitKeyEx(wait)
         if destroy == True: cv2.destroyWindow(self.name)
-        elif build_in_functs:
+        elif built_in_functs:
             match wk:
                 case 65470: cv2.moveWindow(self.name, 0, 0) #f1
                 case 65471: cv2.moveWindow(self.name, screen[0], 0) #f2
@@ -217,9 +217,9 @@ def demo():## TEST
             case 8:
                 RES.update()
                 fs = img.fullscreen
-                img, btn = imag()
+                img, btn1, btn2 = imag()
                 img.fullscreen = fs
-            case 101: img.remove_button(btn)
+            case 101: img.remove_button(btn1)
             case -1: ...
             case _:
                 print(wk)

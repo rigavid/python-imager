@@ -1,0 +1,1 @@
+Check this out: https://packaging.python.org/en/latest/guides/modernize-setup-py-project/
