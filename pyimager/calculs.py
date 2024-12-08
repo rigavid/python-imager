@@ -21,7 +21,7 @@ def ct_cr(p1:point, p2:point, p3:point, p4:point) -> point:
 
 def pt_sg(p1:point, p2:point, m1:number=1, m2:number=1) -> point:
     '''Get a point in a segment'''
-    return ((p1[n] * m1 + p2[n] * m2) / (m1+m2) for n in [0, 1])
+    return [(p1[n] * m1 + p2[n] * m2) / (m1+m2) for n in [0, 1]]
 
 def cts(pts:list[point]) -> list[point]:
     '''Get ch, cb, cg, cd'''
