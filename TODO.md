@@ -1,2 +1,5 @@
-Check this out: https://packaging.python.org/en/latest/guides/modernize-setup-py-project/
-Change resolution by backspace in built_in_functs in image.show_(self)
+[ ] Check this out: https://packaging.python.org/en/latest/guides/modernize-setup-py-project/  
+
+[ ] Change resolution by backspace in built_in_functs in image.show_(self)  
+
+[~] Permit percentiles in coordinates arguments as image.rectangle([20%, 20%], [80%, 80%], COL.red, 0) to draw image.rectangle([RES.resolution[0]/100\*20, RES.resolution[1]/100\*20], [RES.resolution[0]/100\*80, RES.resolution[1]/100\*80], COL.red, 0)
