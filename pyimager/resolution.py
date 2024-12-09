@@ -16,4 +16,4 @@ class resolution:
         resolution.index = [m.is_primary for m in monitors].index(True)
         resolution.resolution = resolution.resolutions[resolution.index]
     def percentile(x, y):
-        return [self.resolution[0]/100*x, self.resolution[1]/100*y]
+        return [resolution.resolution[0]/100*x, resolution.resolution[1]/100*y]
