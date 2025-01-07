@@ -1,6 +1,5 @@
 import os, cv2, copy, numpy as np, random as rd
-try: from pyimager.__vars__ import *
-except: from __vars__ import *
+from pyimager._vars_.__vars__ import *
 
 # Mandatory for Fedora, works on Windows too # TODO see if it works on other distros
 try: os.environ["XDG_SESSION_TYPE"] = "xcb"

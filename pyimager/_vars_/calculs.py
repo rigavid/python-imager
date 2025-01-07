@@ -1,4 +1,4 @@
-import math, numpy as np
+import math
 
 type number = float | int
 type point = list[number]
