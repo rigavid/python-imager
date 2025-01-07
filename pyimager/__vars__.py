@@ -2,6 +2,8 @@ try: from pyimager.resolution import resolution as RES
 except: from resolution import resolution as RES
 try: from pyimager.colors import colour as COL
 except: from colors import colour as COL
+try: import pyimager.terminal_colors as TCOL
+except: import terminal_colors as TCOL
 try: from pyimager.calculs import *
 except: from calculs import *
 try: from pyimager.fonts import *

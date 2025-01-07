@@ -1,0 +1,24 @@
+new_line = '\n'
+espace = ' '
+BLACK        = "\033[30m"
+RED          = "\033[31m"
+GREEN        = "\033[32m"
+BROWN        = "\033[33m"
+BLUE         = "\033[34m"
+PURPLE       = "\033[35m"
+CYAN         = "\033[36m"
+LIGHT_GRAY   = "\033[37m"
+DARK_GRAY    = "\033[30m"
+LIGHT_RED    = "\033[31m"
+LIGHT_GREEN  = "\033[32m"
+YELLOW       = "\033[33m"
+LIGHT_BLUE   = "\033[34m"
+LIGHT_PURPLE = "\033[35m"
+LIGHT_CYAN   = "\033[36m"
+LIGHT_WHITE  = "\033[37m"
+BOLD         = '\033[1m'
+UNDERLINED   = '\033[4m'
+NORMAL       = '\033[00m' # @@ Always append to the end, else: terminal = BUG @@
+BOLD_RED     = f'{RED}{BOLD}'
+BOLD_GREEN   = f'{GREEN}{BOLD}'
+BOLD_BLUE    = f'{BLUE}{BOLD}'
