@@ -1,8 +1,23 @@
-from pyimager._vars_.resolution import resolution as RES
-from pyimager._vars_.colors import colour as COL
-import pyimager._vars_.terminal_colors as TCOL
-from pyimager._vars_.calculs import *
-from pyimager._vars_.fonts import *
+try: from pyimager._vars_.resolution import resolution as RES
+except:
+    try: from _vars_.resolution import resolution as RES
+    except: from resolution import resolution as RES
+try: from pyimager._vars_.colors import colour as COL
+except:
+    try: from _vars_.colors import colour as COL
+    except: from colors import colour as COL
+try: import pyimager._vars_.terminal_colors as COL
+except:
+    try: import _vars_.terminal_colors as TCOL
+    except: import terminal_colors as TCOL
+try: from pyimager._vars_.calculs import *
+except:
+    try: from _vars_.calculs import *
+    except: from calculs import *
+try: from pyimager._vars_.fonts import *
+except:
+    try: from _vars_.fonts import *
+    except: from fonts import *
 
 screen = RES.resolution
 long, haut = screen
