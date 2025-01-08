@@ -34,7 +34,7 @@ def fusionImages(img, base_img, pos=[0, 0]):
                 base_img[y,x] = img[y_,x_]
         return base_img
 def new_img(dimensions=None, background=COL.white, name="NewImg") -> np.array:
-    return image(name, image.new_image(dimensions=dimensions if type(dimensions) == [number] else RES.resolution, background=background))
+    return image(name, image.new_image(dimensions=dimensions if dimensions!=None else RES.resolution, background=background))
 class image:
     class mouse:
         def get(event, x, y, flags, params):
