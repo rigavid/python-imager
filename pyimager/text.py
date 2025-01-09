@@ -1,6 +1,3 @@
-try: from pyimager.main import *
-except: from main import *
-
 ## TODO ##
 ## Format chaine C;C;C ##
 ## Format char : LLXX(:LX) (67600 charactères possibles) ##
@@ -8,11 +5,16 @@ except: from main import *
 CONV = { # Re-checker le vieux carnet de prog et le prog cvt.py
     # Characters (Format LLXX) (67600 charactères possibles) #
     ## Control characters
-    "INDEX":"c0", "RIGHT":"", "LEFT":"", "UP":"", "DOWN":"", "":"", "":"", "":"", "":"", "":"", "":"",
-    # Diacritiques (Format LX) (>260 diacritiques possibles) #
-    "`":"A0",
-    "´":"A1",
+    "INDEX":"c0", "RIGHT":"c1", "LEFT":"c2", "UP":"c3", "DOWN":"c4", "ORIGIN":"c5", "END":"c6", "TOP":"c7", "BOTTOM":"c8", "BACKSPACE":"c9", "DELETE":"c10", "TAB":"c11",
+    ## Format characters (Except color changers, because they have args)
+    "UN":"f0", "UL":"f1", "TL":"f2", "OL":"f3", "IT":"f4", "BD":"f5", "CI":"f6", "TN":"f7", "MV":"f8", "MH":"f9",
+    ## Text chars
+    ### Base chars
+    "":"A0", "":"A1", "":"A2", "":"A3", "":"A4", "":"A5", "":"A6", "":"A7", "":"A8", "":"A9", "":"A10",
+    ### Diacritics chars (Format LX) (>260 diacritiques possibles) #
+    "`":"d0", "´":"d1", "^":"d2", "¨":"d3", "°":"d4", "ˇ":"d5", "¯":"d6", "˛":"d7", "˘":"d8",
 }; CONV[" "]="AA00"#Over-write any space left by error
+CONV["\n"] = f"{CONV["ORIGIN"]};{CONV["DOWN"]}"
 
 # print(f"{",\n\t".join(", ".join(f"\"A{l}{n:0>2}\":\" \"" for l in "ABCDEFGHIJKLMNOPQRSTUVWXYZ") for n in range(11, 15))}")
 a, b = 26*26*10*10, len(CONV)
