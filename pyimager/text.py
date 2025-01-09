@@ -18,11 +18,6 @@ CONV = { # Re-checker le vieux carnet de prog et le prog cvt.py
 a, b = 26*26*10*10, len(CONV)
 print(f"{a}, {b} => {b/a:.2%} used")
 
-def is_comp(chr): ## TODO @
-    return not chr in CONV
-def discomp(chr): ## TODO @
-    return " "
-
 class Text:
     class chain:
         class char:
