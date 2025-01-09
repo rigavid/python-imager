@@ -8,11 +8,7 @@ except: from main import *
 CONV = { # Re-checker le vieux carnet de prog et le prog cvt.py
     # Characters (Format LLXX) (67600 charactères possibles) #
     ## Control characters
-    " ":"0A01", "SPACE":"0A01",
-    "\t":"0A02", "TAB":"0A02",
-    "\n":"0A03", "NEWLINE":"0A03",
-    "\r":"0A04", "RETURN":"0A04",
-    "\f":"0A05", "FORMFEED":"0A05",
+    "INDEX":"c0", "RIGHT":"", "LEFT":"", "UP":"", "DOWN":"", "":"", "":"", "":"", "":"", "":"", "":"",
     # Diacritiques (Format LX) (>260 diacritiques possibles) #
     "`":"A0",
     "´":"A1",
@@ -32,12 +28,27 @@ class Text:
         class char:
             def __init__(self, chr):
                 try: self.char = CONV[chr]
-                except: ... # self.char = UNMAPPED CHARACTER!
+                except: self.char = chr # self.char = UNMAPPED CHARACTER!
             def __str__(self):
                 return str(self.char)
         def __init__(self, string=""):
-            self.string = str(string)
-            self.chain = ";".join(str(self.char(c)) for c in self.string)
+            chr = False
+            chars, strg, char_ = [], "", ""
+            for c in string:
+                if c == "^" and chr:
+                    if char_ != "": chars.append(char_)
+                    else:
+                        chars.append("^")
+                        strg += "^"
+                    chr, char_ = False, ""
+                elif chr: char_ += c
+                elif c=="^": chr = True
+                else:
+                    strg += c
+                    chars.append(c)
+            print(string, chars)
+            self.string = strg
+            self.chain = ";".join(str(self.char(c)) for c in chars)
         def __str__(self):
             return self.string
     def __init__(self, text):
@@ -50,6 +61,6 @@ class Text:
     def __str__(self):
         return self.text.__str__()
 
-a = Text("HELLO WORLD")
-print(a.text.chain.__sizeof__(), a.text.chain)
-print(a.text.string.__sizeof__(), a.text.string)
+a = Text("HELLO WORLD ^INDEX^")
+print(a.text.string, a.text.chain.__sizeof__(), a.text.chain)
+print(a.text.chain, a.text.string.__sizeof__(), a.text.string)
