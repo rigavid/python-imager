@@ -1,8 +1,10 @@
-import os, cv2, copy, numpy as np, random as rd
+import os, copy, numpy as np, random as rd
 try: from pyimager._vars_.__vars__ import *
 except:
     try: from _vars_.__vars__ import *
     except: from __vars__ import *
+try: from pyimager.text import Text
+except: from text import Text
 
 # Mandatory for Fedora, works on Windows too # TODO see if it works on other distros
 try: os.environ["XDG_SESSION_TYPE"] = "xcb"
@@ -114,23 +116,23 @@ class image:
         else: raise unreachableImage("Maybe you forgot to build the image?")
     def line(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a line on the image'''
-        cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), lineTypes[lineType%len(lineTypes)])
     def rectangle(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a rectangle on the image'''
-        cv2.rectangle(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.rectangle(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness) if thickness != 0 else -1, lineTypes[lineType%len(lineTypes)])
     def polygon(self, pts=[ct_sg(p3, ct), ct_sg(p4, ct), ct_sg(ct, ch)], couleur=COL.black, thickness=1, lineType=0):
         '''Draws a polygon on the image'''
         pts = [[round(i) for i in pt] for pt in pts]
-        lineType = [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3]
+        lineType = lineTypes[lineType%len(lineTypes)]
         couleur = couleur[::-1]; thickness = int(thickness)
         if thickness > 0: cv2.polylines(self.img, [np.array(pts, dtype=np.int32)], True, couleur, thickness, lineType)
         else: cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
     def circle(self, ct, radius=10, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a circle on the image'''
-        cv2.circle(self.img, [round(p) for p in ct], round(radius), colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.circle(self.img, [round(p) for p in ct], round(radius), colour[::-1], round(thickness) if thickness != 0 else -1, lineTypes[lineType%len(lineTypes)])
     def ellipse(self, ct, radiuses=[10, 10], colour=COL.black, thickness=1, lineType=0, startAngle=0, endAngle=360, angle=0) -> None:
         '''Draws an ellipse on the image'''
-        cv2.ellipse(self.img, [round(p) for p in ct], [round(radius) for radius in radiuses], angle, startAngle, endAngle, colour[::-1], round(thickness) if thickness != 0 else -1, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.ellipse(self.img, [round(p) for p in ct], [round(radius) for radius in radiuses], angle, startAngle, endAngle, colour[::-1], round(thickness) if thickness != 0 else -1, lineTypes[lineType%len(lineTypes)])
     def save_img(self, path='', fileName=None) -> None:
         '''Saves file'''
         if fileName == None: fileName = self.name
@@ -150,9 +152,11 @@ class image:
         x, y = ct[0], ct[1] - round(cv2.getTextSize('Agd', font, fontSize, thickness)[0][1]*(len(texts)-1))
         for i, line in texts:
             tailles = cv2.getTextSize(line, font, fontSize, thickness)
-            cv2.putText(self.img, line, (round(x-tailles[0][0]/2), round(y+tailles[1]/2) + i*tailles[0][1]*2), font, fontSize, colour[::-1], thickness, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+            cv2.putText(self.img, line, (round(x-tailles[0][0]/2), round(y+tailles[1]/2) + i*tailles[0][1]*2), font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
     def write(self, text, pt, colour=COL.red, thickness=1, fontSize=1, font=cv2.FONT_HERSHEY_SCRIPT_COMPLEX, lineType=0) -> None:
-        cv2.putText(self.img, text, pt, font, fontSize, colour[::-1], thickness, [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA][lineType%3])
+        cv2.putText(self.img, text, pt, font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
+    def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, lineType=0):
+        Text(txt).draw(self, pt, colour, thickness, fontSize, lineType)
     def copy(self):
         '''Returns a copy of itself'''
         return image(self.nom, copy.deepcopy(self.img))

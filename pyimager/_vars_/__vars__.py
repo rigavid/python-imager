@@ -1,3 +1,5 @@
+import cv2
+#############################################################
 try: from pyimager._vars_.resolution import resolution as RES
 except:
     try: from _vars_.resolution import resolution as RES
@@ -40,3 +42,4 @@ cd = ct_sg(p2, p4)
 ch = ct_sg(p1, p2)
 cb = ct_sg(p3, p4)
 ct = ct_cr(p1, p2, p3, p4)
+lineTypes = [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA]

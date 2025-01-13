@@ -1,5 +1,6 @@
+""" A simple package to create, manipulate and show images! """
+
 from pyimager.main import *
-import pyimager.text as TEXT
 
 if __name__ == "__main__":
     img = image().build()
