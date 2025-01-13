@@ -81,7 +81,7 @@ class Text:
     def get_cases(self, pt, fontSize=1, angle=0):
         pts, maxs, s = [], [*pt, *pt], self.text
         d = square_root(7**2+5**2)*fontSize
-        an = angleEntrePoints([0,0],[5,7])
+        an = angleInterPoints([0,0],[5,7])
         X, Y = 5*fontSize, 7*fontSize
         for char in self.text:
             move = True
@@ -110,7 +110,7 @@ class Text:
         cases, center = self.get_cases(pt, fontSize, angle)
         if centered: cases, _ = self.get_cases([pt[0]-(center[0]-pt[0]), pt[1]-(center[1]-pt[1])], fontSize, angle)
         for chr, pts in zip(self.text, cases):
-            chr.draw(img, pts=pts, colour=colour, thickness=thickness*(fontSize/4), lineType=lineType, angle=angle)
+            chr.draw(img, pts=pts, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, angle=angle)
 if __name__ == "__main__":
     import os; os.system("clear")
     a = 100 + 26*10 # (0-99)+(A0-A9)+(A00-Z99)

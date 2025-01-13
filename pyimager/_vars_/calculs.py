@@ -48,9 +48,9 @@ def dist(p1:point, p2:point) -> float:
     '''Calculates distance from p1 to p2'''
     return square_root(diff(p1[0], p2[0])**2 + diff(p1[1], p2[1])**2)
 
-def angleEntrePoints(p1:point, p2:point) -> float:
+def angleInterPoints(p1:point, p2:point) -> float:
     '''Calculate the angle between p1 and p2'''
-    return math.degrees(math.atan2(diff(p1[1], p2[1]), diff(p1[0], p2[0])))
+    return math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
 
 def equation_2eme_degre(a:number, b:number, c:number):
     try: y1 = (-b + square_root(b**2 - 4*a*c)) / (2*a)

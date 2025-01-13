@@ -117,7 +117,7 @@ class image:
         '''Draws a polygon on the image'''
         pts = [[round(i) for i in pt] for pt in pts]
         lineType = lineTypes[lineType%len(lineTypes)]
-        couleur = couleur[::-1]; thickness = int(thickness)
+        couleur = couleur[::-1]; thickness = round(thickness)
         if thickness > 0: cv2.polylines(self.img, [np.array(pts, dtype=np.int32)], True, couleur, thickness, lineType)
         else: cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
     def circle(self, ct, radius=10, colour=COL.black, thickness=1, lineType=0) -> None:
