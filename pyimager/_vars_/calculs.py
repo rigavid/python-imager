@@ -33,7 +33,7 @@ def coosCircle(ct:point, rayon:number, angle:number) -> point:
 
 def coosEllipse(ct:point, rayons:list[number], angle:number) -> point:
     '''Get a point on an ellipse's line'''
-    p1, p2 = coosCircle(ct, min(rayons), angle), coosCircle(ct, max(rayons), angle)
+    p1, p2 = coosCircle(ct, max(rayons), angle), coosCircle(ct, min(rayons), angle)
     return (p1[0] - (p1[0] - p2[0]), p1[1]) if rayons[0]<rayons[1] else (p1[0], p1[1] - (p1[1] - p2[1]))
 
 def diff(n1:number, n2:number) -> number:

@@ -11,13 +11,6 @@ try: os.environ["XDG_SESSION_TYPE"] = "xcb"
 except: ...
 
 class unreachableImage(Exception):...
-def debug_decorator(funct):
-    def inner(*args, **kwargs):
-        try: return funct(*args, **kwargs)
-        except Exception as e:
-            print(args, kwargs)
-            raise e
-    return inner
 def fusionImages(img, base_img, pos=[0, 0]):
     '''Place an image over another'''
     pos = [round(v) for v in pos]
@@ -154,9 +147,9 @@ class image:
             tailles = cv2.getTextSize(line, font, fontSize, thickness)
             cv2.putText(self.img, line, (round(x-tailles[0][0]/2), round(y+tailles[1]/2) + i*tailles[0][1]*2), font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
     def write(self, text, pt, colour=COL.red, thickness=1, fontSize=1, font=cv2.FONT_HERSHEY_SCRIPT_COMPLEX, lineType=0) -> None:
-        cv2.putText(self.img, text, pt, font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
-    def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, lineType=0):
-        Text(txt).draw(self, pt, colour, thickness, fontSize, lineType)
+        cv2.putText(self.img, text, [round(i) for i in pt], font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
+    def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, lineType=0, centered=True):
+        Text(txt).draw(img=self, pt=pt, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, centered=centered)
     def copy(self):
         '''Returns a copy of itself'''
         return image(self.nom, copy.deepcopy(self.img))
@@ -167,12 +160,10 @@ class layout:
     class Frame:
         def __init__(self, img=new_img(background=COL.white), pos=[0,0], name='frame0') -> None:
             self.name, self.img, self.pos = name, img.copy(), pos
-            return
         def __str__(self) -> str:
             return self.name
     def __init__(self, img=new_img(), frames=[], name="Layout") -> None:
         self.name, self.img, self.frames = name, img.copy(), frames
-        return
     def frame(self, img=new_img([100, 100], COL.white), pos=[0,0], name=None):
         if name == None: name = 'Unnamed_frame'
         frame_ = self.Frame(img=img, pos=pos, name=name)

@@ -1,9 +1,8 @@
 CONV = {# Characters (Format LLXX) (67600 charactères possibles) #
     ## Control characters
-    #INDex      RiGhT       LeFT        UP          DoWN        ORiGin      END         TOP         BoTtoM      BacKSpace
-    "IND":"00", "RGT":"01", "LFT":"02", "UPP":"03", "DWN":"04", "ORG":"05", "END":"06", "TOP":"07", "BTM":"08", "BKS":"09",
-    #DELete     TABulation  SPaCe
-    "DEL":"10", "TAB":"11", "SPC":"12", "UNK":"13", "   ":"14", "   ":"15", "   ":"16", "   ":"17", "   ":"18", "   ":"19",
+    #Unknown    SPaCe       LeFT        UP          DoWN
+    "UNK":"00", "SPC":"01", "LFT":"02", "UPP":"03", "DWN":"04", "   ":"05", "   ":"06", "   ":"07", "   ":"08", "   ":"09",
+    "   ":"10", "   ":"11", "   ":"12", "   ":"13", "   ":"14", "   ":"15", "   ":"16", "   ":"17", "   ":"18", "   ":"19",
     ## Format characters
     #UnFormat  UnderLine  TopLine    OverLine   ITalic     BolD       Cnt-Italic ThiN       VertMirror HrztlMirror
     "UF":"20", "UL":"21", "TL":"22", "OL":"23", "IT":"24", "BD":"25", "CI":"26", "TN":"27", "VM":"28", "HM":"29",
@@ -84,7 +83,6 @@ CONV = {# Characters (Format LLXX) (67600 charactères possibles) #
     "":"C80", "":"C81", "":"C82", "":"C83", "":"C84", "":"C85", "":"C86", "":"C87", "":"C88", "":"C89",
     "":"C90", "":"C91", "":"C92", "":"C93", "":"C94", "":"C95", "":"C96", "":"C97", "":"C98", "":"C99",
 }
-CONV["\n"] = f"{CONV["ORG"]};{CONV["DWN"]}"
 for i in [" "*n for n in range(5)]:
     try: del CONV[i]
     except: pass
