@@ -9,6 +9,11 @@ import unicodedata
 class Text:
     class Chain:
         class Char:
+            TypeText = "T"
+            TypeControl = "C"
+            TypeFormat = "F"
+            TypeDiacritic = "D"
+            TypeSymbol = "S"
             def __init__(self, chr):
                 if chr.count(":") == 1: chr, self.args = chr.split(":")
                 if chr in CONV: self.char = CONV[chr]
@@ -20,23 +25,25 @@ class Text:
                 except: return str(self.char)
             def __type__(self):
                 if str(self.char).isnumeric():
-                    if int(self.char) >= 0 and int(self.char) <  20: return "C" # CONTROL
-                    elif int(self.char) <  40: return "F" # FORMAT
-                    elif int(self.char) < 100: return "D" # DIACRITIC
-                elif str(self.char).isalnum(): return "T" # TEXT
+                    if int(self.char) >= 0 and int(self.char) <  20: return self.TypeControl
+                    elif int(self.char) <  40: return self.TypeFormat
+                    elif int(self.char) < 100: return self.TypeDiacritic
+                elif str(self.char).isalnum(): return self.TypeText
                 else: return "U" # UNMAPPED
+            def __specific_type(self):
+                if t:=self.__type__() != self.TypeText: return t
+                elif len(self) == 2: return self.TypeSymbol
             def draw(self, img, pts, *args, **kwargs):
-                if self.__type__() == "T" or self == "00":
-                    img.circle(pts[-1], 4, COL.green, 0)
-                    for p in pts[:-1:]:
-                        img.circle(p, 3, COL.red, 0)
-                    img.write(self.char, pts[0])
+                if self.__type__() == self.TypeText or self == "00":
                     draw_char(img, self.char, pts=pts, *args, **kwargs)
+                elif self.__type__() == self.TypeDiacritic:
+                    draw_diacr(img, self.char, pts=pts, *args, **kwargs)
             def __eq__(self, other):
                 if type(other) == type(self): return self.char == other.char
                 else: return self.char == str(other)
         def __init__(self, string=""):
-            string = string.replace( " ", "^SPC^").replace("\r", "^ORG^").replace("\v", "^DWN^").replace("\f", "^BTM^")
+            s, o, d = f"^{CONV["SPC"]}^", f"^{CONV["ORG"]}^", f"^{CONV["DWN"]}^"
+            string = string.replace( " ", s).replace("\r", o).replace("\v", d).replace("\n", o+d)
             chr, chars, strg, char_ = False, [], "", ""
             for c in string:
                 if chr:
@@ -83,6 +90,7 @@ class Text:
         d = square_root(7**2+5**2)*fontSize
         an = angleInterPoints([0,0],[5,7])
         X, Y = 5*fontSize, 7*fontSize
+        linept = copy.deepcopy(pt)
         for char in self.text:
             move = True
             c = [pt, coosCircle(pt, X, angle), coosCircle(pt, Y, angle+90), coosCircle(pt, d, angle+an)]
@@ -99,21 +107,28 @@ class Text:
                         move = False
                         if nxt.__type__() == "C":
                             if nxt == "02": pt = coosCircle(pt, 5*fontSize, angle+180)
-                            if nxt == "03": pt = coosCircle(pt, 7*fontSize, angle-90)
-                            if nxt == "04": pt = coosCircle(pt, 7*fontSize, angle+90)
+                            if nxt == "03":
+                                pt = coosCircle(pt, 7*fontSize, angle-90)
+                                linept = copy.deepcopy(pt)
+                            if nxt == "04":
+                                pt = coosCircle(pt, 7*fontSize, angle+90)
+                                linept = copy.deepcopy(pt)
+                            if nxt == "05": pt = linept
+                if char.__type__() == "C" and not char in ["00", "01"]:
+                    move = False
                 self.text.index -= 1
-            except: self.text.index -= 1
+            except StopIteration: self.text.index -= 1
             if move: pt = coosCircle(pt, 5*fontSize, angle)
         center = [moyenne(maxs[0], maxs[2]), moyenne(maxs[1], maxs[3])]
         return pts, center
-    def draw(self, img, pt, colour, thickness=1, fontSize=1, lineType=0, angle=0, centered=True):
+    def draw(self, img, pt, colour, thickness=1, fontSize=1, lineType=0, angle=0, centered=True, help=False):
         cases, center = self.get_cases(pt, fontSize, angle)
         if centered: cases, _ = self.get_cases([pt[0]-(center[0]-pt[0]), pt[1]-(center[1]-pt[1])], fontSize, angle)
         for chr, pts in zip(self.text, cases):
-            chr.draw(img, pts=pts, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, angle=angle)
+            chr.draw(img, pts=pts, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, angle=angle, help=help)
 if __name__ == "__main__":
     import os; os.system("clear")
-    a = 100 + 26*10 # (0-99)+(A0-A9)+(A00-Z99)
+    a = 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
     b = len(CONV);print(f"{a}, {b} => {b/a:.2%} used")
 
     a = Text("Ça ñon Æ^A27^")
