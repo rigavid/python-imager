@@ -95,10 +95,10 @@ class Text:
                         if nxt == "02": pt = coosCircle(pt, 5*fontSize, angle+180)
                         if nxt == "03":
                             pt = coosCircle(pt, 7*fontSize, angle-90)
-                            linept = copy.deepcopy(pt)
+                            linept = copy.deepcopy(coosCircle(linept, 7*fontSize, angle-90))
                         if nxt == "04":
                             pt = coosCircle(pt, 7*fontSize, angle+90)
-                            linept = copy.deepcopy(pt)
+                            linept = copy.deepcopy(coosCircle(linept, 7*fontSize, angle+90))
                         if nxt == "05": pt = linept
                     return pt, linept
             if char.__type__() == self.Chain.Char.TypeControl and not char in ["00", "01", "06"]:
