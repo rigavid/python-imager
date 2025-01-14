@@ -19,6 +19,8 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             LINES = [[ch, cd], [cd, cb], [cb, cg], [cg, ch], [pt1, pt2]] + [[pts[(0,1,3,2)[i]], pts[(0,1,3,2)[(i+1)%4]]] for i in range(4)]
             img.ellipse(pt, rs, col, tk, lt, 200, 450, an)
             img.circle(pt3, tk, col, 0, lt)
+        case "06": ## Full char
+            img.polygon([*pts[:2:], *pts[:1:-1]], col, 0, lt)
         case "E2": ## `
             LINES = [[pt_sg(*pts[:2:], 2), pt_sg(*ps[:2:], 1, 2)]]
         case "E3": ## ´
