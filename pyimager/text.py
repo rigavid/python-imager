@@ -13,7 +13,7 @@ class Text:
             TypeText, TypeControl, TypeFormat, TypeDiacritic, TypeUnknown = "T", "C", "F", "D", "U"
             TypeSymbol, TypeLetter, TypeEmoji = "S", "L", "E"
             def __init__(self, chr):
-                if chr.count(":") == 1: chr, self.args = chr.split(":")
+                if len(chr)>3 and chr.count(":") == 1: chr, self.args = chr.split(":")
                 if chr in CONV: self.char = CONV[chr]
                 else:
                     try: self.char = CONV[f"{ord(chr):0>4x}"] ## Hex value of ord(i)
@@ -28,16 +28,21 @@ class Text:
                     elif int(self.char) < 100: return self.TypeDiacritic
                 elif str(self.char).isalnum(): return self.TypeText
                 else: return self.TypeUnknown
-            def __specific_type(self):
+            def __specific_type__(self):
                 if t:=self.__type__() != self.TypeText: return t
                 elif len(self) == 2: return self.TypeSymbol
                 elif len(self) == 3: return self.TypeLetter
-                else: return self.TypeEmoji
+                elif len(self) == 4: return self.TypeEmoji
+                else: return self.TypeUnknown
             def draw(self, img, pts, *args, **kwargs):
-                if self.__type__() == self.TypeText or self in ["00", "06"]:
+                if self.__type__() == self.TypeText or self in ["00", "06"] or self.__type__() == self.TypeUnknown:
                     draw_char(img, self.char, pts=pts, *args, **kwargs)
                 elif self.__type__() == self.TypeDiacritic:
                     draw_diacr(img, self.char, pts=pts, *args, **kwargs)
+                elif self.__type__() == self.TypeControl and False:
+                    img.polygon([*pts[:2:], *pts[:1:-1]], COL.yellow, 3, 2)
+                    img.line(pts[0], pts[3], COL.yellow, 3, 2)
+                    img.line(pts[1], pts[2], COL.yellow, 3, 2)
             def __eq__(self, other):
                 if type(other) == type(self): return self.char == other.char
                 else: return self.char == str(other)
@@ -60,13 +65,15 @@ class Text:
                     if c=="^":
                         chr = True
                     else:
-                        chars.extend(unicodedata.normalize("NFD", c))
+                        chars.extend(unicodedata.normalize("NFD", c)[::-1]) ## chars[::-1] car unicode donne le char, puis le diacr, tandis qu'on écrit premier le diacr, aussi, écrit-on le char.
                 strg += c
             self.string, self.chain = strg, [self.Char(c) for c in chars]
         def __str__(self):
             return self.string
         def __type__str__(self):
             return ";".join(i.__type__() for i in self.chain)
+        def __chain__str__(self):
+            return ";".join(str(i) for i in self.chain)
         def __iter__(self):
             self.index = -1
             return self
@@ -86,25 +93,14 @@ class Text:
     def __type__str__(self):
         return self.text.__type__str__()
     def new_pt(self, pt, char, linept, fontSize, angle=0):
-        try:
-            nxt = next(self.text)
-            self.text.index -= 1
-            if nxt.__type__() != self.Chain.Char.TypeText:
-                if not nxt in ["00", "01", "06"]:
-                    if nxt.__type__() == self.Chain.Char.TypeControl:
-                        if nxt == "02": pt = coosCircle(pt, 5*fontSize, angle+180)
-                        if nxt == "03":
-                            pt = coosCircle(pt, 7*fontSize, angle-90)
-                            linept = copy.deepcopy(coosCircle(linept, 7*fontSize, angle-90))
-                        if nxt == "04":
-                            pt = coosCircle(pt, 7*fontSize, angle+90)
-                            linept = copy.deepcopy(coosCircle(linept, 7*fontSize, angle+90))
-                        if nxt == "05": pt = linept
-                    return pt, linept
-            if char.__type__() == self.Chain.Char.TypeControl and not char in ["00", "01", "06"]:
-                return pt, linept
-        except StopIteration: self.text.index -= 1
-        return coosCircle(pt, 5*fontSize, angle), linept
+        if char.__type__() in (char.TypeDiacritic, char.TypeFormat):
+            return pt, linept
+        elif char.__type__ () == char.TypeControl:
+            if   char == "02": return coosCircle(pt, self.Chain.Char.X*fontSize, angle+180), linept
+            elif char == "03": return coosCircle(pt, self.Chain.Char.Y*fontSize, angle+270), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+270)
+            elif char == "04": return coosCircle(pt, self.Chain.Char.Y*fontSize, angle+ 90), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+ 90)
+            elif char == "05": return linept, linept
+        return coosCircle(pt, self.Chain.Char.X*fontSize, angle), linept
     def get_center(self, pt, fontSize=1, angle=0):
         x, y = self.Chain.Char.X, self.Chain.Char.Y
         maxs, pos = [0, 0, 0, 0], [0, 0]
@@ -125,11 +121,11 @@ class Text:
             if pos[0]<maxs[2]: maxs[2]=pos[0]
             if pos[1]<maxs[3]: maxs[3]=pos[1]
         bords = [coosCircle(coosCircle(pt, x*maxs[2]*fontSize, 180+angle), y*maxs[3]*fontSize, 270+angle), coosCircle(coosCircle(pt, x*maxs[0]*fontSize, angle), y*maxs[1]*fontSize, 90+angle)]
-        c = ct_sg(*bords)
+        c = coosCircle(ct_sg(*bords), self.Chain.Char.Y*fontSize/2, angle+90)
         c2 = ((pt[0]-c[0]), (pt[1]-c[1]))
         return (pt[0]+c2[0], pt[1]+c2[1])
     def get_cases(self, pt, fontSize=1, angle=0):
-        pts, s, x, y, linept = [], self.text, self.Chain.Char.X, self.Chain.Char.Y, copy.deepcopy(pt)
+        pts, s, x, y, linept = [], self.text, self.Chain.Char.X, self.Chain.Char.Y, pt
         d, X, Y, an = square_root(x*x+y*y)*fontSize, x*fontSize, y*fontSize, angleInterPoints([0,0],[x,y])
         for char in self.text:
             pts.append([pt, coosCircle(pt, X, angle), coosCircle(pt, Y, angle+90), coosCircle(pt, d, angle+an)])
@@ -140,12 +136,12 @@ class Text:
         cases = self.get_cases(center, fontSize, angle)
         for chr, pts in zip(self.text, cases):
             chr.draw(img, pts=pts, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, angle=angle, help=help)
+
 if __name__ == "__main__":
     import os
     os.system("clear")
-    a = 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
-    b = len(CONV)
-    print(f"{a}, {b} => {b/a:.2%} used")
+    used, total = len(CONV), 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
+    print(f"{used:0>4}/{total} => {used/total:.2%} used")
 
     a = Text("Ça ñon Æ^A27^")
     print(";".join(str(i) for i in a.text.chain), a.text.chain.__sizeof__(), len(a.text.chain))
