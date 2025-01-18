@@ -1,11 +1,11 @@
 try: from pyimager.main import *
 except: from main import *
 
-def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=0, angle=0, help=False):
+def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=0, angle=0, help=False, format={}):
     if help:
         img.circle(pts[-1], 4, COL.green, 0)
         for p in pts[:-1:]: img.circle(p, 3, COL.red, 0)
-        img.write(char, pts[0])
+        img.text(char, pts[0], fontSize=3, centered=False)
     col, fs, tk, lt, an = colour, fontSize, thickness, lineType, angle
     ct = ct_cr(*pts)
     p1, p2, p3, p4 = ps = [coosCircle(p, fontSize, a+an) for p,a in zip(pts, (45, 135, 315, 225))]
@@ -26,6 +26,69 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             img.circle(pt3, tk, col, 0, lt)
         case "06": ## Full char
             img.polygon([*pts[:2:], *pts[:1:-1]], col, 0, lt)
+        ### Accents suscrits ###################################
+        case "40": # `
+            if char.upper: LINES = [[pt_sg(*pts[:2:], 2), pt_sg(p2, p1, 2)]]
+            else: LINES = [[pt_sg(ct1, ct2, 2), pt_sg(ct_sg(cd, pdh), ct_sg(cg, pgh), 2)]]
+        case "41": # ´
+            if char.upper: LINES = [[pt_sg(*pts[1::-1], 2), pt_sg(p1, p2, 2)]]
+            else: LINES = [[pt_sg(ct2, ct1, 2), pt_sg(ct_sg(cg, pgh), ct_sg(cd, pdh), 2)]]
+        case "42": # ^
+            if char.upper: LINES = [[pt_sg(p2, p1, 2), ct_sg(*pts[1::-1])], [ct_sg(*pts[1::-1]), pt_sg(p1, p2, 2)]]
+            else: LINES = [[ct_sg(cg, cth), cth], [cth, ct_sg(cd, cth)]]
+        case "43": # ˇ
+            if char.upper: LINES = [[pt_sg(*pts[1::-1], 2), ch], [ch, pt_sg(*pts[:2:], 2)]]
+            else: LINES = [[ct1, ct_sg(cth, ct)], [ct_sg(cth, ct), ct2]]
+        case "44": # ̏
+            if char.upper: LINES = [[ch, pt_sg(*pts[:2:], 3, 2)], [ct_sg(phd, ch), pt_sg(*pts[:2:], 3, 3)]]
+            else: LINES = [[ct1, ct_sg(cth, ct)], [cth, ct_sg(ctd, ct2)]]
+        case "45": # ̋
+            if char.upper: LINES = [[ch, pt_sg(*pts[1::-1], 3, 2)], [ct_sg(phg, ch), pt_sg(*pts[1::-1], 3, 3)]]
+            else: LINES = [[ct2, ct_sg(cth, ct)], [cth, ct_sg(ctg, ct1)]]
+        case "46": # ¨
+            if char.upper:
+                img.circle(pt_sg(*pts[:2:], 2), fontSize*0.1, col, -tk, lt)
+                img.circle(pt_sg(*pts[1::-1], 2), fontSize*0.1, col, -tk, lt)
+            else:
+                img.circle(pt_sg(ct1, ctg, 2), fontSize*0.1, col, -tk, lt)
+                img.circle(pt_sg(ct2, ctd, 2), fontSize*0.1, col, -tk, lt)
+        case "47": # ̇
+            if char.upper:
+                img.circle(ct_sg(*pts[:2:]), fontSize*0.1, col, -tk, lt)
+            else:
+                img.circle(ct_sg(ct1, ctd), fontSize*0.1, col, -tk, lt)
+        case "48": # ̆
+            r = (fontSize*0.4 for _ in "00")
+            if char.upper: img.ellipse(ct_sg(*pts[:2:]), r, col, tk, lt, 0, 180, an)
+            else: img.ellipse(pt_sg(cth, ct, 2), r, col, tk, lt, 0, 180, an)
+        case "49": # ¯
+            if char.upper: LINES = [[pt_sg(*pts[1::-1], 2), pt_sg(*pts[:2:], 2)]]
+            else: LINES = [[ct_sg(ct1, ctg), ct_sg(ct2, ctd)]]
+        case "50": # ~
+            if char.upper:
+                pt1, pt2 = pt_sg(*pts[:2:], 3, 2), pt_sg(*pts[1::-1], 3, 2)
+                r = (dist(pt1, ct_sg(*pts[:2:])), dist(ct_sg(*pts[:2:]), ch)/3)
+                img.ellipse(pt1, r, col, tk, lt, 180, 360, an)
+                img.ellipse(pt2, r, col, tk, lt, 0, 180, an)
+            else:
+                pt1, pt2 = ct_sg(cth, ctg), ct_sg(cth, ctd)
+                r = (dist(pt1, ct_sg(cth, ct)), dist(ct_sg(*pts[:2:]), ch)/3)
+                img.ellipse(pt1, r, col, tk, lt, 180, 360, an)
+                img.ellipse(pt2, r, col, tk, lt, 0, 180, an)
+        case "51": # '
+            if char.upper: LINES = [[ct_sg(*pts[:2:]), pt_sg(ch, ct_sg(*pts[:2:]), 2)]]
+            else: LINES = [[cth, ct_sg(cth, ct)]]
+        case "52": # "
+            if char.upper:
+                pt1, pt2 = pt_sg(*pts[:2:], 5, 4), pt_sg(*pts[:2:], 4, 5)
+                d = dist(pt1, pt_sg(ch, ct_sg(*pts[:2:]), 2))
+            else:
+                d = dist(cth, ct_sg(cth, ct))
+                pt1, pt2 = ct_sg(cth, ct1), ct_sg(cth, ct2)
+            LINES = [[pt1, coosCircle(pt1, d, 90+an)], [pt2, coosCircle(pt2, d, 90+an)]]
+        case "53": # °
+            if char.upper: img.circle(ct_sg(*pts[:2:]), fontSize*0.4, col, tk, lt)
+            else: img.circle(pt_sg(cth, ct, 2), fontSize*0.4, col, tk, lt)
         ## Symbols #############################################
         case "A0": ## 0
             r = (dist(ct, ct_sg(cd, ctd)), dist(ct, ch))
@@ -145,11 +208,33 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "E1": ## ª # TODO
             ...
         case "E2": ## `
-            LINES = [[pt_sg(*pts[:2:], 2), pt_sg(*ps[:2:], 1, 2)]]
+            LINES = [[pt_sg(p1, p2, 2), pt_sg(pdh, pgh, 2)]]
         case "E3": ## ´
-            LINES = [[pt_sg(*pts[:2:], 1, 2), pt_sg(*ps[:2:], 2)]]
+            LINES = [[pt_sg(p2, p1, 2), pt_sg(pgh, pdh, 2)]]
         case "E4": ## ^
-            LINES = [[ct_sg(*pts[:2:]), pt_sg(*ps[:2:], 4)], [ct_sg(*pts[:2:]), pt_sg(*ps[:2:], 1, 4)]]
+            LINES = [[pt_sg(pdh, pgh, 4), ch], [ch, pt_sg(pgh, pdh, 4)]]
+        case "E5": ## ¨
+            img.circle(ct_sg(phg, ct1), fontSize*0.2, col, -tk, lt)
+            img.circle(ct_sg(phd, ct2), fontSize*0.2, col, -tk, lt)
+        ########################################################
+        case "F0": ## <
+            LINES = [[ctd, ct3], [ct3, pbd]]
+        case "F1": ## >
+            LINES = [[ctg, ct4], [ct4, pbg]]
+        case "F2": ## \
+            LINES = [[phg, pbd]]
+        ########################################################
+        case "F6": ## ¦
+            LINES = [[ch, ct_sg(cth, ct)], [cb, ct_sg(ctb, ct)]]
+        ########################################################
+        case "F8": ## ×
+            LINES = [[pt_sg(ct1, ct, 2), pt_sg(ct4, ct, 2)], [pt_sg(ct2, ct, 2), pt_sg(ct3, ct, 2)]]
+        case "F9": ## ÷
+            LINES = [[ctg, ctd]]
+            img.circle(ct_sg(cth, ct), fontSize*0.2, col, -tk, lt)
+            img.circle(ct_sg(ctb, ct), fontSize*0.2, col, -tk, lt)
+        case "G0": ## ’
+            LINES = [[p2, ct2]]
         ## Letters #############################################
         case "A00": ## A
             LINES = [[p3, ch], [ch, p4], [ct_sg(p3, ch), ct_sg(ch, p4)]]
@@ -223,6 +308,76 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             LINES = [[ct1, pbg]]
         case "B02": # c
             img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 60, 300, an)
+        case "B03": # d
+            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES = [[ct2, pbd]]
+        case "B04": # e
+            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 30, angle=an)
+            LINES = [[ct3, ct4]]
+        case "B05": # f
+            img.ellipse(ctd, (dist(ct, ctd), dist(ct, cth)), col, tk, lt, 180, 300, an)
+            LINES = [[ctg, ctd], [ct, cb]]
+        case "B06": # g
+            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
+            img.ellipse(cb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 0, 150, an)
+            LINES = [[ctd, pbd]]
+        case "B07": # h
+            img.ellipse(ctb, (dist(ct, ctg), dist(ct, ctg)), col, tk, lt, 180, 360, an)
+            LINES = [[ct1, pbg], [ct4, pbd]]
+        case "B08": # i
+            LINES = [[pbg, pbd], [ct, cb], [ctg, ct]]
+            if not char.diacr: img.circle(cth, fontSize*0.2, col, -tk, lt)
+        case "B09": # j
+            LINES = [[ct, cb], [ctg, ct]]
+            if not char.diacr: img.circle(cth, fontSize*0.2, col, -tk, lt)
+            img.ellipse(pbg, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 0, 90, an)
+        case "B10": # k
+            LINES = [[ct1, pbg], [pt_sg(ct3, ctd, 2), pbd], [ct3, ctd]]
+        case "B11": # l
+            LINES = [[ct1, cth], [cth, ctb]]
+            img.ellipse(ct4, (dist(ctb, ct3), dist(ctb, cb)), col, tk, lt, 90, 180, an)
+        case "B12": # m
+            LINES = [[cg, p3], [ctb, cb], [pdb, p4]]
+            img.ellipse(ct3, (dist(ct, ctd), dist(ct, ctb)), col, tk, lt, 180, 360, an)
+            img.ellipse(ct4, (dist(ct, ctd), dist(ct, ctb)), col, tk, lt, 180, 360, an)
+        case "B13": # n
+            LINES = [[ctg, pbg], [ct4, pbd]]
+            img.ellipse(ctb, (dist(ct, ctd), dist(ct, ctb)), col, tk, lt, 180, 360, an)
+        case "B14": # o
+            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
+        case "B15": # p
+            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES = [[ctg, coosCircle(pbg, dist(ct, ctb), 90+an)]]
+        case "B16": # q
+            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES = [[ctd, coosCircle(pbd, dist(ct, ctb), 90+an)]]
+        case "B17": # r
+            r, a = (dist(ct4, ct3), dist(ct4, ctd)), 270
+            img.ellipse(ct4, r, col, tk, lt, 180, a, an)
+            LINES = [[ctg, pbg], [p3, cb], [ct_sg(cg, ctg), ctg], [ctd, pt_sg(ctd, ct4, 2)]]
+        case "B18": # s
+            pt1, pt2 = ct_sg(ct, ctb), ct_sg(cb, ctb)
+            r = (dist(ct, ctd), dist(pt1, ct))
+            img.ellipse(pt1, (dist(ct, ctd)*0.9, dist(pt1, ct)), col, tk, lt, 90, 330, an)
+            img.ellipse(pt2, (dist(ct, ctd), dist(pt1, ct)), col, tk, lt, -90, 160, an)
+        case "B19": # t
+            LINES = [[cth, ctb], [ctg, ctd]]
+            img.ellipse(ct4, (dist(ct4, ctb), dist(ct4, pbd)), col, tk, lt, 90, 180, an)
+        case "B20": # u
+            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 0, 180, an)
+            LINES = [[ctg, ct3], [ctd, pbd]]
+        case "B21": # v
+            LINES = [[ctg, cb], [ctd, cb]]
+        case "B22": # w
+            LINES = [[cg, pbg], [pbg, ct_sg(ctb, ct)], [ct_sg(ctb, ct), pbd], [pbd, cd]]
+        case "B23": # x
+            LINES = [[ctg, pbd], [ctd, pbg]]
+        case "B24": # y
+            LINES = [[ctg, cb], [ctd, cb]]
+            i = angleInterPoints(ctd, cb)-90
+            img.ellipse(pbg, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, -i, 90-i, an+i)
+        case "B25": # z
+            LINES = [[ctg, ctd], [ctd, pbg], [pbg, pbd]]
 
 
 
@@ -231,14 +386,10 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         ########################################################
         case "A000": ...
     #################################################
-        case _: draw_char(img, "00", pts, col, fs, tk, lt, an, False)
+        case _:
+            draw_char(img, "00", pts, col, fs, tk, lt, an, False)
     for a, b in LINES: img.line(a, b, col, tk, lt) ##
     return ##########################################
-def draw_diacr(img, char, *args, **kwargs):
-    match char:
-        case "40": char = "E2"
-        case "41": char = "E3"
-        case "42": char = "E4"
-        case "46": char = "E5"
-        case _: char = "00"
-    draw_char(img, char, *args, **kwargs)
+
+def draw_diacr(img, char, upper, pts, colour=COL.red, fontSize=1, thickness=1, lineType=0, angle=0, help=False, format={}):
+    ...

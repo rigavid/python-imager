@@ -18,6 +18,7 @@ class Text:
                 else:
                     try: self.char = CONV[f"{ord(chr):0>4x}"] ## Hex value of ord(i)
                     except: self.char = chr if chr in CHARS else f"<{chr}>"
+                self.diacr = False ## It is changed after it's definition by Chain.__init__()
             def __str__(self):
                 try: return f"{self.char}:{self.args}"
                 except: return str(self.char)
@@ -35,10 +36,8 @@ class Text:
                 elif len(self) == 4: return self.TypeEmoji
                 else: return self.TypeUnknown
             def draw(self, img, pts, *args, **kwargs):
-                if self.__type__() == self.TypeText or self in ["00", "06"] or self.__type__() == self.TypeUnknown:
-                    draw_char(img, self.char, pts=pts, *args, **kwargs)
-                elif self.__type__() == self.TypeDiacritic:
-                    draw_diacr(img, self.char, pts=pts, *args, **kwargs)
+                if self.__type__() in [self.TypeText, self.TypeUnknown, self.TypeDiacritic] or self in ["00", "06"]:
+                    draw_char(img, self, pts=pts, format={}, *args, **kwargs)
                 elif self.__type__() == self.TypeControl and False:
                     img.polygon([*pts[:2:], *pts[:1:-1]], COL.yellow, 3, 2)
                     img.line(pts[0], pts[3], COL.yellow, 3, 2)
@@ -48,7 +47,7 @@ class Text:
                 else: return self.char == str(other)
         def __init__(self, string=""):
             s, o, d = f"^{CONV["SPC"]}^", f"^{CONV["ORG"]}^", f"^{CONV["DWN"]}^"
-            string = string.replace( " ", s).replace("\r", o).replace("\v", d).replace("\n", o+d)
+            string = string.replace(" ", s).replace("\r", o).replace("\v", d).replace("\n", o+d)
             chr, chars, strg, char_ = False, [], "", ""
             for c in string:
                 if chr:
@@ -64,10 +63,20 @@ class Text:
                 else:
                     if c=="^":
                         chr = True
-                    else:
-                        chars.extend(unicodedata.normalize("NFD", c)[::-1]) ## chars[::-1] car unicode donne le char, puis le diacr, tandis qu'on écrit premier le diacr, aussi, écrit-on le char.
+                    else: ## chars[::-1] car unicode donne le char, puis le diacr, tandis qu'on écrit premier le diacr, aussi, écrit-on le char.
+                        if unicodedata.category(c) == "Mn":
+                            c = f"{chars.pop(-1)}{c}"
+                        chars.extend(unicodedata.normalize("NFD", c)[::-1])
                 strg += c
             self.string, self.chain = strg, [self.Char(c) for c in chars]
+            for char in self:
+                if char.__type__() == self.Char.TypeDiacritic:
+                    try:
+                        nxt = next(self)
+                        char.upper = nxt.char[0]=="A"
+                        nxt.diacr = True
+                    except StopIteration: char.upper = False
+                    self.index -= 1
         def __str__(self):
             return self.string
         def __type__str__(self):
@@ -82,8 +91,7 @@ class Text:
             if self.index == len(self.chain): raise StopIteration
             return self.chain[self.index]
     def __init__(self, text):
-        if type(text) == type(self): text = str(text)
-        self.text = self.Chain(text)
+        self.text = self.Chain(str(text))
     def __eq__(self, other):
         if type(self) == type(other):
             return self.text == other.text
