@@ -29,12 +29,16 @@ class Text:
                     elif int(self.char) < 100: return self.TypeDiacritic
                 elif str(self.char).isalnum(): return self.TypeText
                 else: return self.TypeUnknown
+            def __len__(self):
+                return len(self.char)
             def __specific_type__(self):
                 if t:=self.__type__() != self.TypeText: return t
                 elif len(self) == 2: return self.TypeSymbol
                 elif len(self) == 3: return self.TypeLetter
                 elif len(self) == 4: return self.TypeEmoji
                 else: return self.TypeUnknown
+            def __is_upper__(self):
+                return not (self.__specific_type__()==self.TypeLetter and self.char[0] == "B")
             def draw(self, img, pts, *args, **kwargs):
                 if self.__type__() in [self.TypeText, self.TypeUnknown, self.TypeDiacritic] or self in ["00", "06"]:
                     draw_char(img, self, pts=pts, format={}, *args, **kwargs)
@@ -52,20 +56,16 @@ class Text:
             for c in string:
                 if chr:
                     if c == "^":
-                        if char_ == "":
-                            chars.append("^")
+                        if char_ == "": chars.append("^")
                         else:
                             chars.append(char_)
                             char_ = ""
                         chr = False
-                    else:
-                        char_ += c
+                    else: char_ += c
                 else:
-                    if c=="^":
-                        chr = True
+                    if c=="^": chr = True
                     else: ## chars[::-1] car unicode donne le char, puis le diacr, tandis qu'on écrit premier le diacr, aussi, écrit-on le char.
-                        if unicodedata.category(c) == "Mn":
-                            c = f"{chars.pop(-1)}{c}"
+                        if unicodedata.category(c) == "Mn": c = f"{chars.pop(-1)}{c}"
                         chars.extend(unicodedata.normalize("NFD", c)[::-1])
                 strg += c
             self.string, self.chain = strg, [self.Char(c) for c in chars]
@@ -73,10 +73,12 @@ class Text:
                 if char.__type__() == self.Char.TypeDiacritic:
                     try:
                         nxt = next(self)
-                        char.upper = nxt.char[0]=="A"
+                        char.upper = nxt.__is_upper__()
                         nxt.diacr = True
                     except StopIteration: char.upper = False
                     self.index -= 1
+        def __len__(self):
+            return len(self.chain)
         def __str__(self):
             return self.string
         def __type__str__(self):
@@ -88,7 +90,7 @@ class Text:
             return self
         def __next__(self):
             self.index += 1
-            if self.index == len(self.chain): raise StopIteration
+            if self.index == len(self): raise StopIteration
             return self.chain[self.index]
     def __init__(self, text):
         self.text = self.Chain(str(text))
