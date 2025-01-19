@@ -50,8 +50,8 @@ class Text:
                 if type(other) == type(self): return self.char == other.char
                 else: return self.char == str(other)
         def __init__(self, string=""):
-            s, o, d = f"^{CONV["SPC"]}^", f"^{CONV["ORG"]}^", f"^{CONV["DWN"]}^"
-            string = string.replace(" ", s).replace("\r", o).replace("\v", d).replace("\n", o+d)
+            s, o, d, tp, tb, rtb = f"^{CONV["SPC"]}^", f"^{CONV["ORG"]}^", f"^{CONV["DWN"]}^", f"^{CONV["TOP"]}^", f"^{CONV["TAB"]}^", f"^{CONV["RTB"]}^"
+            string = string.replace(" ", s).replace("\r", o).replace("\v", d).replace("\n", o+d).replace("\b", tp).replace("\t", tb).replace("\f", rtb)
             chr, chars, strg, char_ = False, [], "", ""
             for c in string:
                 if chr:
@@ -102,15 +102,36 @@ class Text:
         return str(self.text)
     def __type__str__(self):
         return self.text.__type__str__()
-    def new_pt(self, pt, char, linept, fontSize, angle=0):
+    def new_pt(self, pt, char, linept, orgpt, pos, fontSize, angle=0):
         if char.__type__() in (char.TypeDiacritic, char.TypeFormat):
-            return pt, linept
+            pass
         elif char.__type__ () == char.TypeControl:
-            if   char == "02": return coosCircle(pt, self.Chain.Char.X*fontSize, angle+180), linept
-            elif char == "03": return coosCircle(pt, self.Chain.Char.Y*fontSize, angle+270), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+270)
-            elif char == "04": return coosCircle(pt, self.Chain.Char.Y*fontSize, angle+ 90), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+ 90)
-            elif char == "05": return linept, linept
-        return coosCircle(pt, self.Chain.Char.X*fontSize, angle), linept
+            if   char == "02":
+                pos[0] -= 1
+                pt = coosCircle(pt, self.Chain.Char.X*fontSize, angle+180)
+            elif char == "03":
+                pos[1] -= 1
+                pt, linept = coosCircle(pt, self.Chain.Char.Y*fontSize, angle+270), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+270)
+            elif char == "04":
+                pos[1] += 1
+                pt, linept = coosCircle(pt, self.Chain.Char.Y*fontSize, angle+ 90), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+ 90)
+            elif char == "05": pt, pos[0], orgpt = linept, 0, coosCircle(orgpt, self.Chain.Char.X*fontSize*pos[0], angle+180)
+            elif char == "07": pt, pos[1], linept = orgpt, 0, coosCircle(linept, self.Chain.Char.Y*fontSize*pos[1], angle+270)
+            elif char == "08":
+                n = 4-(pos[0]%4)
+                pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize*n, angle), coosCircle(orgpt, self.Chain.Char.X*fontSize*n, angle)
+                pos[0] += n
+            elif char == "09":
+                n = 4-(pos[0]%4)
+                pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize*n, 180+angle), coosCircle(orgpt, self.Chain.Char.X*fontSize*n, 180+angle)
+                pos[0] -= n
+            else:
+                pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize, angle), coosCircle(orgpt, self.Chain.Char.X*fontSize, angle)
+                pos[0] += 1
+        else:
+            pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize, angle), coosCircle(orgpt, self.Chain.Char.X*fontSize, angle)
+            pos[0] += 1
+        return pt, linept, orgpt, pos
     def get_center(self, pt, fontSize=1, angle=0):
         x, y = self.Chain.Char.X, self.Chain.Char.Y
         maxs, pos = [0, 0, 0, 0], [0, 0]
@@ -123,6 +144,9 @@ class Text:
                         case "03": pos[1] -= 1
                         case "04": pos[1] += 1
                         case "05": pos[0] = 0
+                        case "07": pos[1] = 0
+                        case "08": pos[0] += 4-(pos[0]%4)
+                        case "09": pos[0] -= 4-(pos[0]%4)
                 case char.TypeFormat: continue
                 case char.TypeDiacritic: continue
                 case char.TypeText: pos[0] += 1
@@ -135,11 +159,13 @@ class Text:
         c2 = ((pt[0]-c[0]), (pt[1]-c[1]))
         return (pt[0]+c2[0], pt[1]+c2[1])
     def get_cases(self, pt, fontSize=1, angle=0):
-        pts, s, x, y, linept = [], self.text, self.Chain.Char.X, self.Chain.Char.Y, pt
+        pts, s, x, y = [], self.text, self.Chain.Char.X, self.Chain.Char.Y
+        pos = [0, 0]
+        linept = orgpt = pt
         d, X, Y, an = square_root(x*x+y*y)*fontSize, x*fontSize, y*fontSize, angleInterPoints([0,0],[x,y])
         for char in self.text:
             pts.append([pt, coosCircle(pt, X, angle), coosCircle(pt, Y, angle+90), coosCircle(pt, d, angle+an)])
-            pt, linept = self.new_pt(pt, char, linept, fontSize, angle)
+            pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle)
         return pts
     def draw(self, img, pt, colour, thickness=1, fontSize=1, lineType=0, angle=0, centered=True, help=False):
         center = self.get_center(pt, fontSize, angle) if centered else pt
