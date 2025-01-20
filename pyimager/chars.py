@@ -580,8 +580,10 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             img.ellipse(ctb, (dist(ct, ctd), dist(ct, ctb)), col, tk, lt, 240, 490, an)
             LINES = [[ctb, ct4]]
         case "B61": # ю
-            LINES = [[ctg, pbg], [ct3, ct_sg(ct3, ctb)]]
-            img.ellipse(ctb, (dist(ctb, ct4)/2, dist(ct, ctb)), col, tk, lt, angle=an)
+            p = pt_sg(ctb, ct4, 2)
+            r = (dist(p, ct4), dist(ct, ctb))
+            img.ellipse(p, r, col, tk, lt, angle=an)
+            LINES = [[ctg, pbg], [ct3, coosEllipse(p, r, 180, an)]]
         case "B62": # я
             LINES = [[ctd, pbd], [ct4, ctb], [ctd, ct], [ctb, pbg]]
             img.ellipse(ct_sg(ctb, ct), (dist(ct, ctd)*0.8, dist(ct, ctb)/2), col, tk, lt, 90, 270, an)
