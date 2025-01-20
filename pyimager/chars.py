@@ -1,3 +1,6 @@
+try: from pyimager.main import *
+except: from main import *
+
 def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=0, angle=0, help=False, format={}):
     if help:
         img.circle(pts[-1], 4, COL.green, 0)
