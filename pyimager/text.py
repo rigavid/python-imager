@@ -1,9 +1,7 @@
+try: from pyimager.text_conv import CONV, CHARS
+except: from text_conv import CONV, CHARS
 try: from pyimager.chars import *
 except: from chars import *
-try: from pyimager._vars_.text_conv import CONV, CHARS
-except:
-    try: from _vars_.text_conv import CONV, CHARS
-    except: from text_conv import CONV, CHARS
 import unicodedata
 
 class Text:

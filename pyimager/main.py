@@ -1,8 +1,6 @@
 import os, copy, numpy as np, random as rd
-try: from pyimager._vars_.__vars__ import *
-except:
-    try: from _vars_.__vars__ import *
-    except: from __vars__ import *
+try: from pyimager.__vars__ import *
+except: from __vars__ import *
 try: from pyimager.text import Text
 except: from text import Text
 

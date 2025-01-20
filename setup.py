@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 # python3 -m build
 # twine upload  dist/* --verbose
 
-VERSION = '1.2.12'
+VERSION = '1.2.14'
 DESCRIPTION = 'Python image program'
 with open("README.md", "r", encoding="utf8") as file:
     LONG_DESCRIPTION = file.read()
