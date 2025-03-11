@@ -6,14 +6,17 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         img.circle(pts[-1], 4, COL.green, 0)
         for p in pts[:-1:]: img.circle(p, 3, COL.red, 0)
         img.text(char, pts[0], fontSize=3, centered=False)
-    col, fs, tk, lt, an = colour, fontSize, thickness, lineType, angle
-    ct = ct_cr(*pts)
-    p1, p2, p3, p4 = ps = [coosCircle(p, fontSize, a+an) for p,a in zip(pts, (45, 135, 315, 225))]
-    ch, cb, cg, cd = ct_sg(p1, p2), ct_sg(p3, p4), ct_sg(p1, p3), ct_sg(p2, p4)
-    cth, ctb, ctg, ctd = ct_sg(ct, ch), ct_sg(ct, cb), ct_sg(ct, cg), ct_sg(ct, cd)
-    ct1, ct2, ct3, ct4 = ct_sg(ct, p1), ct_sg(ct, p2), ct_sg(ct, p3), ct_sg(ct, p4)
-    phg, phd, pbg, pbd = ct_sg(p1, ch), ct_sg(p2, ch), ct_sg(p3, cb), ct_sg(p4, cb)
-    pgh, pdh, pgb, pdb = ct_sg(p1, cg), ct_sg(p2, cd), ct_sg(p3, cg), ct_sg(p4, cd)
+    if type(char)==str or not ":" in str(char):
+        col, fs, tk, lt, an = colour, fontSize, thickness, lineType, angle
+        ct = ct_cr(*pts)
+        p1, p2, p3, p4 = ps = [coosCircle(p, fontSize, a+an) for p,a in zip(pts, (45, 135, 315, 225))]
+        ch, cb, cg, cd = ct_sg(p1, p2), ct_sg(p3, p4), ct_sg(p1, p3), ct_sg(p2, p4)
+        cth, ctb, ctg, ctd = ct_sg(ct, ch), ct_sg(ct, cb), ct_sg(ct, cg), ct_sg(ct, cd)
+        ct1, ct2, ct3, ct4 = ct_sg(ct, p1), ct_sg(ct, p2), ct_sg(ct, p3), ct_sg(ct, p4)
+        phg, phd, pbg, pbd = ct_sg(p1, ch), ct_sg(p2, ch), ct_sg(p3, cb), ct_sg(p4, cb)
+        pgh, pdh, pgb, pdb = ct_sg(p1, cg), ct_sg(p2, cd), ct_sg(p3, cg), ct_sg(p4, cd)
+    else: ### Adapter les variables selon le style à appliquer
+        return
     LINES = []
     match char:
         ## "Control" chars #####################################
@@ -309,8 +312,10 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "A27": ## Œ
             img.ellipse(ct, (dist(ct, cd), dist(ct, ch)), col, tk, lt, 90, 270, an)
             LINES = [[ch, cb], [ct, ct_sg(cd, ctd)], [cb, p4], [ch, p2]]
+        ##################
         case "A30": ## А
-            LINES = [[p3, ch], [ch, p4], [ct_sg(p3, ch), ct_sg(ch, p4)]]
+            char.char = "A00"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
         case "A31": ## Б
             LINES = [[p1, p3], [p3, cb], [cg, ct], [p1, ct_sg(p2, phd)]]
             img.ellipse(ctb, (dist(ct, cd), dist(ctb, cb)), col, tk, lt, 270, 450, an)
@@ -348,7 +353,8 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "A43": ## М
             LINES = [[p3, phg], [phg, ctb], [ctb, phd], [phd, p4]]
         case "A44": ## Н
-            LINES = [[p1, p3], [p2, p4], [cg, cd]]
+            char.char = "A07"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
         case "A45": ## О
             char.char = "A14"
             draw_char(img, char, pts, col, fs, tk, lt, an, False)
@@ -399,6 +405,79 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "A62": ## Я
             LINES = [[p2, p4], [cd, ct], [p2, ch], [ct, p3]]
             img.ellipse(cth, [dist(ch, p2)*0.8, dist(cth, ch)], col, tk, lt, 90, 270, an)
+        ##################
+        case "A70": ## Α
+            char.char = "A00"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A71": ## Β
+            char.char = "A01"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A72": ## Γ
+            char.char = "A33"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A73": ## Δ
+            LINES = [[p3, ch], [ch, p4], [p3, p4]]
+        case "A74": ## Ε
+            char.char = "A04"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A75": ## Ζ
+            char.char = "A25"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A76": ## Η
+            char.char = "A07"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A77": ## Θ
+            img.ellipse(ct, (dist(ct, cd), dist(ct, ch)), col, tk, lt, angle=an)
+            LINES = [[cg, cd]]
+        case "A78": ## Ι
+            char.char = "A08"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A79": ## Κ
+            char.char = "A41"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A80": ## Λ
+            LINES = [[p3, ch], [ch, p4]]
+        case "A81": ## Μ
+            char.char = "A12"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A82": ## Ν
+            char.char = "A13"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A83": ## Ξ
+            LINES = [[p1, p2], [p3, p4], [ctg, ctd]]
+        case "A84": ## Ο
+            char.char = "A14"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A85": ## Π
+            char.char = "A46"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A86": ## Ρ
+            char.char = "A15"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A87": ## Σ
+            LINES = [[p1, p2], [p3, p4], [p1, ct], [ct, p3]]
+        case "A88": ## Σ
+            LINES = [[p1, p2], [p2, p3], [p3, p4]]
+        case "A89": ## Τ
+            char.char = "A19"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A90": ## Υ
+            LINES = [[p1, ct], [p2, ct], [ct, cb]]
+        case "A91": ## Φ
+            char.char = "A51"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A92": ## Χ
+            char.char = "A23"
+            draw_char(img, char, pts, col, fs, tk, lt, an, False)
+        case "A93": ## Ψ
+            c, d = cth, (dist(ct, cd), dist(ct, ch))
+            img.ellipse(c, d, col, tk, lt, 0, 180, an)
+            LINES = [[ch, cb], [coosEllipse(c, d, 0, an), p2], [coosEllipse(c, d, 180, an), p1]]
+        case "A94": ## Ω
+            y, a, b = dist(ct, ch), 140, 400
+            p, d = [ct[0], ct[1]-dist(ct, ch)+y], (dist(ct, cd), y)
+            img.ellipse(p, d, col, tk, lt, a, b, an)
+            LINES = [[p3, pbg], [coosEllipse(p, d, a, an), pbg], [coosEllipse(p, d, b, an), pbd], [pbd, p4]]
         ########################################################
         case "B00": # a
             p, r, a, a1 = pt_sg(ctb, pbg, 2), (dist(ctb, cb)/2, dist(ctb, cb)/2), 90, 270
@@ -489,6 +568,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "B27": # œ
             img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 30, angle=an)
             LINES = [[ctb, ct4], [ct, cb]]
+        #################
         case "B30": # а
             LINES = [[pbg, ct], [ct, pbd], [ct_sg(pbg, ct), ct_sg(ct, pbd)]]
         case "B31": # б
@@ -587,7 +667,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "B62": # я
             LINES = [[ctd, pbd], [ct4, ctb], [ctd, ct], [ctb, pbg]]
             img.ellipse(ct_sg(ctb, ct), (dist(ct, ctd)*0.8, dist(ct, ctb)/2), col, tk, lt, 90, 270, an)
-
+        #################
 
 
 

@@ -10,16 +10,17 @@ class Text:
             X, Y = 5, 7
             TypeText, TypeControl, TypeFormat, TypeDiacritic, TypeUnknown = "T", "C", "F", "D", "U"
             TypeSymbol, TypeLetter, TypeEmoji = "S", "L", "E"
-            def __init__(self, chr):
+            def __init__(self, chr, style=""):
                 if len(chr)>3 and chr.count(":") == 1: chr, self.args = chr.split(":")
                 if chr in CONV: self.char = CONV[chr]
                 else:
                     try: self.char = CONV[f"{ord(chr):0>4x}"] ## Hex value of ord(i)
                     except: self.char = chr if chr in CHARS else f"<{chr}>"
                 self.diacr = False ## It is changed after it's definition by Chain.__init__()
+                self.style = style
             def __str__(self):
-                try: return f"{self.char}:{self.args}"
-                except: return str(self.char)
+                try: return f"{self.char}{self.style}:{self.args}"
+                except: return f"{self.char}{self.style}"
             def __type__(self):
                 if str(self.char).isnumeric():
                     if int(self.char) >= 0 and int(self.char) <  20: return self.TypeControl
@@ -66,7 +67,30 @@ class Text:
                         if unicodedata.category(c) == "Mn": c = f"{chars.pop(-1)}{c}"
                         chars.extend(unicodedata.normalize("NFD", c)[::-1])
                 strg += c
-            self.string, self.chain = strg, [self.Char(c) for c in chars]
+            chaine = []
+            format = False
+            ul = tl = ol = it = bd = ci = tn = vm = hm = False
+            for c in chars:
+                char = self.Char(c)
+                if char.__type__() == char.TypeFormat:
+                    match char.char:
+                        case "20":
+                            ul = tl = ol = it = bd = ci = tn = vm = hm = False if format else True
+                        case "21": ul = not ul
+                        case "22": tl = not tl
+                        case "23": ol = not ol
+                        case "24": it = not it
+                        case "25": bd = not bd
+                        case "26": ci = not ci
+                        case "27": tn = not tn
+                        case "28": vm = not vm
+                        case "29": hm = not hm
+                    format = not format
+                else:
+                    if format:
+                        char.style = f"{":UL"if ul else""}{":TL"if tl else""}{":OL"if ol else""}{":IT"if it else""}{":CI"if ci else""}{":BD"if bd else""}{":TN"if tn else""}{":VM"if vm else""}{":HM"if hm else""}"
+                    chaine.append(char)
+            self.string, self.chain = strg, chaine
             for char in self:
                 if char.__type__() == self.Char.TypeDiacritic:
                     try:
