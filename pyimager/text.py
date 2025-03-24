@@ -4,6 +4,9 @@ try: from pyimager.chars import *
 except: from chars import *
 import unicodedata
 
+## TODO Séparer les lignes des caractères
+## TODO Raprocher les colones des caractères
+
 class Text:
     class Chain:
         class Char:
@@ -21,6 +24,8 @@ class Text:
             def __str__(self):
                 try: return f"{self.char}{self.style}:{self.args}"
                 except: return f"{self.char}{self.style}"
+            def split(self, *args, **kwargs):
+                return self.__str__().split(*args, **kwargs)
             def __type__(self):
                 if str(self.char).isnumeric():
                     if int(self.char) >= 0 and int(self.char) <  20: return self.TypeControl
@@ -73,9 +78,11 @@ class Text:
             for c in chars:
                 char = self.Char(c)
                 if char.__type__() == char.TypeFormat:
+                    r = True
                     match char.char:
                         case "20":
                             ul = tl = ol = it = bd = ci = tn = vm = hm = False if format else True
+                            r = not format
                         case "21": ul = not ul
                         case "22": tl = not tl
                         case "23": ol = not ol
@@ -85,7 +92,7 @@ class Text:
                         case "27": tn = not tn
                         case "28": vm = not vm
                         case "29": hm = not hm
-                    format = not format
+                    format = r
                 else:
                     if format:
                         char.style = f"{":UL"if ul else""}{":TL"if tl else""}{":OL"if ol else""}{":IT"if it else""}{":CI"if ci else""}{":BD"if bd else""}{":TN"if tn else""}{":VM"if vm else""}{":HM"if hm else""}"
