@@ -663,7 +663,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             LINES += [[cg, p3], [cg, cd]]
         case "B34": # д
             LINES += [[ct_sg(pgb, p3), p3], [ct_sg(pdb, p4), p4], [ct_sg(pgb, p3), ct_sg(pdb, p4)], [pt_sg(ct, cg, 2), ct_sg(ct, cd)], [ct_sg(ct, cd), ct_sg(ctb, p4)]]
-            img.ellipse(pt_sg(cg, ct, 2), (dist(pt_sg(cg, ct, 2), pt_sg(ct, ctg, 2)), dist(ct, ct_sg(ctb, cb))), col, tk, lt, 0, 90, an)
+            img.ellipse(pt_sg(cg, ct, 2), (dist(pt_sg(cg, ct, 2), pt_sg(ct, cg, 2)), dist(ct, ct_sg(ctb, cb))), col, tk, lt, 0, 90, an)
         case "B35": # е
             LINES += [[cg, cd], [cg, p3], [pgb, ct_sg(ctb, pdb)], [p3, p4]]
         case "B36": # ё
@@ -822,7 +822,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "A000": ...
     #################################################
         case _:
-            draw_char(img, "00", pts, col, fs, tk, lt, an, False)
+            LINES += [[p1, p4], [p2, p3], [p1, p2], [p1, p3], [p2, p4], [p3, p4]]
     for a, b in LINES: img.line(a, b, col, tk, lt)
     #################################################
     if help:
@@ -830,7 +830,6 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         img.circle(pts[0], d*2, COL.compl(COL.help), 0)
         for p in pts[:-1:]: img.circle(p, d, COL.help, 0)
         t = str(char).replace(":", "\n")
-        while "(" in t:
-            t = t[:t.index("("):]+t[1+t.index(")")::]
-        img.text(t, pts[0], COL.help, fontSize=3, centered=False)
+        while "(" in t: t = t[:t.index("("):]+t[1+t.index(")")::]
+        img.text(t.strip("<").strip(">"), pts[0], COL.help, fontSize=3, thickness=2, centered=False)
     return ##########################################

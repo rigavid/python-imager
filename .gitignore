@@ -2,3 +2,4 @@
 dist/
 python_imager*/
 **/test**
+!test.py

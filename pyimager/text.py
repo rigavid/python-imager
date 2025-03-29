@@ -57,12 +57,10 @@ class Text:
             def get_width_height(self):
                 XD, YD =  self.X, self.Y
                 if self.monospace: return XD, YD
-                YD *= 1.1
                 if self.__type__() == self.TypeControl:
                     match str(self.char):
-                        case "00": XD *= 0.5
-                        case "01": XD *= 0.2
-                        case "06": XD *= 0.5
+                        case "00"|"06": XD *= 0.5
+                        case "01": XD *= 0.6
                         case _: return XD, YD
                 elif self.__specific_type__() == self.TypeLetter:
                     l, n = self.char[0], int(self.char[1::])
