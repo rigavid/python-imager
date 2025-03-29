@@ -4,7 +4,7 @@ except: from __vars__ import *
 try: from pyimager.text import Text
 except: from text import Text
 
-# Mandatory for Fedora, works on Windows too # TODO see if it works on other distros
+# Mandatory for Fedora, works on Windows too # TEST see if it works on other distros
 try: os.environ["XDG_SESSION_TYPE"] = "xcb"
 except: ...
 

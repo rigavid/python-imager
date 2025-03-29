@@ -58,16 +58,26 @@ class Text:
                 XD, YD =  self.X, self.Y
                 if self.monospace: return XD, YD
                 YD *= 1.1
-                if self.__specific_type__() == self.TypeLetter:
+                if self.__type__() == self.TypeControl:
+                    match str(self.char):
+                        case "00": XD *= 0.5
+                        case "01": XD *= 0.2
+                        case "06": XD *= 0.5
+                        case _: return XD, YD
+                elif self.__specific_type__() == self.TypeLetter:
                     l, n = self.char[0], int(self.char[1::])
                     u = l.upper()=="A"
                     if n < 30: ## LATIN ##
                         if n in (26, 27): XD *= 1.1 if u else 0.75
                         else: XD *= 0.9 if u else 0.6
                     elif n < 70: ## CYRILLIC ##
-                        XD *= 0.9 if self.__is_upper__() else 0.6
+                        XD *= 0.9 if u else 0.6
                     elif n < 100: ## GREEK ##
-                        XD *= 0.9 if self.__is_upper__() else 0.6
+                        XD *= 0.9 if u else 0.6
+                elif self.__specific_type__() == self.TypeSymbol:
+                    c, l, n = self.char, self.char[0], self.char[1]
+                    if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.1
+                    if (l=="C" and n=="1")or(l=="D"and not n in "678")or(l=="G"and n in "012"): XD *= 0.3
                 if self.__type__() == self.TypeDiacritic:
                     return self.width, YD
                 return XD, YD
@@ -134,15 +144,18 @@ class Text:
                     chaine.append(char)
             self.string, self.chain = strg, chaine
             for char in self:
+                ind = self.index
                 try:
-                    nxt = next(self)
                     if char.__type__() == self.Char.TypeDiacritic:
+                        nxt = next(self)
+                        while nxt.__type__() == self.Char.TypeDiacritic:
+                            nxt = next(self)
                         char.upper = nxt.__is_upper__()
                         char.width = nxt.get_width_height()[0]
                         nxt.diacr = True
                     else: char.upper = char.__is_upper__()
                 except StopIteration: char.upper = char.__is_upper__()
-                self.index -= 1
+                self.index = ind
         def __len__(self):
             return len(self.chain)
         def __str__(self):
@@ -214,7 +227,7 @@ class Text:
                         case "09": pos[0] -= 4-(pos[0]%4)
                 case char.TypeFormat: continue
                 case char.TypeDiacritic: continue
-                case char.TypeText|_: pos[0] += 1
+                case char.TypeText|_: pos[0] += char.get_width_height()[0]/char.X
             if pos[0]>maxs[0]: maxs[0]=pos[0]
             if pos[1]>maxs[1]: maxs[1]=pos[1]
             if pos[0]<maxs[2]: maxs[2]=pos[0]
