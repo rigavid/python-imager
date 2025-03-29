@@ -6,6 +6,9 @@ class colour:
         if tipe: b, g, r = int(hexadecimal[0:2],base=16), int(hexadecimal[2:4],base=16), int(hexadecimal[4:6],base=16)
         else: r, g, b = int(hexadecimal[0:2],base=16), int(hexadecimal[2:4],base=16), int(hexadecimal[4:6],base=16)
         return[r,g,b]
+    def compl(colour):
+        if type(colour) == str: colour = self.new(colour)
+        return [255 - i for i in colour]
     aliceBlue = new("#F0F8FF")
     antiqueWhite = new("#FAEBD7")
     aqua = new("#00FFFF")
@@ -154,3 +157,4 @@ class colour:
     whiteSmoke = new("#F5F5F5")
     yellow = new("#FFFF00")
     yellowGreen = new("#9ACD32")
+    help = red

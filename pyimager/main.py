@@ -40,17 +40,17 @@ class image:
             self.img.rectangle(*self.coos, colour, 0, 2)
             self.img.rectangle(*self.coos, colour2, frameThickness, 2)
             if text != "": self.img.write_centered(text, ct_sg(*self.coos), textColour, textThickness, textSize)
-        def on_click(self, funct, params=None) -> None: # TODO
+        def on_click(self, funct, params=None) -> None: # TODO button_.on_click()
             self.funct, self.params = funct, params
         def clicked(self) -> None: self.funct(self.params)
-        def close(self): ... ## TODO
-    def button(self, name, coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:## TODO
+        def close(self): ... ## TODO button_.close()
+    def button(self, name, coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:## TODO button()
         bttn = self.button_(name, coos)
         bttn.defImg(self)
         bttn.draw(*args, **kwargs)
         self.buttons.append(bttn)
         return bttn
-    def remove_button(self, bttn) -> button_ | int: ## TODO
+    def remove_button(self, bttn) -> button_ | int: ## TODO remove_button()
         try:
             btn = self.buttons.pop(bttn)
             btn.close()
@@ -187,7 +187,7 @@ class layout:
     def size(self) -> [int, int]:
         return self.img.size()
 
-def demo():## TEST
+def demo():## TEST see if two buttons can coexist
     def button_test1(event,x,y,flgs,prms):
         if event==cv2.EVENT_LBUTTONDOWN and clicked_in((x,y), prms.coos): print("CLICKED1")
     def button_test2(event,x,y,flgs,prms):

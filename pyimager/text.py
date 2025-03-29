@@ -43,13 +43,13 @@ class Text:
                 else: return self.TypeUnknown
             def __is_upper__(self):
                 return not (self.__specific_type__()==self.TypeLetter and self.char[0] == "B")
-            def draw(self, img, pts, *args, **kwargs):
+            def draw(self, img, pts, help=False, *args, **kwargs):
                 if self.__type__() in [self.TypeText, self.TypeUnknown, self.TypeDiacritic] or self in ["00", "06"]:
-                    draw_char(img, self, pts=pts, format={}, *args, **kwargs)
-                elif self.__type__() == self.TypeControl and False:
-                    img.polygon([*pts[:2:], *pts[:1:-1]], COL.yellow, 3, 2)
-                    img.line(pts[0], pts[3], COL.yellow, 3, 2)
-                    img.line(pts[1], pts[2], COL.yellow, 3, 2)
+                    draw_char(img, self, pts=pts, format={}, help=help, *args, **kwargs)
+                elif self.__type__() == self.TypeControl and help:
+                    img.polygon([*pts[:2:], *pts[:1:-1]], COL.yellow, 2, 2)
+                    img.line(pts[0], pts[3], COL.yellow, 1, 2)
+                    img.line(pts[1], pts[2], COL.yellow, 1, 2)
             def __eq__(self, other):
                 if type(other) == type(self): return self.char == other.char
                 else: return self.char == str(other)
@@ -74,14 +74,14 @@ class Text:
                 strg += c
             chaine = []
             format = False
-            ul = tl = ol = it = bd = ci = tn = vm = hm = False
+            bg = fg = ls = ul = tl = ol = it = bd = ci = tn = vm = hm = False
             for c in chars:
                 char = self.Char(c)
                 if char.__type__() == char.TypeFormat:
                     r = True
                     match char.char:
                         case "20":
-                            ul = tl = ol = it = bd = ci = tn = vm = hm = False if format else True
+                            bg = fg = ls = ul = tl = ol = it = bd = ci = tn = vm = hm = False if format else True
                             r = not format
                         case "21": ul = not ul
                         case "22": tl = not tl
@@ -92,20 +92,38 @@ class Text:
                         case "27": tn = not tn
                         case "28": vm = not vm
                         case "29": hm = not hm
+                        case "30": bg, bg_c = not bg, char.args
+                        case "31": fg, fg_c = not fg, char.args
+                        case "32": ls, ls_c = not ls, char.args
                     format = r
                 else:
-                    if format:
-                        char.style = f"{":UL"if ul else""}{":TL"if tl else""}{":OL"if ol else""}{":IT"if it else""}{":CI"if ci else""}{":BD"if bd else""}{":TN"if tn else""}{":VM"if vm else""}{":HM"if hm else""}"
+                    if format and char.__type__() == char.TypeText:
+                        styles = [
+                            "UL" if ul else "",
+                            "TL" if tl else "",
+                            "OL" if ol else "",
+                            "IT" if it else "",
+                            "CI" if ci else "",
+                            "BD" if bd else "",
+                            "TN" if tn else "",
+                            "VM" if vm else "",
+                            "HM" if hm else "",
+                            f"BG({bg_c})" if bg else "",
+                            f"FG({fg_c})" if fg else "",
+                            f"LS({ls_c})" if ls else ""
+                        ]
+                        char.style = ":"+":".join(i for i in styles if not i == "")
                     chaine.append(char)
             self.string, self.chain = strg, chaine
             for char in self:
-                if char.__type__() == self.Char.TypeDiacritic:
-                    try:
-                        nxt = next(self)
+                try:
+                    nxt = next(self)
+                    if char.__type__() == self.Char.TypeDiacritic:
                         char.upper = nxt.__is_upper__()
                         nxt.diacr = True
-                    except StopIteration: char.upper = False
-                    self.index -= 1
+                    else: char.upper = char.__is_upper__()
+                except StopIteration: char.upper = char.__is_upper__()
+                self.index -= 1
         def __len__(self):
             return len(self.chain)
         def __str__(self):
@@ -121,8 +139,9 @@ class Text:
             self.index += 1
             if self.index == len(self): raise StopIteration
             return self.chain[self.index]
-    def __init__(self, text):
+    def __init__(self, text, monospace=False):
         self.text = self.Chain(str(text))
+        self.monospace = monospace
     def __eq__(self, other):
         if type(self) == type(other):
             return self.text == other.text
@@ -131,38 +150,52 @@ class Text:
         return str(self.text)
     def __type__str__(self):
         return self.text.__type__str__()
+    def get_width_heigth(self, char):
+        XD, YD =  self.Chain.Char.X, self.Chain.Char.Y
+        if self.monospace: return XD, YD
+        YD *= 1.1
+        if char.__specific_type__() == char.TypeLetter:
+            l, n = char.char[0], int(char.char[1::])
+            u = l.upper()=="A"
+            if n < 30: ## LATIN ##
+                if n in (26, 27): XD *= 1.1 if u else 1.3
+                else: XD *= 0.9 if u else 0.6
+            elif n < 70: ## CYRILLIC ##
+                XD *= 0.9 if char.__is_upper__() else 0.5
+            elif n < 100: ## GREEK ##
+                ...
+        return XD, YD
     def new_pt(self, pt, char, linept, orgpt, pos, fontSize, angle=0):
-        if char.__type__() in (char.TypeDiacritic, char.TypeFormat):
-            pass
+        XD, YD = self.get_width_heigth(char)
+        if char.__type__() in (char.TypeDiacritic, char.TypeFormat): pass
         elif char.__type__ () == char.TypeControl:
             if   char == "02":
                 pos[0] -= 1
-                pt = coosCircle(pt, self.Chain.Char.X*fontSize, angle+180)
+                pt = coosCircle(pt, XD*fontSize, angle+180)
             elif char == "03":
                 pos[1] -= 1
-                pt, linept = coosCircle(pt, self.Chain.Char.Y*fontSize, angle+270), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+270)
+                pt, linept = coosCircle(pt, YD*fontSize, angle+270), coosCircle(linept, YD*fontSize, angle+270)
             elif char == "04":
                 pos[1] += 1
-                pt, linept = coosCircle(pt, self.Chain.Char.Y*fontSize, angle+ 90), coosCircle(linept, self.Chain.Char.Y*fontSize, angle+ 90)
-            elif char == "05": pt, pos[0], orgpt = linept, 0, coosCircle(orgpt, self.Chain.Char.X*fontSize*pos[0], angle+180)
-            elif char == "07": pt, pos[1], linept = orgpt, 0, coosCircle(linept, self.Chain.Char.Y*fontSize*pos[1], angle+270)
+                pt, linept = coosCircle(pt, YD*fontSize, angle+ 90), coosCircle(linept, YD*fontSize, angle+ 90)
+            elif char == "05": pt, pos[0], orgpt = linept, 0, coosCircle(orgpt, XD*fontSize*pos[0], angle+180)
+            elif char == "07": pt, pos[1], linept = orgpt, 0, coosCircle(linept, YD*fontSize*pos[1], angle+270)
             elif char == "08":
                 n = 4-(pos[0]%4)
-                pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize*n, angle), coosCircle(orgpt, self.Chain.Char.X*fontSize*n, angle)
+                pt, orgpt = coosCircle(pt, XD*fontSize*n, angle), coosCircle(orgpt, XD*fontSize*n, angle)
                 pos[0] += n
             elif char == "09":
                 n = 4-(pos[0]%4)
-                pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize*n, 180+angle), coosCircle(orgpt, self.Chain.Char.X*fontSize*n, 180+angle)
+                pt, orgpt = coosCircle(pt, XD*fontSize*n, 180+angle), coosCircle(orgpt, XD*fontSize*n, 180+angle)
                 pos[0] -= n
             else:
-                pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize, angle), coosCircle(orgpt, self.Chain.Char.X*fontSize, angle)
+                pt, orgpt = coosCircle(pt, XD*fontSize, angle), coosCircle(orgpt, XD*fontSize, angle)
                 pos[0] += 1
         else:
-            pt, orgpt = coosCircle(pt, self.Chain.Char.X*fontSize, angle), coosCircle(orgpt, self.Chain.Char.X*fontSize, angle)
+            pt, orgpt = coosCircle(pt, XD*fontSize, angle), coosCircle(orgpt, XD*fontSize, angle)
             pos[0] += 1
         return pt, linept, orgpt, pos
-    def get_center(self, pt, fontSize=1, angle=0):
-        x, y = self.Chain.Char.X, self.Chain.Char.Y
+    def get_center(self, pt, fontSize=1, angle=0): ## TODO Use get_width_heigth() to get the correct sizes.
         maxs, pos = [0, 0, 0, 0], [0, 0]
         for char in self.text:
             match char.__type__():
@@ -178,33 +211,38 @@ class Text:
                         case "09": pos[0] -= 4-(pos[0]%4)
                 case char.TypeFormat: continue
                 case char.TypeDiacritic: continue
-                case char.TypeText: pos[0] += 1
+                case char.TypeText|_: pos[0] += 1
             if pos[0]>maxs[0]: maxs[0]=pos[0]
             if pos[1]>maxs[1]: maxs[1]=pos[1]
             if pos[0]<maxs[2]: maxs[2]=pos[0]
             if pos[1]<maxs[3]: maxs[3]=pos[1]
-        bords = [coosCircle(coosCircle(pt, x*maxs[2]*fontSize, 180+angle), y*maxs[3]*fontSize, 270+angle), coosCircle(coosCircle(pt, x*maxs[0]*fontSize, angle), y*maxs[1]*fontSize, 90+angle)]
+        bords = [
+            coosCircle( coosCircle(pt, self.Chain.Char.X*maxs[2]*fontSize, 180+angle),
+                self.Chain.Char.Y*maxs[3]*fontSize, 270+angle),
+            coosCircle( coosCircle(pt, self.Chain.Char.X*maxs[0]*fontSize, angle),
+                self.Chain.Char.Y*maxs[1]*fontSize, 90+angle)
+        ]
         c = coosCircle(ct_sg(*bords), self.Chain.Char.Y*fontSize/2, angle+90)
         c2 = ((pt[0]-c[0]), (pt[1]-c[1]))
         return (pt[0]+c2[0], pt[1]+c2[1])
     def get_cases(self, pt, fontSize=1, angle=0):
-        pts, s, x, y = [], self.text, self.Chain.Char.X, self.Chain.Char.Y
-        pos = [0, 0]
+        pts, pos = [], [0, 0]
+        x, y = self.Chain.Char.X, self.Chain.Char.Y
         linept = orgpt = pt
-        d, X, Y, an = square_root(x*x+y*y)*fontSize, x*fontSize, y*fontSize, angleInterPoints([0,0],[x,y])
         for char in self.text:
-            pts.append([pt, coosCircle(pt, X, angle), coosCircle(pt, Y, angle+90), coosCircle(pt, d, angle+an)])
+            pts.append(
+                [pt, coosCircle(pt, x*fontSize, angle), coosCircle(pt, y*fontSize, angle+90),
+                coosCircle(pt, square_root(x*x+y*y)*fontSize, angle+angleInterPoints([0,0],[x,y]))])
             pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle)
         return pts
     def draw(self, img, pt, colour, thickness=1, fontSize=1, lineType=0, angle=0, centered=True, help=False):
-        center = self.get_center(pt, fontSize, angle) if centered else pt
-        cases = self.get_cases(center, fontSize, angle)
+        origin = self.get_center(pt, fontSize, angle) if centered else pt
+        cases = self.get_cases(origin, fontSize, angle)
         for chr, pts in zip(self.text, cases):
             chr.draw(img, pts=pts, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, angle=angle, help=help)
+            if help: img.polygon((pts[i] for i in (0, 1, 3, 2)), COL.orangeRed, 1)
 
 if __name__ == "__main__":
-    import os
-    os.system("clear")
     used, total = len(CONV), 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
     print(f"{used:0>4}/{total} => {used/total:.2%} used")
 
