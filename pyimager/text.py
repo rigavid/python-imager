@@ -227,9 +227,9 @@ class Text:
         return (pt[0]+c2[0], pt[1]+c2[1])
     def get_cases(self, pt, fontSize=1, angle=0):
         pts, pos = [], [0, 0]
-        x, y = self.Chain.Char.X, self.Chain.Char.Y
         linept = orgpt = pt
         for char in self.text:
+            x, y = self.get_width_heigth(char)
             pts.append(
                 [pt, coosCircle(pt, x*fontSize, angle), coosCircle(pt, y*fontSize, angle+90),
                 coosCircle(pt, square_root(x*x+y*y)*fontSize, angle+angleInterPoints([0,0],[x,y]))])
