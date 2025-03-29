@@ -62,12 +62,12 @@ class Text:
                     l, n = self.char[0], int(self.char[1::])
                     u = l.upper()=="A"
                     if n < 30: ## LATIN ##
-                        if n in (26, 27): XD *= 1.1 if u else 1.3
+                        if n in (26, 27): XD *= 1.1 if u else 0.75
                         else: XD *= 0.9 if u else 0.6
                     elif n < 70: ## CYRILLIC ##
-                        XD *= 0.9 if self.__is_upper__() else 0.5
+                        XD *= 0.9 if self.__is_upper__() else 0.6
                     elif n < 100: ## GREEK ##
-                        ...
+                        XD *= 0.9 if self.__is_upper__() else 0.6
                 if self.__type__() == self.TypeDiacritic:
                     return self.width, YD
                 return XD, YD
