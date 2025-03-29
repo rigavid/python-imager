@@ -4,8 +4,7 @@ try: from pyimager.chars import *
 except: from chars import *
 import unicodedata
 
-## TODO Séparer les lignes des caractères
-## TODO Raprocher les colones des caractères
+## TODO Créer de la séparation verticale entre les caractères (et pas juste les déformer !)
 
 class Text:
     class Chain:
@@ -43,7 +42,9 @@ class Text:
                 elif len(self) == 4: return self.TypeEmoji
                 else: return self.TypeUnknown
             def __is_upper__(self):
-                return not (self.__specific_type__()==self.TypeLetter and self.char[0] == "B")
+                upper = not (self.__specific_type__()==self.TypeLetter and self.char[0] == "B")
+                if len(self.char)==3 and self.char[0] == "A" and int(self.char[1::]) > 97: upper = False
+                return upper
             def draw(self, img, pts, help=False, *args, **kwargs):
                 if self.__type__() in [self.TypeText, self.TypeUnknown, self.TypeDiacritic] or self in ["00", "06"]:
                     draw_char(img, self, pts=pts, format={}, help=help, *args, **kwargs)
@@ -63,8 +64,7 @@ class Text:
                         case "01": XD *= 0.6
                         case _: return XD, YD
                 elif self.__specific_type__() == self.TypeLetter:
-                    l, n = self.char[0], int(self.char[1::])
-                    u = l.upper()=="A"
+                    l, n, u = self.char[0], int(self.char[1::]), self.__is_upper__()
                     if n < 30: ## LATIN ##
                         if n in (26, 27): XD *= 1.1 if u else 0.75
                         else: XD *= 0.9 if u else 0.6

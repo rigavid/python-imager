@@ -226,10 +226,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             LINES += [[phg, phd], [phg, pbg], [pbg, pbd]]
         case "D3": ## ]
             LINES += [[phg, phd], [phd, pbd], [pbg, pbd]]
-        case "D4": ## { # TODO {
-            ...
-        case "D5": ## } # TODO }
-            ...
+        #################{}
         case "D6": ## |
             LINES += [[ch, cb]]
         case "D7": ## @
@@ -244,8 +241,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "E0": ## º
             img.ellipse(cth, (dist(ct, ctg), dist(ct, cth)*0.6), col, tk, lt, angle=an)
             LINES += [[ctg, ctd]]
-        case "E1": ## ª # TODO ª
-            ...
+        ################# ª
         case "E2": ## `
             LINES += [[pt_sg(p1, p2, 2), pt_sg(pdh, pgh, 2)]]
         case "E3": ## ´
@@ -521,7 +517,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "A87": ## Σ
             LINES += [[p1, p2], [p3, p4], [p1, ct], [ct, p3]]
         case "A88": ## Σ
-            LINES += [[p1, p2], [p2, p3], [p3, p4]]
+            LINES += [[p1, p2], [p1, p4], [p4, p3]]
         case "A89": ## Τ
             char.char = "A19"
             draw_char(img, char, pts, col, fs, tk, lt, an, False)
@@ -797,8 +793,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "B82": # ν
             img.ellipse(p3, (dist(cb, p3), dist(cb, ct)), col, tk, lt, -70, 0, an)
             LINES += [[cb, cd]]
-        case "B83": # ξ # TODO ξ
-            ...
+        ################# ξ
         case "B84": # ο
             char.char = "B14"
             draw_char(img, char, pts, col, fs, tk, lt, an, False)
@@ -822,7 +817,9 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "A000": ...
     #################################################
         case _:
-            LINES += [[p1, p4], [p2, p3], [p1, p2], [p1, p3], [p2, p4], [p3, p4]]
+            if "<" in str(char):
+                draw_char(img, "00", pts, col, fs, tk, lt, an, False)
+            else: LINES += [[p1, p4], [p2, p3], [p1, p2], [p1, p3], [p2, p4], [p3, p4]]
     for a, b in LINES: img.line(a, b, col, tk, lt)
     #################################################
     if help:
