@@ -259,10 +259,5 @@ class Text:
             if help: img.polygon((pts[i] for i in (0, 1, 3, 2)), COL.orangeRed, 1)
 
 if __name__ == "__main__":
-    used, total = len(CONV), 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
+    used, total = len(CHARS), 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
     print(f"{used:0>4}/{total} => {used/total:.2%} used")
-
-    a = Text("Ça ñon Æ^A27^")
-    print(";".join(str(i) for i in a.text.chain), a.text.chain.__sizeof__(), len(a.text.chain))
-    print(a.text.string, a.text.string.__sizeof__(), len(a.text.string))
-    print(a.__type__str__())
