@@ -519,84 +519,88 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             LINES += [[p3, pbg], [coosEllipse(p, d, a, an), pbg], [coosEllipse(p, d, b, an), pbd], [pbd, p4]]
         ########################################################
         case "B00": # a
-            p, r, a, a1 = pt_sg(ctb, pbg, 2), (dist(ctb, cb)/2, dist(ctb, cb)/2), 90, 270
-            img.ellipse(p, r, col, tk, lt, a, a1, an)
-            img.ellipse(ct_sg(ct, ctb), (dist(cb, pbd), dist(ctb, ct)*0.4), col, tk, lt, 180, 360, an)
-            LINES += [[ct_sg(ctd, ct4), pbd], [coosEllipse(p, r, a, an), pt_sg(pbd, ct_sg(ctd, ct4), 10)], [coosEllipse(p, r, a1, an), pt_sg(ct_sg(ctd, ct4), pbd, 3)]]
+            p = pt_sg(cb, ct, 3); d = (dist(ct, cd), dist(p, cb))
+            img.ellipse(p, d, col, tk, lt, 90, 270, an)
+            pe = pt_sg(ct, ctb, 2); de = (dist(ct, cd), dist(ct, pe))
+            img.ellipse(pe, de, col, tk, lt, 180, 360, an)
+            LINES += [[coosEllipse(pe, de, 0, an), p4], [coosEllipse(p, d, 270, an), pdb], [cb, p4]]
         case "B01": # b
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
-            LINES += [[ct1, pbg]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES += [[pgh, p3]]
         case "B02": # c
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 60, 300, an)
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 60, 300, an)
         case "B03": # d
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
-            LINES += [[ct2, pbd]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES += [[pdh, p4]]
         case "B04": # e
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 30, angle=an)
-            LINES += [[ct3, ct4]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 30, angle=an)
+            LINES += [[pgb, pdb]]
         case "B05": # f
-            img.ellipse(ctd, (dist(ct, ctd), dist(ct, cth)), col, tk, lt, 180, 300, an)
-            LINES += [[ctg, ctd], [ct, cb]]
+            img.ellipse(cd, (dist(ct, cd), dist(ct, cth)), col, tk, lt, 180, 300, an)
+            LINES += [[cg, cd], [ct, cb]]
         case "B06": # g
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
-            img.ellipse(cb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 0, 150, an)
-            LINES += [[ctd, pbd]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
+            img.ellipse(cb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 0, 150, an)
+            LINES += [[cd, p4]]
         case "B07": # h
-            img.ellipse(ctb, (dist(ct, ctg), dist(ct, ctg)), col, tk, lt, 180, 360, an)
-            LINES += [[ct1, pbg], [ct4, pbd]]
+            img.ellipse(ctb, (dist(ct, cg), dist(ct, ctb)), col, tk, lt, 180, 360, an)
+            LINES += [[pgh, p3], [pdb, p4]]
         case "B08": # i
-            LINES += [[pbg, pbd], [ct, cb], [ctg, ct]]
+            LINES += [[p3, p4], [ct, cb], [cg, ct]]
             if not char.diacr: img.circle(cth, fontSize*0.2, col, tk, lt)
         case "B09": # j
-            LINES += [[ct, cb], [ctg, ct]]
+            LINES += [[ct, cb], [cg, ct]]
             if not char.diacr: img.circle(cth, fontSize*0.2, col, tk, lt)
-            img.ellipse(pbg, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 0, 90, an)
+            img.ellipse(p3, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 0, 90, an)
         case "B10": # k
-            LINES += [[ct1, pbg], [pt_sg(ct3, ctd, 2), pbd], [ct3, ctd]]
+            LINES += [[pgh, p3], [pt_sg(pgb, cd, 2), p4], [pgb, cd]]
         case "B11": # l
-            LINES += [[ct1, cth], [cth, ctb]]
-            img.ellipse(ct4, (dist(ctb, ct3), dist(ctb, cb)), col, tk, lt, 90, 180, an)
+            LINES += [[pgh, cth], [cth, ctb]]
+            img.ellipse(pdb, (dist(ctb, pgb), dist(ctb, cb)), col, tk, lt, 90, 180, an)
         case "B12": # m
             LINES += [[cg, p3], [ctb, cb], [pdb, p4]]
             img.ellipse(ct3, (dist(ct, ctd), dist(ct, ctb)), col, tk, lt, 180, 360, an)
             img.ellipse(ct4, (dist(ct, ctd), dist(ct, ctb)), col, tk, lt, 180, 360, an)
         case "B13": # n
-            LINES += [[ctg, pbg], [ct4, pbd]]
-            img.ellipse(ctb, (dist(ct, ctd), dist(ct, ctb)), col, tk, lt, 180, 360, an)
+            LINES += [[cg, p3], [pdb, p4]]
+            img.ellipse(ctb, (dist(ct, cd), dist(ct, ctb)), col, tk, lt, 180, 360, an)
         case "B14": # o
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
         case "B15": # p
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
-            LINES += [[ctg, coosCircle(pbg, dist(ct, ctb), 90+an)]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES += [[cg, coosCircle(p3, dist(ct, ctb), 90+an)]]
         case "B16": # q
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
-            LINES += [[ctd, coosCircle(pbd, dist(ct, ctb), 90+an)]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES += [[cd, coosCircle(p4, dist(ct, ctb), 90+an)]]
         case "B17": # r
-            r, a = (dist(ct4, ct3), dist(ct4, ctd)), 270
-            img.ellipse(ct4, r, col, tk, lt, 180, a, an)
-            LINES += [[ctg, pbg], [p3, cb], [ct_sg(cg, ctg), ctg], [ctd, pt_sg(ctd, ct4, 2)]]
+            r, a = (dist(pgb, pdb), dist(pdb, cd)), 270
+            img.ellipse(pdb, r, col, tk, lt, 180, a, an)
+            LINES += [
+                [cg, p3], [coosCircle(p3, fontSize/2, 180+an), pbg],
+                [coosCircle(cg, fontSize/2, 180+an), cg], [cd, coosCircle(cd, fontSize/2, 90+an)]
+            ]
         case "B18": # s
             pt1, pt2 = ct_sg(ct, ctb), ct_sg(cb, ctb)
-            r = (dist(ct, ctd), dist(pt1, ct))
-            img.ellipse(pt1, (dist(ct, ctd)*0.9, dist(pt1, ct)), col, tk, lt, 90, 330, an)
-            img.ellipse(pt2, (dist(ct, ctd), dist(pt1, ct)), col, tk, lt, -90, 160, an)
+            r = (dist(ct, cd), dist(pt1, ct))
+            img.ellipse(pt1, (dist(ct, cd)*0.9, dist(pt1, ct)), col, tk, lt, 90, 330, an)
+            img.ellipse(pt2, (dist(ct, cd), dist(pt1, ct)), col, tk, lt, -90, 160, an)
         case "B19": # t
-            LINES += [[cth, ctb], [ctg, ctd]]
-            img.ellipse(ct4, (dist(ct4, ctb), dist(ct4, pbd)), col, tk, lt, 90, 180, an)
+            LINES += [[cth, ctb], [cg, cd]]
+            img.ellipse(pdb, (dist(pdb, ctb), dist(pdb, p4)), col, tk, lt, 90, 180, an)
         case "B20": # u
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 0, 180, an)
-            LINES += [[ctg, ct3], [ctd, pbd]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 0, 180, an)
+            LINES += [[cg, pgb], [cd, p4]]
         case "B21": # v
-            LINES += [[ctg, cb], [ctd, cb]]
+            LINES += [[cg, cb], [cd, cb]]
         case "B22": # w
             LINES += [[cg, pbg], [pbg, ct_sg(ctb, ct)], [ct_sg(ctb, ct), pbd], [pbd, cd]]
         case "B23": # x
-            LINES += [[ctg, pbd], [ctd, pbg]]
+            LINES += [[cg, p4], [cd, p3]]
         case "B24": # y
-            LINES += [[ctg, cb], [ctd, cb]]
-            img.ellipse(pbg, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 0, 90, an)
+            LINES += [[cg, cb], [cd, cb]]
+            img.ellipse(p3, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 0, 90, an)
         case "B25": # z
-            LINES += [[ctg, ctd], [ctd, pbg], [pbg, pbd]]
+            LINES += [[cg, cd], [cd, p3], [p3, p4]]
         case "B26": # æ # FIXME æ
             LINES += [[ct3, ct4], [ct, cb]]
             r = (dist(ctg, ct), dist(ctb, ct))
@@ -608,29 +612,29 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, 30, angle=an)
             LINES += [[ctb, ct4], [ct, cb]]
         case "B28": # þ
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
-            LINES += [[ct1, coosCircle(pbg, dist(ct, ctb), 90+an)]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
+            LINES += [[pgh, coosCircle(p3, dist(ct, ctb), 90+an)]]
         case "B29": # ð
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
-            img.ellipse(ct3, (dist(ct, cd), dist(ct, cb)), col, tk, lt, 270, 360, an)
-            LINES += [[pt_sg(ctg, ct1, 2), ct2]]
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
+            img.ellipse(pgb, (dist(cg, cd), dist(ct, cb)), col, tk, lt, 270, 360, an)
+            LINES += [[pt_sg(cg, pgh, 2), pdh]]
         case "B30": # а
-            LINES += [[pbg, ct], [ct, pbd], [ct_sg(pbg, ct), ct_sg(ct, pbd)]]
+            LINES += [[p3, ct], [ct, p4], [ct_sg(p3, ct), ct_sg(ct, p4)]]
         case "B31": # б
-            img.ellipse(ctb, (dist(cb, pbg), dist(ctb, cb)), col, tk, lt, angle=an)
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
             p, p1 = ctb, ct_sg(ch, phd)
-            r, r1 = (dist(ct, ctg), dist(ctb, cth)), (dist(ct, ctg), dist(ch, cth))
+            r, r1 = (dist(ct, cg), dist(ctb, cth)), (dist(ct, cg), dist(ch, cth))
             a, a1 = 270, 90
             img.ellipse(p, r, col, tk, lt, 180, a, an)
             img.ellipse(p1, r1, col, tk, lt, 60, a1, an)
             LINES += [[coosEllipse(p, r, a, an), coosEllipse(p1, r1, a1, an)]]
         case "B32": # в
-            LINES += [[ctg, pbg], [ct3, ctb], [ctg, ct], [pbg, cb]]
-            img.ellipse(ct_sg(ctb, ct), (dist(ct, ctd)*0.8, dist(ct, ctb)/2), col, tk, lt, -90, 90, an)
-            img.ellipse(ct_sg(ctb, cb), (dist(ct, ctd), dist(ct, ctb)/2), col, tk, lt, -90, 90, an)
+            LINES += [[cg, p3], [pgb, ctb], [cg, ct], [p3, cb]]
+            img.ellipse(ct_sg(ctb, ct), (dist(ct, cd)*0.8, dist(ct, ctb)/2), col, tk, lt, -90, 90, an)
+            img.ellipse(ct_sg(ctb, cb), (dist(ct, cd), dist(ct, ctb)/2), col, tk, lt, -90, 90, an)
         case "B33": # г
-            LINES += [[ctg, pbg], [ctg, ctd]]
-        case "B34": # д
+            LINES += [[cg, p3], [cg, cd]]
+        case "B34": # д ## TODO Resize underneath letters
             LINES += [[ct_sg(ct3, pbg), pbg], [ct_sg(ct4, pbd), pbd], [ct_sg(ct3, pbg), ct_sg(ct4, pbd)], [pt_sg(ct, ctg, 2), ct_sg(ct, ctd)], [ct_sg(ct, ctd), ct_sg(ctb, pbd)]]
             img.ellipse(pt_sg(ctg, ct, 2), (dist(pt_sg(ctg, ct, 2), pt_sg(ct, ctg, 2)), dist(ct, ct_sg(ctb, cb))), col, tk, lt, 0, 90, an)
         case "B35": # е

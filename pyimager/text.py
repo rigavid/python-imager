@@ -13,7 +13,8 @@ class Text:
             X, Y = 5, 7
             TypeText, TypeControl, TypeFormat, TypeDiacritic, TypeUnknown = "T", "C", "F", "D", "U"
             TypeSymbol, TypeLetter, TypeEmoji = "S", "L", "E"
-            def __init__(self, chr, style=""):
+            def __init__(self, chr, style="", monospace=False):
+                self.monospace = monospace
                 if len(chr)>3 and chr.count(":") == 1: chr, self.args = chr.split(":")
                 if chr in CONV: self.char = CONV[chr]
                 else:
@@ -53,7 +54,24 @@ class Text:
             def __eq__(self, other):
                 if type(other) == type(self): return self.char == other.char
                 else: return self.char == str(other)
-        def __init__(self, string=""):
+            def get_width_height(self):
+                XD, YD =  self.X, self.Y
+                if self.monospace: return XD, YD
+                YD *= 1.1
+                if self.__specific_type__() == self.TypeLetter:
+                    l, n = self.char[0], int(self.char[1::])
+                    u = l.upper()=="A"
+                    if n < 30: ## LATIN ##
+                        if n in (26, 27): XD *= 1.1 if u else 1.3
+                        else: XD *= 0.9 if u else 0.6
+                    elif n < 70: ## CYRILLIC ##
+                        XD *= 0.9 if self.__is_upper__() else 0.5
+                    elif n < 100: ## GREEK ##
+                        ...
+                if self.__type__() == self.TypeDiacritic:
+                    return self.width, YD
+                return XD, YD
+        def __init__(self, string="", monospace=False):
             s, o, d, tp, tb, rtb = f"^{CONV["SPC"]}^", f"^{CONV["ORG"]}^", f"^{CONV["DWN"]}^", f"^{CONV["TOP"]}^", f"^{CONV["TAB"]}^", f"^{CONV["RTB"]}^"
             string = string.replace(" ", s).replace("\r", o).replace("\v", d).replace("\n", o+d).replace("\b", tp).replace("\t", tb).replace("\f", rtb)
             chr, chars, strg, char_ = False, [], "", ""
@@ -75,8 +93,8 @@ class Text:
             chaine = []
             format = False
             bg = fg = ls = ul = tl = ol = it = bd = ci = tn = vm = hm = False
-            for c in chars:
-                char = self.Char(c)
+            for c in chars: ## Set styles ##
+                char = self.Char(c, monospace=monospace)
                 if char.__type__() == char.TypeFormat:
                     r = True
                     match char.char:
@@ -120,6 +138,7 @@ class Text:
                     nxt = next(self)
                     if char.__type__() == self.Char.TypeDiacritic:
                         char.upper = nxt.__is_upper__()
+                        char.width = nxt.get_width_height()[0]
                         nxt.diacr = True
                     else: char.upper = char.__is_upper__()
                 except StopIteration: char.upper = char.__is_upper__()
@@ -140,8 +159,7 @@ class Text:
             if self.index == len(self): raise StopIteration
             return self.chain[self.index]
     def __init__(self, text, monospace=False):
-        self.text = self.Chain(str(text))
-        self.monospace = monospace
+        self.text = self.Chain(str(text), monospace)
     def __eq__(self, other):
         if type(self) == type(other):
             return self.text == other.text
@@ -150,23 +168,8 @@ class Text:
         return str(self.text)
     def __type__str__(self):
         return self.text.__type__str__()
-    def get_width_heigth(self, char):
-        XD, YD =  self.Chain.Char.X, self.Chain.Char.Y
-        if self.monospace: return XD, YD
-        YD *= 1.1
-        if char.__specific_type__() == char.TypeLetter:
-            l, n = char.char[0], int(char.char[1::])
-            u = l.upper()=="A"
-            if n < 30: ## LATIN ##
-                if n in (26, 27): XD *= 1.1 if u else 1.3
-                else: XD *= 0.9 if u else 0.6
-            elif n < 70: ## CYRILLIC ##
-                XD *= 0.9 if char.__is_upper__() else 0.5
-            elif n < 100: ## GREEK ##
-                ...
-        return XD, YD
     def new_pt(self, pt, char, linept, orgpt, pos, fontSize, angle=0):
-        XD, YD = self.get_width_heigth(char)
+        XD, YD = char.get_width_height()
         if char.__type__() in (char.TypeDiacritic, char.TypeFormat): pass
         elif char.__type__ () == char.TypeControl:
             if   char == "02":
@@ -195,7 +198,7 @@ class Text:
             pt, orgpt = coosCircle(pt, XD*fontSize, angle), coosCircle(orgpt, XD*fontSize, angle)
             pos[0] += 1
         return pt, linept, orgpt, pos
-    def get_center(self, pt, fontSize=1, angle=0): ## TODO Use get_width_heigth() to get the correct sizes.
+    def get_center(self, pt, fontSize=1, angle=0): ## TODO Use get_width_height() to get the correct sizes.
         maxs, pos = [0, 0, 0, 0], [0, 0]
         for char in self.text:
             match char.__type__():
@@ -229,7 +232,7 @@ class Text:
         pts, pos = [], [0, 0]
         linept = orgpt = pt
         for char in self.text:
-            x, y = self.get_width_heigth(char)
+            x, y = char.get_width_height()
             pts.append(
                 [pt, coosCircle(pt, x*fontSize, angle), coosCircle(pt, y*fontSize, angle+90),
                 coosCircle(pt, square_root(x*x+y*y)*fontSize, angle+angleInterPoints([0,0],[x,y]))])
