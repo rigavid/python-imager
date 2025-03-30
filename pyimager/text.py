@@ -55,7 +55,7 @@ class Text:
             def __eq__(self, other):
                 if type(other) == type(self): return self.char == other.char
                 else: return self.char == str(other)
-            def get_width_height(self):
+            def get_width_height(self): ## TODO Set chars' width
                 XD, YD =  self.X, self.Y
                 if self.monospace: return XD, YD
                 if self.__type__() == self.TypeControl:
@@ -73,9 +73,10 @@ class Text:
                     elif n < 100: ## GREEK ##
                         XD *= 0.9 if u else 0.6
                 elif self.__specific_type__() == self.TypeSymbol:
-                    c, l, n = self.char, self.char[0], self.char[1]
-                    if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.1
-                    if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
+                    ...
+                    # c, l, n = self.char, self.char[0], self.char[1]
+                    # if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.1
+                    # if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
                 if self.__type__() == self.TypeDiacritic:
                     return self.width, YD
                 return XD, YD

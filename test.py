@@ -15,8 +15,7 @@ for n in range(10):
     test_symbols += "\n"
 
 strs = [
-    f"^28^{test_symbols}^28^", test_symbols, f"^29^{test_symbols}^29^",
-    f"^28^{test_letters}^28^", test_letters, f"^29^{test_letters}^29^",
+    f"^28^{test_letters}^28^", test_letters, f"^29^{test_letters}^29^", f"^29^^28^{test_letters}^28^^29^",
     "^28^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^28^",
     "^29^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^29^",
     "ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎",
