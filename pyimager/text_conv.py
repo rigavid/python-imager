@@ -100,7 +100,7 @@ CONV = CONTROL|FORMAT|DIACRITICS|TEXT
 for i in [" "*n for n in range(5)]:
     try: del CONV[i]
     except: pass
-CHARS = {CONV[k] for k in CONV}
+CHARS = [CONV[k] for k in CONV]
 if __name__ == "__main__":
     used, total = len(CHARS), 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
     print(f"{used:0>4}/{total} => {used/total:.2%} used")

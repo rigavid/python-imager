@@ -119,9 +119,15 @@ class Text:
                         case "27": tn = not tn
                         case "28": vm = not vm
                         case "29": hm = not hm
-                        case "30": bg, bg_c = not bg, char.args
-                        case "31": fg, fg_c = not fg, char.args
-                        case "32": ls, ls_c = not ls, char.args
+                        case "30":
+                            try: bg, bg_c = not bg, char.args
+                            except: bg = False
+                        case "31":
+                            try: fg, fg_c = not fg, char.args
+                            except: bg = False
+                        case "32":
+                            try: ls, ls_c = not ls, char.args
+                            except: bg = False
                     format = r
                 else:
                     styles = []
@@ -268,7 +274,3 @@ class Text:
         for chr, pts in zip(self.text, cases):
             chr.draw(img, pts=pts, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, angle=angle, help=help)
             if help: img.polygon((pts[i] for i in (0, 1, 3, 2)), COL.orangeRed, 1)
-
-if __name__ == "__main__":
-    used, total = len(CHARS), 100 + 26*10 + 26*100 # (0-99)+(A0-A9)+(A00-Z99)
-    print(f"{used:0>4}/{total} => {used/total:.2%} used")
