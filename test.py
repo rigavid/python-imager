@@ -15,7 +15,10 @@ for n in range(10):
     test_symbols += "\n"
 
 strs = [
-    test_letters, test_symbols,
+    f"^28^{test_symbols}^28^", test_symbols, f"^29^{test_symbols}^29^",
+    f"^28^{test_letters}^28^", test_letters, f"^29^{test_letters}^29^",
+    "^28^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^28^",
+    "^29^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^29^",
     "ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎",
     "Dès Noël, où un zéphyr haï me vêt de\nglaçons würmiens, je dîne d’exquis\nrôtis de bœuf au kir, à l’aÿ\nd’âge mûr, &cætera.",
     "Ξεσκεπάζω τὴν ψυχοφθόρα βδελυγμία.",

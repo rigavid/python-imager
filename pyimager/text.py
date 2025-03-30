@@ -47,7 +47,7 @@ class Text:
                 return upper
             def draw(self, img, pts, help=False, *args, **kwargs):
                 if self.__type__() in [self.TypeText, self.TypeUnknown, self.TypeDiacritic] or self in ["00", "06"]:
-                    draw_char(img, self, pts=pts, format={}, help=help, *args, **kwargs)
+                    draw_char(img, self, pts=pts, help=help, *args, **kwargs)
                 elif self.__type__() == self.TypeControl and help:
                     img.polygon([*pts[:2:], *pts[:1:-1]], COL.yellow, 2, 2)
                     img.line(pts[0], pts[3], COL.yellow, 1, 2)
@@ -75,7 +75,7 @@ class Text:
                 elif self.__specific_type__() == self.TypeSymbol:
                     c, l, n = self.char, self.char[0], self.char[1]
                     if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.1
-                    if (l=="C" and n=="1")or(l=="D"and not n in "678")or(l=="G"and n in "012"): XD *= 0.3
+                    if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
                 if self.__type__() == self.TypeDiacritic:
                     return self.width, YD
                 return XD, YD
@@ -123,6 +123,7 @@ class Text:
                         case "32": ls, ls_c = not ls, char.args
                     format = r
                 else:
+                    styles = []
                     if format and char.__type__() == char.TypeText:
                         styles = [
                             "UL" if ul else "",
@@ -137,6 +138,17 @@ class Text:
                             f"BG({bg_c})" if bg else "",
                             f"FG({fg_c})" if fg else "",
                             f"LS({ls_c})" if ls else ""
+                        ]
+                        char.style = ":"+":".join(i for i in styles if not i == "")
+                    elif format and char.__type__() == char.TypeDiacritic:
+                        styles = [
+                            "IT" if it else "",
+                            "CI" if ci else "",
+                            "BD" if bd else "",
+                            "TN" if tn else "",
+                            "VM" if vm else "",
+                            "HM" if hm else "",
+                            f"FG({fg_c})" if fg else "",
                         ]
                         char.style = ":"+":".join(i for i in styles if not i == "")
                     chaine.append(char)
