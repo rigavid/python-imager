@@ -27,7 +27,7 @@ strs = [
     "Tất cả mọi người sinh ra đều\nđược tự do và bình đẳng về\nnhân phẩm và quyền lợi.",
     "Kæmi ný öxi hér ykist þjófum\nnú bæði víl og ádrepa.",
     "דג סקרן שט בים מאוכזב ולפתע מצא חברה",
-    "^21^UL^21^\t^22^TL^22^\t^23^OL^23^\t^24^IT^24^\t^25^BD^25^\t^26^CI^26^\t^27^TN^27^\t^28^VM^28^\t^29^HM^29^\n^21^^22^U^23^T^23^L^21^^22^\n\n",
+    "^21^UL^21^\t^22^TL^22^\t^23^OL^23^\t^24^IT^24^\t^25^BD^25^\n^26^CI^26^\t^27^TN^27^\t^28^VM^28^\t^29^HM^29^\n^21^^22^U^23^T^23^L^21^^22^",
     "^BG:ffffff^BG:ffffff^BG:ffffff^\n^FG:ffffff^FG:ffffff^FG:ffffff^\n^21^^LS:ffffff^UL:LS:ffffff^LS:ffffff^^21^"
 ]
 

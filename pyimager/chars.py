@@ -908,7 +908,8 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             img.ellipse(p, rs, col, tk, lt, angle=an)
             LINES += [[coosEllipse(p, rs, i, an) for i in (0, 180)]]
         case "B78": # ι
-            img.ellipse(cd, (dist(ct, cd), dist(ct, cb)), col, tk, lt, 90, 180, an)
+            LINES += [[ct, ctb]]
+            img.ellipse(pdb, (dist(ct, cd), dist(ctb, cb)), col, tk, lt, 90, 180, an)
         case "B79": # κ
             p = pt_sg(pgb, ctb, 2)
             LINES += [[cg, p3], [pgb, p], [p, cd], [p, p4]]
