@@ -19,8 +19,7 @@ class ANG:
         return angle
 
 def get_coos(ps):
-    ct = ct_cr(*ps)
-    p1, p2, p3, p4 = ps
+    p1, p2, p3, p4, ct = *ps, ct_cr(*ps)
     ch, cb, cg, cd = ct_sg(p1, p2), ct_sg(p3, p4), ct_sg(p1, p3), ct_sg(p2, p4)
     cth, ctb, ctg, ctd = ct_sg(ct, ch), ct_sg(ct, cb), ct_sg(ct, cg), ct_sg(ct, cd)
     ct1, ct2, ct3, ct4 = ct_sg(ct, p1), ct_sg(ct, p2), ct_sg(ct, p3), ct_sg(ct, p4)
@@ -104,8 +103,12 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             else: img.circle(ct_sg(ct1, ctd), fontSize*0.1*tk, col, -tk, lt)
         case "48": # ̆
             r = (fontSize*0.4 for _ in "00")
-            if char.upper: img.ellipse(ct_sg(*pts[:2:]), r, col, tk, lt, ang(0), ang(180), an)
-            else: img.ellipse(pt_sg(cth, ct, 2), r, col, tk, lt, ang(0), ang(180), an)
+            a = [ang(0), ang(180)]
+            if "VM" in sty:
+                an+=180
+                if not "HM" in sty: a[1] += 360
+            if char.upper: img.ellipse(ct_sg(*pts[:2:]), r, col, tk, lt, *a, an)
+            else: img.ellipse(pt_sg(cth, ct, 2), r, col, tk, lt, *a, an)
         case "49": # ¯
             if char.upper: LINES += [[pt_sg(*pts[1::-1], 2), pt_sg(*pts[:2:], 2)]]
             else: LINES += [[ct_sg(ct1, ctg), ct_sg(ct2, ctd)]]
@@ -734,10 +737,11 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             img.ellipse(pt2, (dist(ct, cd), dist(pt1, ct)), col, tk, lt, *a2, an)
         case "B19": # t
             LINES += [[cth, ctb], [cg, cd]]
-            a = [ang(90), ang(180)]
-            img.ellipse(pdb, (dist(ctb, pgb), dist(ctb, cb)), col, tk, lt, *a, an)
+            img.ellipse(pdb, (dist(ctb, pgb), dist(ctb, cb)), col, tk, lt, ang(90), ang(180), an)
         case "B20": # u
-            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 0, 180, an)
+            a = [ang(0), ang(180)]
+            if "VM" in sty and "HM" in sty: a[1] += 360
+            img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, *a, an)
             LINES += [[cg, pgb], [cd, p4]]
         case "B21": # v
             LINES += [[cg, cb], [cd, cb]]
@@ -746,28 +750,43 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "B23": # x
             LINES += [[cg, p4], [cd, p3]]
         case "B24": # y
+            a = [ang(0), ang(90)]
+            if "VM" in sty and "HM" in sty: a[1] += 360
+            img.ellipse(p3, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, *a, an)
             LINES += [[cg, cb], [cd, cb]]
-            img.ellipse(p3, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, 0, 90, an)
         case "B25": # z
             LINES += [[cg, cd], [cd, p3], [p3, p4]]
         case "B26": # æ
             p = pt_sg(pbg, ctg, 3); d = (dist(cg, ctg), dist(p, pbg))
             pe = pt_sg(ctg, ct3); de = (dist(cg, ctg), dist(pe, ctg))
-            img.ellipse(p, d, col, tk, lt, 90, 270, an)
-            img.ellipse(pe, de, col, tk, lt, 180, 360, an)
-            img.ellipse(pt_sg(ctd, ct4), de, col, tk, lt, 180, 450, an)
-            LINES += [[coosEllipse(pe, de, 0, an), cb], [pbg, pbd], [ct3, ct4]]
-            img.ellipse(pt_sg(p4, ctb), de, col, tk, lt, 0, 90, an)
+            a1, a2, a3, a4 = [ang(90), ang(270)], [ang(180), ang(360)], [ang(180), ang(450)], [ang(0), ang(90)]
+            if "VM" in sty:
+                if "HM" in sty:
+                    a4[1] += 360
+                    a3[1] += 360
+                else:
+                    a1[0] += 360
+                    a2[0] += 360
+                    a3[0] += 360
+            elif "HM" in sty:
+                a3[0] += 360
+            img.ellipse(p, d, col, tk, lt, *a1, an)
+            img.ellipse(pe, de, col, tk, lt, *a2, an)
+            img.ellipse(pt_sg(ctd, ct4), de, col, tk, lt, *a3, an)
+            img.ellipse(pt_sg(p4, ctb), de, col, tk, lt, *a4, an)
+            LINES += [[coosEllipse(pe, de, ang(0), an), cb], [pbg, pbd], [ct3, ct4]]
         case "B27": # œ
+            a = [ang(50), ang(360)]
+            if "VM" in sty and not "HM" in sty: a[0]+=360
             img.ellipse(ct3, (dist(ct, ctg)*1.1, dist(ctb, cb)), col, tk, lt, angle=an)
-            img.ellipse(ct4, (dist(ct, ctg)*1.1, dist(ctb, cb)), col, tk, lt, 50, angle=an)
+            img.ellipse(ct4, (dist(ct, ctg)*1.1, dist(ctb, cb)), col, tk, lt, *a, an)
             LINES += [[ctb, pdb]]
         case "B28": # þ
             img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
-            LINES += [[pgh, coosCircle(p3, dist(ct, ctb), 90+an)]]
+            LINES += [[pgh, coosCircle(p3, dist(ct, ctb), ang(90)+an)]]
         case "B29": # ð
             img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
-            img.ellipse(pgb, (dist(cg, cd), dist(ct, cb)), col, tk, lt, 270, 360, an)
+            img.ellipse(pgb, (dist(cg, cd), dist(ct, cb)), col, tk, lt, ang(270), ang(360), an)
             LINES += [[pt_sg(cg, pgh, 2), pdh]]
         case "B30": # а
             LINES += [[p3, ct], [ct, p4], [pt_sg(p3, ct, 2), pt_sg(p4, ct, 2)]]
@@ -775,19 +794,24 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             img.ellipse(ctb, (dist(cb, p3), dist(ctb, cb)), col, tk, lt, angle=an)
             p, p1 = ctb, ct_sg(ch, phd)
             r, r1 = (dist(ct, cg), dist(ctb, cth)), (dist(ct, cg), dist(ch, cth))
-            a, a1 = 270, 90
-            img.ellipse(p, r, col, tk, lt, 180, a, an)
-            img.ellipse(p1, r1, col, tk, lt, 60, a1, an)
-            LINES += [[coosEllipse(p, r, a, an), coosEllipse(p1, r1, a1, an)]]
+            an1, an2 = ang(270), ang(90)
+            a1, a2 = ang(180), ang(60)
+            if "VM" in sty and not "HM" in sty: a1+=360
+            img.ellipse(p, r, col, tk, lt, a1, an1, an)
+            img.ellipse(p1, r1, col, tk, lt, a2, an2, an)
+            LINES += [[coosEllipse(p, r, an1, an), coosEllipse(p1, r1, an2, an)]]
         case "B32": # в
             LINES += [[cg, p3], [pgb, ctb], [cg, ct], [p3, cb]]
+            if "HM" in sty: an+=180
             img.ellipse(ct_sg(ctb, ct), (dist(ct, cd)*0.8, dist(ct, ctb)/2), col, tk, lt, -90, 90, an)
             img.ellipse(ct_sg(ctb, cb), (dist(ct, cd), dist(ct, ctb)/2), col, tk, lt, -90, 90, an)
         case "B33": # г
             LINES += [[cg, p3], [cg, cd]]
         case "B34": # д
             LINES += [[ct_sg(pgb, p3), p3], [ct_sg(pdb, p4), p4], [ct_sg(pgb, p3), ct_sg(pdb, p4)], [pt_sg(ct, cg, 2), ct_sg(ct, cd)], [ct_sg(ct, cd), ct_sg(ctb, p4)]]
-            img.ellipse(pt_sg(cg, ct, 2), (dist(pt_sg(cg, ct, 2), pt_sg(ct, cg, 2)), dist(ct, ct_sg(ctb, cb))), col, tk, lt, 0, 90, an)
+            a = ang(90)
+            if "HM" in sty and "VM" in sty: a += 360
+            img.ellipse(pt_sg(cg, ct, 2), (dist(pt_sg(cg, ct, 2), pt_sg(ct, cg, 2)), dist(ct, ct_sg(ctb, cb))), col, tk, lt, ang(0), a, an)
         case "B35": # е
             LINES += [[cg, cd], [cg, p3], [pgb, ct_sg(ctb, pdb)], [p3, p4]]
         case "B36": # ё
@@ -798,8 +822,10 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             pt1, pt2 = ct_sg(pgb, ctb), ct_sg(pdb, ctb)
             LINES += [[cg, pt1], [pt1, pt2], [pt1, p3], [ct, cb], [cd, pt2], [pt2, p4]]
         case "B38": # з
-            img.ellipse(ct_sg(ct, ctb), (dist(ct, cd)*0.9, dist(ct, ctb)/2), col, tk, lt, 220, 450, an)
-            img.ellipse(ct_sg(cb, ctb), (dist(ct, cd), dist(ctb, cb)/2), col, tk, lt, 270, 500, an)
+            a1, a2 = [ang(220), ang(450)], [ang(270), ang(500)]
+            if "HM" in sty: a1, a2 = [a%360 for a in a1], [a%360 for a in a2]
+            img.ellipse(ct_sg(ct, ctb), (dist(ct, cd)*0.9, dist(ct, ctb)/2), col, tk, lt, *a1, an)
+            img.ellipse(ct_sg(cb, ctb), (dist(ct, cd), dist(ctb, cb)/2), col, tk, lt, *a2, an)
         case "B39": # и
             LINES += [[cg, p3], [cd, p4], [cd, p3]]
         case "B40": # й
