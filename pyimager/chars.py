@@ -929,7 +929,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "B73": # δ
             p, rs = ctb, (dist(cb, p3), dist(ctb, cb))
             img.ellipse(p, rs, col, tk, lt, angle=an)
-            LINES += [[ct_sg(ct2, phd), ct1], [ct1, coosEllipse(p, rs, -60, an)]]
+            LINES += [[ct_sg(ct2, phd), ct1], [ct1, coosEllipse(p, rs, ang(-60), an)]]
         case "B74": # ε
             rs = (dist(cb, p3), dist(cb, ctb)/2)
             img.ellipse(ct_sg(ct, ctb), rs, col, tk, lt, 90, 310, an)
