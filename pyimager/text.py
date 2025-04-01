@@ -4,8 +4,6 @@ try: from pyimager.chars import *
 except: from chars import *
 import unicodedata
 
-## TODO Créer de la séparation verticale entre les caractères (et pas juste les déformer !)
-
 class Text:
     class Chain:
         class Char:
@@ -198,34 +196,37 @@ class Text:
         return str(self.text)
     def __type__str__(self):
         return self.text.__type__str__()
-    def new_pt(self, pt, char, linept, orgpt, pos, fontSize, angle=0):
+    def new_pt(self, pt, char, linept, orgpt, pos, fontSize, angle=0, interligne=0):
         XD, YD = char.get_width_height()
+        XD *= fontSize
+        YD *= fontSize
+        IL = interligne*YD
         if char.__type__() in (char.TypeDiacritic, char.TypeFormat): pass
         elif char.__type__ () == char.TypeControl:
             if   char == "02":
                 pos[0] -= 1
-                pt = coosCircle(pt, XD*fontSize, angle+180)
+                pt = coosCircle(pt, XD, angle+180)
             elif char == "03":
                 pos[1] -= 1
-                pt, linept = coosCircle(pt, YD*fontSize, angle+270), coosCircle(linept, YD*fontSize, angle+270)
+                pt, linept = coosCircle(pt, YD+IL, angle+270), coosCircle(linept, YD+IL, angle+270)
             elif char == "04":
                 pos[1] += 1
-                pt, linept = coosCircle(pt, YD*fontSize, angle+ 90), coosCircle(linept, YD*fontSize, angle+ 90)
-            elif char == "05": pt, pos[0], orgpt = linept, 0, coosCircle(orgpt, XD*fontSize*pos[0], angle+180)
-            elif char == "07": pt, pos[1], linept = orgpt, 0, coosCircle(linept, YD*fontSize*pos[1], angle+270)
+                pt, linept = coosCircle(pt, YD+IL, angle+ 90), coosCircle(linept, YD+IL, angle+ 90)
+            elif char == "05": pt, pos[0], orgpt = linept, 0, coosCircle(orgpt, XD*pos[0], angle+180)
+            elif char == "07": pt, pos[1], linept = orgpt, 0, coosCircle(linept, YD*pos[1]+IL*pos[1], angle+270)
             elif char == "08":
                 n = 4-(pos[0]%4)
-                pt, orgpt = coosCircle(pt, XD*fontSize*n, angle), coosCircle(orgpt, XD*fontSize*n, angle)
+                pt, orgpt = coosCircle(pt, XD*n, angle), coosCircle(orgpt, XD*n, angle)
                 pos[0] += n
             elif char == "09":
                 n = 4-(pos[0]%4)
-                pt, orgpt = coosCircle(pt, XD*fontSize*n, 180+angle), coosCircle(orgpt, XD*fontSize*n, 180+angle)
+                pt, orgpt = coosCircle(pt, XD*n, 180+angle), coosCircle(orgpt, XD*n, 180+angle)
                 pos[0] -= n
             else:
-                pt, orgpt = coosCircle(pt, XD*fontSize, angle), coosCircle(orgpt, XD*fontSize, angle)
+                pt, orgpt = coosCircle(pt, XD, angle), coosCircle(orgpt, XD, angle)
                 pos[0] += 1
         else:
-            pt, orgpt = coosCircle(pt, XD*fontSize, angle), coosCircle(orgpt, XD*fontSize, angle)
+            pt, orgpt = coosCircle(pt, XD, angle), coosCircle(orgpt, XD, angle)
             pos[0] += 1
         return pt, linept, orgpt, pos
     def get_center(self, pt, fontSize=1, angle=0): ## TODO Use get_width_height() to get the correct sizes.
@@ -258,7 +259,7 @@ class Text:
         c = coosCircle(ct_sg(*bords), self.Chain.Char.Y*fontSize/2, angle+90)
         c2 = ((pt[0]-c[0]), (pt[1]-c[1]))
         return (pt[0]+c2[0], pt[1]+c2[1])
-    def get_cases(self, pt, fontSize=1, angle=0):
+    def get_cases(self, pt, fontSize=1, angle=0, interligne=0):
         pts, pos = [], [0, 0]
         linept = orgpt = pt
         for char in self.text:
@@ -266,11 +267,11 @@ class Text:
             pts.append(
                 [pt, coosCircle(pt, x*fontSize, angle), coosCircle(pt, y*fontSize, angle+90),
                 coosCircle(pt, square_root(x*x+y*y)*fontSize, angle+angleInterPoints([0,0],[x,y]))])
-            pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle)
+            pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle, interligne)
         return pts
-    def draw(self, img, pt, colour, thickness=1, fontSize=1, lineType=0, angle=0, centered=True, help=False):
+    def draw(self, img, pt, colour, thickness=1, fontSize=1, interligne=0, lineType=0, angle=0, centered=True, help=False):
         origin = self.get_center(pt, fontSize, angle) if centered else pt
-        cases = self.get_cases(origin, fontSize, angle)
+        cases = self.get_cases(origin, fontSize, angle, interligne)
         for chr, pts in zip(self.text, cases):
             chr.draw(img, pts=pts, colour=colour, thickness=thickness, fontSize=fontSize, lineType=lineType, angle=angle, help=help)
             if help: img.polygon((pts[i] for i in (0, 1, 3, 2)), COL.orangeRed, 1)

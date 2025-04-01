@@ -146,8 +146,8 @@ class image:
             cv2.putText(self.img, line, (round(x-tailles[0][0]/2), round(y+tailles[1]/2) + i*tailles[0][1]*2), font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
     def write(self, text, pt, colour=COL.red, thickness=1, fontSize=1, font=cv2.FONT_HERSHEY_SCRIPT_COMPLEX, lineType=0) -> None:
         cv2.putText(self.img, text, [round(i) for i in pt], font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
-    def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, angle=0, lineType=0, centered=True, help=False, monospace=False):
-        Text(text=txt, monospace=monospace).draw(img=self, pt=pt, colour=colour, thickness=thickness, fontSize=fontSize, angle=angle, lineType=lineType, centered=centered, help=help)
+    def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, angle=0, lineType=0, centered=True, help=False, monospace=False, interligne=0):
+        Text(text=txt, monospace=monospace).draw(img=self, pt=pt, colour=colour, thickness=thickness, fontSize=fontSize, angle=angle, lineType=lineType, centered=centered, help=help, interligne=interligne)
     def copy(self):
         '''Returns a copy of itself'''
         return image(self.nom, copy.deepcopy(self.img))
