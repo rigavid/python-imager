@@ -30,39 +30,50 @@ def new_img(dimensions=None, background=COL.white, name="NewImg") -> np.array:
     return image(name, image.new_image(dimensions=dimensions if dimensions!=None else RES.resolution, background=background))
 class image:
     class mouse:
-        def get(event, x, y, flags, params):
-            return event, x, y, flags, params
-    class button_: ## TODO if mouse.click: for bt in bts: if clicked_in(mouse.pos, bt.coos): bt.clicked()
+        new = False
+        event = x = y = flags = None
+        def get(event, x, y, flags, _):
+            image.mouse.new = True
+            image.mouse.event = event
+            image.mouse.x, image.mouse.y = x, y
+            image.mouse.flags = flags
+            return event, x, y, flags
+    class button_:
         def __init__(self, name="", coos=[[100,100], [300, 200]]) -> None:
-            self.name, self.coos, self.funct, self.params = name, coos, lambda:..., None
+            self.name, self.coos = name, coos
+            self.functs = []
         def defImg(self, img) -> None: self.img = img
-        def draw(self, colour=COL.red, colour2=COL.darkRed, textColour=COL.white, frameThickness=5, textThickness=3, textSize=3, textFont=FONT_HERSHEY_PLAIN, text="") -> None:
+        def draw(self, colour=COL.red, colour2=COL.darkRed, textColour=COL.white, frameThickness=5, textThickness=3, textSize=3, textFont=FONT_HERSHEY_PLAIN, text="") -> None: ## TODO change text function to image.Text()
             self.img.rectangle(*self.coos, colour, 0, 2)
             self.img.rectangle(*self.coos, colour2, frameThickness, 2)
             if text != "": self.img.write_centered(text, ct_sg(*self.coos), textColour, textThickness, textSize)
-        def on_click(self, funct, params=None) -> None: # TODO button_.on_click()
-            self.funct, self.params = funct, params
-        def clicked(self) -> None: self.funct(self.params)
-        def close(self): ... ## TODO button_.close()
-    def button(self, name, coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:## TODO button()
+        def on_click(self, funct, params=None) -> None:
+            '''To add a function to execute when clicked'''
+            self.functs.append([funct, params])
+        def clicked(self, vars_get) -> None:
+            '''Execute each function'''
+            for f, p in self.functs: f(*vars_get, p)
+        def is_clicked(self, coos) -> bool: return clicked_in(coos, self.coos)
+    def button(self, name, coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:
         bttn = self.button_(name, coos)
         bttn.defImg(self)
         bttn.draw(*args, **kwargs)
         self.buttons.append(bttn)
         return bttn
-    def remove_button(self, bttn) -> button_ | int: ## TODO remove_button()
-        try:
-            btn = self.buttons.pop(bttn)
-            btn.close()
-            return btn
+    def remove_button(self, bttn) -> button_ | int:
+        try: return self.buttons.pop(self.buttons.index(bttn))
         except: return -1
+    def setMouseCallback(self, funct, params=None) -> None:
+        '''event, x, y, flags, params -> None'''
+        self.callbacks.append([funct, params])
     def new_image(self=None, dimensions=RES.resolution, background=COL.white) -> np.array:
         '''New image'''
         return np.full([round(v) for v in dimensions[::-1]]+[3], background[::-1], np.uint8)
-    def __init__(self, name="python-image", img=None) -> None:
+    def __init__(self, name="python-image", img=None, disable_callback=False) -> None:
         self.img = np.array(self.new_image() if type(img) == type(None) else img.img if type(img) == image else img)
         self.name, self.fullscreen = name, False
-        self.buttons = []
+        self.buttons, self.callbacks = [], []
+        self.disable_callback = disable_callback
     def __str__(self) -> str: return self.name
     def show_(self, wait=1, destroy=False, built_in_functs=True) -> int:
         '''Show image in a window'''
@@ -75,6 +86,13 @@ class image:
             cv2.setWindowProperty(self.name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_KEEPRATIO)
         cv2.imshow(self.name, np.array(self.img, np.uint8))
         wk = cv2.waitKeyEx(wait)
+        if not self.disable_callback and self.mouse.new:
+            pos = self.mouse.x, self.mouse.y
+            v = self.mouse.event, *pos, self.mouse.flags
+            for f, p in self.callbacks: f(*v, p)
+            for b in self.buttons:
+                if b.is_clicked(pos):
+                    b.clicked(v)
         if destroy == True: cv2.destroyWindow(self.name)
         elif built_in_functs:
             match wk:
@@ -86,7 +104,10 @@ class image:
             return -1
         return wk
     def build(self):
-        if self.show_(1, False, False) == -1: return self
+        if self.show_(1, False, False) == -1:
+            if not self.disable_callback:
+                cv2.setMouseCallback(self.name, self.mouse.get)
+            return self
         else: raise unreachableImage("An error has occurred while building the image!")
     def show(self, *args, **kwargs) -> int:
         if self.is_opened(): return self.show_(*args, **kwargs)
@@ -101,10 +122,6 @@ class image:
     def close(self) -> None:
         '''Closes window'''
         if not self.is_closed(): cv2.destroyWindow(self.name)
-    def setMouseCallback(self, funct, params=None) -> None: ## TODO Creating a second callback erases the previous one ##
-        '''event, x, y, flags, params -> None'''
-        if self.is_opened(): cv2.setMouseCallback(self.name, funct, params)
-        else: raise unreachableImage("Maybe you forgot to build the image?")
     def line(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
         '''Draws a line on the image'''
         cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), lineTypes[lineType%len(lineTypes)])
