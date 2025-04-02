@@ -15,6 +15,7 @@ for n in range(10):
     test_symbols += "\n"
 
 strs = [
+    test_symbols,
     f"^28^{test_letters}^28^", test_letters, f"^29^{test_letters}^29^", f"^29^^28^{test_letters}^28^^29^",
     "^28^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^28^",
     "^29^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^29^",
@@ -36,7 +37,7 @@ import unicodedata
 
 def update(img, help=False, a=0, ind=0, m=False):
     i:pyi.image = pyi.new_img(background=pyi.COL.black)
-    i.text(strs[ind%len(strs)], [i/2 for i in pyi.RES.resolution], fontSize=10, lineType=2, thickness=2, help=help, angle=a, monospace=m, interligne=0.3)
+    i.text(strs[ind%len(strs)], [i/2 for i in pyi.RES.resolution], fontSize=10, lineType=2, thickness=2, help=help, angle=a, monospace=m, interligne=0)
     img.img = i.img
     img.line([0, pyi.RES.resolution[1]/2], [pyi.RES.resolution[0], pyi.RES.resolution[1]/2], pyi.COL.green, 1, 2)
     img.line([pyi.RES.resolution[0]/2, 0], [pyi.RES.resolution[0]/2, pyi.RES.resolution[1]], pyi.COL.green, 1, 2)

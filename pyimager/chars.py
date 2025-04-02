@@ -33,7 +33,7 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
     col, fs, tk, lt, an, sty = colour, fontSize, thickness, lineType, angle%360, ""
     ps = [coosCircle(p, fs, a+an) for p, a in zip(pts, (45, 135, 315, 225))]
     LINES, ang = [], lambda a: a
-    ## Modif vars selon style ## Latin chars would be the only ones supported officially ##
+    ## Modif vars selon style ##
     if not (type(char)==str or not ":" in str(char)): ### Adapter les variables selon le style à appliquer
         lc = col
         c, s = str(char).split(":")[0], str(char).split(":")[1::]
@@ -284,9 +284,16 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
         case "D9": ## ¬
             LINES += [[cg, cd], [cd, pdb]]
         case "E0": ## º
-            img.ellipse(cth, (dist(ct, ctg), dist(ct, cth)*0.6), col, tk, lt, angle=an)
-            LINES += [[ctg, ctd]]
-        ################# ª
+            img.ellipse(cth, (dist(ct, cg), dist(ct, cth)), col, tk, lt, angle=an)
+            LINES += [[pt_sg(cg, pgb, 2), pt_sg(cd, pdb, 2)]]
+        case "E1": ## ª
+            a1, a2 = [ang(90), ang(270)], [ang(180), ang(360)]
+            if "VM" in sty and not "HM" in sty: a1[0] += 360; a2[0] += 360
+            p = pt_sg(ct, ch, 3); d = (dist(ct, cd), dist(p, ct))
+            pe = pt_sg(ch, cth, 2); de = (dist(ct, cd), dist(ch, pe))
+            img.ellipse(p, d, col, tk, lt, *a1, an)
+            img.ellipse(pe, de, col, tk, lt, *a2, an)
+            LINES += [[pt_sg(cg, pgb, 2), pt_sg(cd, pdb, 2)], [coosEllipse(pe, de, ang(0), an), cd], [coosEllipse(p, d, ang(270), an), pdh], [ct, cd]]
         case "E2": ## `
             LINES += [[pt_sg(p1, p2, 2), pt_sg(pdh, pgh, 2)]]
         case "E3": ## ´
@@ -929,16 +936,16 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             img.ellipse(ct, (dist(ct, cg)*0.7, dist(cth, ct)*0.6), col, tk, lt, *a3, an)
             img.ellipse(ctb, (dist(ct, cg), dist(ctb, ct)*0.6), col, tk, lt, *a4, an)
             img.ellipse(ctb, (dist(ct, cg), dist(ctb, ct)), col, tk, lt, *a5, an)
-        case "B72": # γ ## FIXME Change ellipses' angles of the chars below
+        case "B72": # γ
             rs = (dist(cb, p3), dist(cb, ct))
-            img.ellipse(p3, rs, col, tk, lt, -70, -10, an)
-            img.ellipse(p4, rs, col, tk, lt, 190, 250, an)
-            img.ellipse(cb, (dist(cb, p3)*0.1, dist(cb, coosEllipse(p3, (dist(cb, p3), dist(cb, ct)), -10, an))), col, tk, lt, 0, 360, an)
+            img.ellipse(p3, rs, col, tk, lt, ang(-70), ang(-10), an)
+            img.ellipse(p4, rs, col, tk, lt, ang(190), ang(250), an)
+            img.ellipse(cb, (dist(cb, p3)*0.1, dist(cb, coosEllipse(p3, rs, ang(-10), an))), col, tk, lt, ang(0)+360, ang(360)%360, an)
         case "B73": # δ
             p, rs = ctb, (dist(cb, p3), dist(ctb, cb))
             img.ellipse(p, rs, col, tk, lt, angle=an)
             LINES += [[ct_sg(ct2, phd), ct1], [ct1, coosEllipse(p, rs, ang(-60), an)]]
-        case "B74": # ε
+        case "B74": # ε ## FIXME Change ellipses' angles of the chars below
             rs = (dist(cb, p3), dist(cb, ctb)/2)
             img.ellipse(ct_sg(ct, ctb), rs, col, tk, lt, 90, 310, an)
             img.ellipse(ct_sg(cb, ctb), rs, col, tk, lt, 40, 270, an)
@@ -969,9 +976,10 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             LINES += [l, [ct_sg(*l), p3]]
         case "B81": # μ
             img.ellipse(ctb, (dist(ct, cd), dist(ct, ctb)), col, tk, lt, 0, 180, an)
-            LINES += [[cg, coosCircle(p3, dist(p4, pts[-1]), 90+an)], [cd, p4]]
+            LINES += [[cg, coosCircle(p3, dist(p4, pts[-1]), ang(90)+an)], [cd, p4]]
         case "B82": # ν
-            img.ellipse(p3, (dist(cb, p3), dist(cb, ct)), col, tk, lt, -70, 0, an)
+            a = 360 if "HM" in sty and not "VM" in sty else 0
+            img.ellipse(p3, (dist(cb, p3), dist(cb, ct)), col, tk, lt, ang(-70)+a, ang(0), an)
             LINES += [[cb, cd]]
         ################# ξ
         case "B84": # ο
