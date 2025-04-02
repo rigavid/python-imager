@@ -119,7 +119,9 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             else:
                 pt1, pt2 = ct_sg(cth, ctg), ct_sg(cth, ctd)
                 r = (dist(pt1, ct_sg(cth, ct)), dist(ct_sg(*pts[:2:]), ch)/3)
-            img.ellipse(pt1, r, col, tk, lt, ang(180), ang(360), an)
+            a = 360 if "VM" in sty else 0
+            if "HM" in sty: an+=180
+            img.ellipse(pt1, r, col, tk, lt, ang(180)+a, ang(360), an)
             img.ellipse(pt2, r, col, tk, lt, ang(0), ang(180), an)
         case "51": # '
             if char.upper: LINES += [[ct_sg(*pts[:2:]), pt_sg(ch, ct_sg(*pts[:2:]), 2)]]
