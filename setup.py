@@ -11,7 +11,7 @@ with open("README.md", "r", encoding="utf8") as file:
 setup(
         name="python-imager",
         version=VERSION,
-        author="T-Sana",
+        author="Rigavid",
         author_email="tsana.code@gmail.com",
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
