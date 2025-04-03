@@ -43,10 +43,10 @@ class image:
             self.name, self.coos = name, coos
             self.functs = []
         def defImg(self, img) -> None: self.img = img
-        def draw(self, colour=COL.red, colour2=COL.darkRed, textColour=COL.white, frameThickness=5, textThickness=3, textSize=3, textFont=FONT_HERSHEY_PLAIN, text="") -> None: ## TODO change text function to image.Text()
+        def draw(self, colour=COL.red, colour2=COL.darkRed, frameThickness=3, text="", **kwargs) -> None:
             self.img.rectangle(*self.coos, colour, 0, 2)
             self.img.rectangle(*self.coos, colour2, frameThickness, 2)
-            if text != "": self.img.write_centered(text, ct_sg(*self.coos), textColour, textThickness, textSize)
+            if text != "": self.img.text(text, ct_sg(*self.coos), **kwargs)
         def on_click(self, funct, params=None) -> None:
             '''To add a function to execute when clicked'''
             self.functs.append([funct, params])
@@ -164,7 +164,7 @@ class image:
     def write(self, text, pt, colour=COL.red, thickness=1, fontSize=1, font=cv2.FONT_HERSHEY_SCRIPT_COMPLEX, lineType=0) -> None:
         cv2.putText(self.img, text, [round(i) for i in pt], font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
     def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, angle=0, lineType=0, centered=True, help=False, monospace=False, interligne=0):
-        Text(text=txt, monospace=monospace).draw(img=self, pt=pt, colour=colour, thickness=thickness, fontSize=fontSize, angle=angle, lineType=lineType, centered=centered, help=help, interligne=interligne)
+        Text(text=txt, monospace=monospace).draw(img=self, pt=pt, colour=colour, thickness=thickness, fontSize=fontSize, interligne=interligne, lineType=lineType, angle=angle, centered=centered, help=help)
     def copy(self):
         '''Returns a copy of itself'''
         return image(self.nom, copy.deepcopy(self.img))
@@ -203,39 +203,3 @@ class layout:
         return self.img.is_opened()
     def size(self) -> [int, int]:
         return self.img.size()
-
-def demo():## TEST see if two buttons can coexist
-    def button_test1(event,x,y,flgs,prms):
-        if event==cv2.EVENT_LBUTTONDOWN and clicked_in((x,y), prms.coos): print("CLICKED1")
-    def button_test2(event,x,y,flgs,prms):
-        if event==cv2.EVENT_LBUTTONDOWN and clicked_in((x,y), prms.coos): print("CLICKED2")
-    def imag():
-        img = new_img(background=COL.black, name="Demo")
-        pt = pt_sg([0, 0], screen)
-        img.ellipse(pt, [500, 100], COL.magenta, 10, 2)
-        img.line([0, 0], screen, COL.white, 10, 2)
-        img.circle([0, 0], 100, COL.red, 0, 2)
-        img.circle(screen, 1000, COL.red, 0, 2)
-        btn1 = img.button("Boutton1", text="Button1")
-        btn2 = img.button("Boutton2", [[400, 100], [700, 200]], COL.green, COL.darkGreen, text="Button2")
-        return img, btn1, btn2
-    img, btn1, btn2 = imag()
-    img.build()
-    btn1.on_click(button_test1, btn1)
-    btn2.on_click(button_test2, btn2)
-    while img.is_opened():
-        wk = img.show(1)
-        match wk:
-            case 8:
-                RES.update()
-                fs = img.fullscreen
-                img, btn1, btn2 = imag()
-                img.fullscreen = fs
-            case 101: img.remove_button(btn1)
-            case -1: ...
-            case _:
-                print(wk)
-    return img
-
-if __name__ == "__main__":
-    demo()
