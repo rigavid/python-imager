@@ -33,9 +33,9 @@ strs = [
 import unicodedata
 
 
-def update(img, help=False, a=0, ind=0, m=False):
+def update(img, help=False, a=0, ind=0, m=False, il=0):
     i:pyi.image = pyi.new_img(background=pyi.COL.black)
-    i.text(strs[ind%len(strs)], [i/2 for i in pyi.RES.resolution], fontSize=10, lineType=2, thickness=2, help=help, angle=a, monospace=m, interligne=0)
+    i.text(strs[ind%len(strs)], [i/2 for i in pyi.RES.resolution], fontSize=10, lineType=2, thickness=2, help=help, angle=a, monospace=m, interligne=il)
     img.img = i.img
     img.line([0, pyi.RES.resolution[1]/2], [pyi.RES.resolution[0], pyi.RES.resolution[1]/2], pyi.COL.green, 1, 2)
     img.line([pyi.RES.resolution[0]/2, 0], [pyi.RES.resolution[0]/2, pyi.RES.resolution[1]], pyi.COL.green, 1, 2)
@@ -45,15 +45,20 @@ def main():
     img, help, a, i = pyi.new_img(background=pyi.COL.black, name="Text test!").build(), False, 0, 0
     img.fullscreen = True
     m = False
+    il = 0
     while img.is_opened():
-        update(img, help, a, i, m)
+        update(img, help, a, i, m, il)
         wk = img.show_()
-        if wk == 8: help = not help
+        if wk == 32: help = not help
         if wk == ord("r"): a += 30
         if wk == ord("c"): i += 1
         if wk == ord("x"): i -= 1
-        if wk == ord("h"): print(pyi.Text(strs[i]).text.__chain__str__())
+        if wk == ord("h"):
+            print(pyi.Text(strs[i]).text.__chain__str__())
+            print(img.size())
         if wk == ord("m"): m = not m
+        if wk == ord("+"): il += 0.1
+        if wk == ord("-"): il -= 0.1
 
 if __name__ == "__main__":
     pyi.COL.help = pyi.COL.blue

@@ -51,5 +51,6 @@ You have 5 inner functions to draw shapes:
 And you have 2 inner functions more to write text:
 > - `image.write(text, pt, colour, thickness, fontSize, font, lineType)`
 > - `image.write_centered(text, ct, colour, thickness, fontSize, font, lineType)`
+
 # Installation
 > `pip install python-imager`

@@ -1,8 +1,10 @@
 [ ] Check this out: https://packaging.python.org/en/latest/guides/modernize-setup-py-project/
 
-[ ] Change resolution by backspace in built_in_functs in image.show_(self)
-
 [x] Permit percentiles in coordinates arguments as image.rectangle([20%, 20%], [80%, 80%], COL.red, 0) -> use RES.percentile(x, y)
+
+[ ] Update README.md
+
+[ ] Implement Alignement in Text.draw()
 
 [ ] Voir pour implémenter ce code :
 ```

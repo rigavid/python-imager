@@ -96,13 +96,18 @@ class image:
         if destroy == True: cv2.destroyWindow(self.name)
         elif built_in_functs:
             match wk:
-                case 65470: cv2.moveWindow(self.name, 0, 0) #f1
-                case 65471: cv2.moveWindow(self.name, screen[0], 0) #f2
-                case 32: self.fullscreen = not self.fullscreen #spacebar
-                case 27: self.close()
-                case _: return wk
-            return -1
+                case 65470: self.move((0, 0)) #f1
+                case 65471: self.move((screen[0], 0)) #f2
+                case 65472: self.fullscreen() #f3
+                case 65473: RES.update() # f4
+                case 65481: self.close() # f12
         return wk
+    def move(self, pos) -> None:
+        cv2.moveWindow(self.name, *pos)
+    def fullscreen(self) -> None:
+        self.fullscreen = not self.fullscreen
+    def setFullscreen(self, fullscreen:bool) -> None:
+        self.fullscreen = fullscreen
     def build(self):
         if self.show_(1, False, False) == -1:
             if not self.disable_callback:

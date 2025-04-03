@@ -1019,7 +1019,6 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
     #################################################
         case _: ## Other chars
             if "<" in str(char): ## Unknown character ##
-                return
                 char.char = "00"
                 draw_char(img, char, points, col, fs, tk, lt, an, False)
             else: ## Unassigned pattern character ##
