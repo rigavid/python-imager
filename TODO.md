@@ -4,7 +4,9 @@
 
 [ ] Update README.md
 
-[ ] Implement Alignement in Text.draw()
+[ ] Implement Alignement in Text.draw() (Left, right, center)
+
+[ ] Create sliders on images as buttons (dont just use cv2.CreateTrackBar() and so)
 
 [ ] Voir pour implémenter ce code :
 ```
