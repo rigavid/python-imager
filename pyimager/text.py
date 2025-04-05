@@ -50,33 +50,40 @@ class Text:
                     img.polygon([*pts[:2:], *pts[:1:-1]], COL.yellow, 2, 2)
                     img.line(pts[0], pts[3], COL.yellow, 1, 2)
                     img.line(pts[1], pts[2], COL.yellow, 1, 2)
+                    d = 3
+                    img.circle(pts[0], d*2, COL.compl(COL.help), 0)
+                    for p in pts[:-1:]: img.circle(p, d, COL.help, 0)
+                    img.text(str(self), pts[0], COL.help, fontSize=3, thickness=2, centered=False)
             def __eq__(self, other):
                 if type(other) == type(self): return self.char == other.char
                 else: return self.char == str(other)
             def get_width_height(self): ## TODO Set chars' width
                 XD, YD =  self.X, self.Y
                 if self.monospace: return XD, YD
-                if self.__type__() == self.TypeControl:
-                    match str(self.char):
-                        case "00"|"06": XD *= 0.5
-                        case "01": XD *= 0.6
-                        case _: return XD, YD
-                elif self.__specific_type__() == self.TypeLetter:
-                    l, n, u = self.char[0], int(self.char[1::]), self.__is_upper__()
-                    if n < 30: ## LATIN ##
-                        if n in (26, 27): XD *= 1.1 if u else 0.75
-                        else: XD *= 0.9 if u else 0.6
-                    elif n < 70: ## CYRILLIC ##
-                        XD *= 0.9 if u else 0.6
-                    elif n < 100: ## GREEK ##
-                        XD *= 0.9 if u else 0.6
-                elif self.__specific_type__() == self.TypeSymbol:
-                    ...
-                    # c, l, n = self.char, self.char[0], self.char[1]
-                    # if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.1
-                    # if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
-                if self.__type__() == self.TypeDiacritic:
-                    return self.width, YD
+                match self.__type__():
+                    case self.TypeControl:
+                        match str(self.char):
+                            case "00"|"06": XD *= 0.5
+                            case "01": XD *= 0.6
+                            case _: return XD, YD
+                    case self.TypeFormat: return 0, YD
+                    case self.TypeDiacritic: return self.width, YD
+                    case self.TypeText:
+                        match self.__specific_type__():
+                            case self.TypeLetter:
+                                l, n, u = self.char[0], int(self.char[1::]), self.__is_upper__()
+                                if n < 30: ## LATIN ##
+                                    if n in (26, 27): XD *= 1.1 if u else 0.75 ## Æ|Œ
+                                    else: XD *= 0.9 if u else 0.6
+                                elif n < 70: ## CYRILLIC ##
+                                    XD *= 0.9 if u else 0.6
+                                elif n < 100: ## GREEK ##
+                                    XD *= 0.9 if u else 0.6
+                            case self.TypeSymbol:
+                                ...
+                                # c, l, n = self.char, self.char[0], self.char[1]
+                                # if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.1
+                                # if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
                 return XD, YD
         def __init__(self, string="", monospace=False):
             s, o, d, tp, tb, rtb = f"^{CONV["SPC"]}^", f"^{CONV["ORG"]}^", f"^{CONV["DWN"]}^", f"^{CONV["TOP"]}^", f"^{CONV["TAB"]}^", f"^{CONV["RTB"]}^"
@@ -201,62 +208,16 @@ class Text:
         XD *= fontSize; YD *= fontSize; YD += interligne
         if char.__type__() in (char.TypeDiacritic, char.TypeFormat): pass
         elif char.__type__ () == char.TypeControl:
-            if   char == "02":
-                pos[0] -= 1
-                pt = coosCircle(pt, XD, angle+180)
-            elif char == "03":
-                pos[1] -= 1
-                pt, linept = coosCircle(pt, YD, angle+270), coosCircle(linept, YD, angle+270)
-            elif char == "04":
-                pos[1] += 1
-                pt, linept = coosCircle(pt, YD, angle+ 90), coosCircle(linept, YD, angle+ 90)
-            elif char == "05": pt, pos[0], orgpt = linept, 0, coosCircle(orgpt, XD*pos[0], angle+180)
+            if   char == "02": pt = coosCircle(pt, XD, angle+180); pos[0] -= 1
+            elif char == "03": pt = linept = coosCircle(pt, YD, angle+270); pos[1] -= 1
+            elif char == "04": pt = linept = coosCircle(pt, YD, angle+ 90); pos[1] += 1
+            elif char == "05": pt, pos[0] = linept, 0
             elif char == "07": pt, pos[1], linept = orgpt, 0, coosCircle(linept, YD*pos[1], angle+270)
-            elif char == "08":
-                n = 4-(pos[0]%4)
-                pt, orgpt = coosCircle(pt, XD*n, angle), coosCircle(orgpt, XD*n, angle)
-                pos[0] += n
-            elif char == "09":
-                n = 4-(pos[0]%4)
-                pt, orgpt = coosCircle(pt, XD*n, 180+angle), coosCircle(orgpt, XD*n, 180+angle)
-                pos[0] -= n
-            else:
-                pt, orgpt = coosCircle(pt, XD, angle), coosCircle(orgpt, XD, angle)
-                pos[0] += 1
-        else:
-            pt, orgpt = coosCircle(pt, XD, angle), coosCircle(orgpt, XD, angle)
-            pos[0] += 1
+            elif char == "08": n = 4-(pos[0]%4); pt = coosCircle(pt, XD*n, angle); pos[0] += n
+            elif char == "09": n = 4-(pos[0]%4); pt = coosCircle(pt, XD*n, 180+angle); pos[0] -= n
+            else: pt = coosCircle(orgpt, XD, angle); pos[0] += 1
+        else: pt = coosCircle(pt, XD, angle); pos[0] += 1
         return pt, linept, orgpt, pos
-    def get_center(self, pt, fontSize=1, angle=0, il=0): ## TODO Use get_width_height() to get the correct sizes.
-        maxs, pos = [0, 0, 0, 0], [0, 0]
-        for char in self.text:
-            match char.__type__():
-                case char.TypeControl:
-                    match str(char):
-                        case a if a in ("00", "01", "06"): pos[0] += 1
-                        case "02": pos[0] -= 1
-                        case "03": pos[1] -= 1
-                        case "04": pos[1] += 1
-                        case "05": pos[0] = 0
-                        case "07": pos[1] = 0
-                        case "08": pos[0] += 4-(pos[0]%4)
-                        case "09": pos[0] -= 4-(pos[0]%4)
-                case char.TypeFormat: continue
-                case char.TypeDiacritic: continue
-                case char.TypeText|_: pos[0] += char.get_width_height()[0]/char.X
-            if pos[0]>maxs[0]: maxs[0]=pos[0]
-            if pos[1]>maxs[1]: maxs[1]=pos[1]
-            if pos[0]<maxs[2]: maxs[2]=pos[0]
-            if pos[1]<maxs[3]: maxs[3]=pos[1]
-        bords = [
-            coosCircle( coosCircle(pt, self.Chain.Char.X*maxs[2]*fontSize, 180+angle),
-                self.Chain.Char.Y*maxs[3]*fontSize, 270+angle),
-            coosCircle( coosCircle(pt, self.Chain.Char.X*maxs[0]*fontSize, angle),
-                self.Chain.Char.Y*maxs[1]*fontSize, 90+angle)
-        ]
-        c = coosCircle(ct_sg(*bords), self.Chain.Char.Y*fontSize/2, angle+90)
-        c2 = ((pt[0]-c[0]), (pt[1]-c[1]))
-        return (pt[0]+c2[0], pt[1]+c2[1])
     def get_cases(self, pt, fontSize, angle, interligne):
         pts, pos = [], [0, 0]
         linept = orgpt = pt
@@ -267,6 +228,14 @@ class Text:
                 coosCircle(pt, square_root(x*x+y*y)*fontSize, angle+angleInterPoints([0,0],[x,y]))])
             pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle, interligne)
         return pts
+    def get_center(self, pt, fontSize=1, angle=0, interligne=0):
+        poses = self.get_cases(pt, fontSize, 0, interligne)
+        axes = [[], []]
+        for p in poses:
+            axes[0] += [ct_sg(p[0], p[-1])[0]]
+            axes[1] += [ct_sg(p[0], p[-1])[1]]
+        PT = pt[0]-diff(min(axes[0]), max(axes[0]))/2, pt[1]-diff(min(axes[1]), max(axes[1]))/2
+        return coosCircle(pt, dist(pt, PT), angle+angleInterPoints(pt, PT))
     def draw(self, img, pt, colour, thickness=1, fontSize=1, interligne=0, lineType=0, angle=0, centered=True, help=False):
         interligne *= self.Chain.Char.Y*fontSize
         origin = self.get_center(pt, fontSize, angle, interligne) if centered else pt
