@@ -58,7 +58,7 @@ class image:
             x, y = diff(p4[0], p1[0]), diff(p4[1], p1[1])
             dx = x/50
             t = Text(self.name, False)
-            X, Y = t.get_size(self.fs, 0, self.il)
+            X, Y = t.get_size(self.fs, self.il)
             t.draw(self.img, (p1[0]+dx, p1[1]+y/2-Y/2), self.col2, self.tk, self.fs, self.il, self.lt, 0, False, False)
             g, d = (p1[0]+X+dx*2, p1[1]+y/2), (p4[0]-dx, p4[1]-y/2)
             self.img.line(g, d, self.col2, self.tk, self.lt)

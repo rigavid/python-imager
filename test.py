@@ -16,19 +16,22 @@ for n in range(10):
 
 strs = [
     test_symbols, test_letters,
-    "^28^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^28^\n^29^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^29^",
-    "^28^^29^ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎^29^^28^\nÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎\nàáâäǎåăȁa̋ȧāãa̍a̎",
+    "ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎^54^A^80^A^62^A^63^A\nàáâäǎåăȁa̋ȧāãa̍a̎^54^a^80^a^62^a^63^a",
     "Dès Noël, où un zéphyr haï me vêt de\nglaçons würmiens, je dîne d’exquis\nrôtis de bœuf au kir, à l’aÿ\nd’âge mûr, &cætera.",
     "Ξεσκεπάζω τὴν ψυχοφθόρα βδελυγμία.",
     "いろはにほへと ちりぬるを わかよたれそ つねならむ\nうゐのおくやま けふこえて あさきゆめみし ゑひもせす",
     "Съешь ещё этих мягких французских\nбулок, да выпей же чаю.",
-    "Nechť již hříšné saxofony ďáblů\nrozzvučí síň úděsnými tóny waltzu,\ntanga a quickstepu.",
+    "Nechť již hříšné saxofony ďáblů\nrozzvučí síň úděsnými tóny waltzu,\ntanga a quickstepu.".upper(),
     "Tất cả mọi người sinh ra đều\nđược tự do và bình đẳng về\nnhân phẩm và quyền lợi.",
     "Kæmi ný öxi hér ykist þjófum\nnú bæði víl og ádrepa.",
     "דג סקרן שט בים מאוכזב ולפתע מצא חברה",
     "^21^UL^21^\t^22^TL^22^\t^23^OL^23^\t^24^IT^24^\t^25^BD^25^\n^26^CI^26^\t^27^TN^27^\t^28^VM^28^\t^29^HM^29^\n^21^^22^U^23^T^23^L^21^^22^",
     "^BG:ffffff^BG:ffffff^BG:ffffff^\n^FG:ffffff^FG:ffffff^FG:ffffff^\n^21^^LS:ffffff^UL:LS:ffffff^LS:ffffff^^21^"
 ]
+
+# t = pyi.Text("Tất cả mọi người sinh ra đều\nđược tự do và bình đẳng về\nnhân phẩm và quyền lợi.")
+# print(";".join(str(i) for i in t.text.chain))
+# raise SystemExit
 
 import unicodedata
 

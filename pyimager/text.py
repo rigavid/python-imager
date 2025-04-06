@@ -1,12 +1,12 @@
-try: from pyimager.text_conv import CONV, CHARS
-except: from text_conv import CONV, CHARS
+try: from pyimager.text_conv import *
+except: from text_conv import *
 try: from pyimager.chars import *
 except: from chars import *
 import unicodedata
 
 class Text:
     class Chain:
-        class Char:
+        class Char: ## TODO Prevent overlapping accents
             X, Y = 5, 7
             TypeText, TypeControl, TypeFormat, TypeDiacritic, TypeUnknown = "T", "C", "F", "D", "U"
             TypeSymbol, TypeLetter, TypeEmoji = "S", "L", "E"
@@ -86,8 +86,8 @@ class Text:
                                 # if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
                 return XD, YD
         def __init__(self, string="", monospace=False):
-            s, o, d, tp, tb, rtb = f"^{CONV["SPC"]}^", f"^{CONV["ORG"]}^", f"^{CONV["DWN"]}^", f"^{CONV["TOP"]}^", f"^{CONV["TAB"]}^", f"^{CONV["RTB"]}^"
-            string = string.replace(" ", s).replace("\r", o).replace("\v", d).replace("\n", o+d).replace("\b", tp).replace("\t", tb).replace("\f", rtb)
+            string = string.replace("\r", "^05^").replace("\v", "^04^").replace("\n", "^05^^04^") \
+                .replace("\b", "^07^").replace("\t", "^08^").replace("\f", "^09^").replace(" ", "^01^")
             chr, chars, strg, char_ = False, [], "", ""
             for c in string:
                 if chr:
@@ -215,21 +215,26 @@ class Text:
             elif char == "07": pt, pos[1], linept = orgpt, 0, coosCircle(linept, YD*pos[1], angle+270)
             elif char == "08": n = 4-(pos[0]%4); pt = coosCircle(pt, XD*n, angle); pos[0] += n
             elif char == "09": n = 4-(pos[0]%4); pt = coosCircle(pt, XD*n, 180+angle); pos[0] -= n
-            else: pt = coosCircle(orgpt, XD, angle); pos[0] += 1
+            else: pt = coosCircle(pt, XD, angle); pos[0] += 1
         else: pt = coosCircle(pt, XD, angle); pos[0] += 1
         return pt, linept, orgpt, pos
     def get_cases(self, pt, fontSize, angle, interligne):
         pts, pos = [], [0, 0]
         linept = orgpt = pt
         for char in self.text:
+            if char.__type__() == char.TypeControl:
+                if not char.char in ("00", "01", "06"):
+                    pts.append([pt, pt, pt, pt])
+                    pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle, interligne)
+                    continue
             x, y = char.get_width_height()
             pts.append(
                 [pt, coosCircle(pt, x*fontSize, angle), coosCircle(pt, y*fontSize, angle+90),
                 coosCircle(pt, square_root(x*x+y*y)*fontSize, angle+angleInterPoints([0,0],[x,y]))])
             pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle, interligne)
         return pts
-    def get_size(self, fontSize=1, angle=0, interligne=0):
-        poses = self.get_cases((0, 0), fontSize, angle, interligne)
+    def get_size(self, fontSize=1, interligne=0):
+        poses = self.get_cases((0, 0), fontSize, 0, interligne)
         axes = [[], []]
         for p in poses:
             axes[0] += [p[0][0], p[-1][0]]
@@ -238,7 +243,7 @@ class Text:
         y = diff(min(axes[1]), max(axes[1]))
         return x, y
     def get_center(self, pt, fontSize=1, angle=0, interligne=0):
-        x, y = self.get_size(fontSize, angle, interligne)
+        x, y = self.get_size(fontSize, interligne)
         PT = pt[0]-x/2, pt[1]-y/2
         return coosCircle(pt, dist(pt, PT), angle+angleInterPoints(pt, PT))
     def draw(self, img, pt, colour, thickness=1, fontSize=1, interligne=0, lineType=0, angle=0, centered=True, help=False):
