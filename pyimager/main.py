@@ -51,7 +51,7 @@ class image:
         def set_vars(self, col1=COL.red, col2=COL.darkRed, col3=COL.green, thickness=3, lineType=2, fontSize=1, interligne=0) -> None:
             self.col1, self.col2, self.col3 = col1, col2, col3
             self.tk, self.lt, self.fs, self.il = thickness, lineType, fontSize, interligne
-        def draw(self) -> None: ## TODO Draw value, minimum and maximum
+        def draw(self) -> None: ## TODO Write value, minimum and maximum
             self.img.rectangle(*self.coos, self.col1, 0, self.lt)
             self.img.rectangle(*self.coos, self.col2, self.tk, self.lt)
             p1, p4 = self.coos
@@ -83,10 +83,13 @@ class image:
             self.name, self.coos = name, coos
             self.functs = []
         def defImg(self, img) -> None: self.img = img
-        def draw(self, col1=COL.red, col2=COL.darkRed, thickness=3, fontSize=1, lineType=2, interligne=0) -> None:
-            self.img.rectangle(*self.coos, col1, 0, 2)
-            self.img.rectangle(*self.coos, col2, thickness, 2)
-            self.img.text(self.name, ct_sg(*self.coos), col2, thickness, fontSize, 0, lineType, True, False, False, interligne)
+        def set_vars(self, col1=COL.red, col2=COL.darkRed, thickness=3, lineType=2, fontSize=1, interligne=0) -> None:
+            self.col1, self.col2 = col1, col2
+            self.tk, self.lt, self.fs, self.il = thickness, lineType, fontSize, interligne
+        def draw(self) -> None:
+            self.img.rectangle(*self.coos, self.col1, 0, 2)
+            self.img.rectangle(*self.coos, self.col2, self.tk, 2)
+            self.img.text(self.name, ct_sg(*self.coos), self.col2, self.tk, self.fs, 0, self.lt, True, False, False, self.il)
         def on_click(self, funct, params=None) -> None:
             '''To add a function to execute when clicked'''
             self.functs.append([funct, params])
@@ -97,7 +100,8 @@ class image:
     def button(self, name="Button", coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:
         bttn = self.button_(name, coos)
         bttn.defImg(self)
-        bttn.draw(*args, **kwargs)
+        bttn.set_vars(*args, **kwargs)
+        bttn.draw()
         self.buttons.append(bttn)
         return bttn
     def remove_button(self, bttn) -> button_ | int:
@@ -115,18 +119,18 @@ class image:
         self.buttons, self.trackbars, self.callbacks = [], [], []
         self.disable_callback = disable_callback
     def __str__(self) -> str: return self.name
-    def show_(self, wait=1, destroy=False, built_in_functs=True) -> int:
+    def show_(self, wait=1, destroy=False, built_in_functs=True, QtGui=False) -> int:
         '''Show image in a window'''
+        props = cv2.WND_PROP_FULLSCREEN | (cv2.WINDOW_GUI_EXPANDED if QtGui else cv2.WINDOW_GUI_NORMAL)
+        cv2.namedWindow(self.name, props)
         if self.fullscreen:
-            cv2.namedWindow(self.name, cv2.WND_PROP_FULLSCREEN)
             cv2.setWindowProperty(self.name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             cv2.setWindowProperty(self.name, cv2.WND_PROP_ASPECT_RATIO, cv2.WINDOW_KEEPRATIO)
-        else:
-            cv2.namedWindow(self.name, cv2.WND_PROP_FULLSCREEN)
-            cv2.setWindowProperty(self.name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_KEEPRATIO)
-        cv2.imshow(self.name, np.array(self.img, np.uint8))
+        else: cv2.setWindowProperty(self.name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_KEEPRATIO)
+        cv2.imshow(self.name, cv2.resize(np.array(self.img, np.uint8), RES.resolution))
         wk = cv2.waitKeyEx(wait)
         if not self.disable_callback and self.mouse.new:
+            self.mouse.new = False
             pos = self.mouse.x, self.mouse.y
             v = self.mouse.event, *pos, self.mouse.flags
             for f, p in self.callbacks: f(*v, p)
@@ -137,7 +141,7 @@ class image:
                 if v[0] == cv2.EVENT_LBUTTONDOWN:
                     if not t.changing and t.is_clicked(pos):
                         t.changing = True
-                elif v[0] == cv2.EVENT_MOUSEMOVE and t.is_clicked(pos) and t.changing:
+                elif v[0] == cv2.EVENT_MOUSEMOVE and t.changing:
                     g, d, x = *t.scale, v[1]
                     t.value = t.range[0] if x<g else t.range[1] if x>d else diff(g, x)/2
                 elif v[0] == cv2.EVENT_LBUTTONUP:
