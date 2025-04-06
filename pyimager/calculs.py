@@ -46,7 +46,7 @@ def square_root(n:number) -> float:
     return decoupe(math.sqrt(n))
 
 def dist(p1:point, p2:point) -> float:
-    '''Calculates distance from p1 to p2'''
+    '''Calculates distance from p1 to p2\nIf you have a TypeError, maybe you should use diff() instead of dist()'''
     return square_root(diff(p1[0], p2[0])**2 + diff(p1[1], p2[1])**2)
 
 def angleInterPoints(p1:point, p2:point) -> float:

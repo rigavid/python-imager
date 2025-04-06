@@ -228,13 +228,18 @@ class Text:
                 coosCircle(pt, square_root(x*x+y*y)*fontSize, angle+angleInterPoints([0,0],[x,y]))])
             pt, linept, orgpt, pos = self.new_pt(pt, char, linept, orgpt, pos, fontSize, angle, interligne)
         return pts
-    def get_center(self, pt, fontSize=1, angle=0, interligne=0):
-        poses = self.get_cases(pt, fontSize, 0, interligne)
+    def get_size(self, fontSize=1, angle=0, interligne=0):
+        poses = self.get_cases((0, 0), fontSize, angle, interligne)
         axes = [[], []]
         for p in poses:
-            axes[0] += [ct_sg(p[0], p[-1])[0]]
-            axes[1] += [ct_sg(p[0], p[-1])[1]]
-        PT = pt[0]-diff(min(axes[0]), max(axes[0]))/2, pt[1]-diff(min(axes[1]), max(axes[1]))/2
+            axes[0] += [p[0][0], p[-1][0]]
+            axes[1] += [p[0][1], p[-1][1]]
+        x = diff(min(axes[0]), max(axes[0]))
+        y = diff(min(axes[1]), max(axes[1]))
+        return x, y
+    def get_center(self, pt, fontSize=1, angle=0, interligne=0):
+        x, y = self.get_size(fontSize, angle, interligne)
+        PT = pt[0]-x/2, pt[1]-y/2
         return coosCircle(pt, dist(pt, PT), angle+angleInterPoints(pt, PT))
     def draw(self, img, pt, colour, thickness=1, fontSize=1, interligne=0, lineType=0, angle=0, centered=True, help=False):
         interligne *= self.Chain.Char.Y*fontSize

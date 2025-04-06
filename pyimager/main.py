@@ -38,15 +38,55 @@ class image:
             image.mouse.x, image.mouse.y = x, y
             image.mouse.flags = flags
             return event, x, y, flags
+    class trackbar_:
+        def defImg(self, img) -> None: self.img = img
+        def __init__(self, name, coos, min=0, max=100, val=0) -> None:
+            self.name, self.coos = name, coos
+            self.value = val
+            self.range = (min, max)
+            self.changing = False
+        def is_clicked(self, coos) -> bool: return clicked_in(coos, self.coos)
+        def pnts(self, g, d, i, y, n):
+            return (coosCircle(coosCircle(g, dist(g, d)*(i/100), 0), y/n/2, a) for a in (90, 270))
+        def set_vars(self, col1=COL.red, col2=COL.darkRed, col3=COL.green, thickness=3, lineType=2, fontSize=1, interligne=0) -> None:
+            self.col1, self.col2, self.col3 = col1, col2, col3
+            self.tk, self.lt, self.fs, self.il = thickness, lineType, fontSize, interligne
+        def draw(self) -> None: ## TODO Draw value, minimum and maximum
+            self.img.rectangle(*self.coos, self.col1, 0, self.lt)
+            self.img.rectangle(*self.coos, self.col2, self.tk, self.lt)
+            p1, p4 = self.coos
+            x, y = diff(p4[0], p1[0]), diff(p4[1], p1[1])
+            dx = x/50
+            t = Text(self.name, False)
+            X, Y = t.get_size(self.fs, 0, self.il)
+            t.draw(self.img, (p1[0]+dx, p1[1]+y/2-Y/2), self.col2, self.tk, self.fs, self.il, self.lt, 0, False, False)
+            g, d = (p1[0]+X+dx*2, p1[1]+y/2), (p4[0]-dx, p4[1]-y/2)
+            self.img.line(g, d, self.col2, self.tk, self.lt)
+            m = diff(*self.range)
+            for n, i in enumerate(range(0, m+1, 5)):
+                self.img.line(*self.pnts(g, d, i, y, 2 if n%5==0 else 4), self.col2, self.tk, self.lt)
+            self.img.line(*self.pnts(g, d, self.value, y, 3), self.col3, self.tk, self.lt)
+            self.scale = g[0], d[0]
+        def get(self) -> number: return self.val
+    def trackbar(self, name="TrackBar", coos=[[100, 200], [500, 300]], min=0, max=100, val=0, *args, **kwargs) -> trackbar_:
+        trkb = self.trackbar_(name, coos, min, max, val)
+        trkb.defImg(self)
+        trkb.set_vars(*args, **kwargs)
+        trkb.draw()
+        self.trackbars.append(trkb)
+        return trkb
+    def remove_trackbar(self, trkb) -> trackbar_ | int:
+        try: return self.trackbars.pop(self.trackbars.index(trkb))
+        except: return -1
     class button_:
-        def __init__(self, name="", coos=[[100,100], [300, 200]]) -> None:
+        def __init__(self, name, coos) -> None:
             self.name, self.coos = name, coos
             self.functs = []
         def defImg(self, img) -> None: self.img = img
-        def draw(self, colour=COL.red, colour2=COL.darkRed, frameThickness=3, text="", **kwargs) -> None:
-            self.img.rectangle(*self.coos, colour, 0, 2)
-            self.img.rectangle(*self.coos, colour2, frameThickness, 2)
-            if text != "": self.img.text(text, ct_sg(*self.coos), **kwargs)
+        def draw(self, col1=COL.red, col2=COL.darkRed, thickness=3, fontSize=1, lineType=2, interligne=0) -> None:
+            self.img.rectangle(*self.coos, col1, 0, 2)
+            self.img.rectangle(*self.coos, col2, thickness, 2)
+            self.img.text(self.name, ct_sg(*self.coos), col2, thickness, fontSize, 0, lineType, True, False, False, interligne)
         def on_click(self, funct, params=None) -> None:
             '''To add a function to execute when clicked'''
             self.functs.append([funct, params])
@@ -54,7 +94,7 @@ class image:
             '''Execute each function'''
             for f, p in self.functs: f(*vars_get, p)
         def is_clicked(self, coos) -> bool: return clicked_in(coos, self.coos)
-    def button(self, name, coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:
+    def button(self, name="Button", coos=[[100,100], [300, 200]], *args, **kwargs) -> button_:
         bttn = self.button_(name, coos)
         bttn.defImg(self)
         bttn.draw(*args, **kwargs)
@@ -72,7 +112,7 @@ class image:
     def __init__(self, name="python-image", img=None, disable_callback=False) -> None:
         self.img = np.array(self.new_image() if type(img) == type(None) else img.img if type(img) == image else img)
         self.name, self.fullscreen = name, False
-        self.buttons, self.callbacks = [], []
+        self.buttons, self.trackbars, self.callbacks = [], [], []
         self.disable_callback = disable_callback
     def __str__(self) -> str: return self.name
     def show_(self, wait=1, destroy=False, built_in_functs=True) -> int:
@@ -93,18 +133,31 @@ class image:
             for b in self.buttons:
                 if b.is_clicked(pos):
                     b.clicked(v)
+            for t in self.trackbars:
+                if v[0] == cv2.EVENT_LBUTTONDOWN:
+                    if not t.changing and t.is_clicked(pos):
+                        t.changing = True
+                elif v[0] == cv2.EVENT_MOUSEMOVE and t.is_clicked(pos) and t.changing:
+                    g, d, x = *t.scale, v[1]
+                    t.value = t.range[0] if x<g else t.range[1] if x>d else diff(g, x)/2
+                elif v[0] == cv2.EVENT_LBUTTONUP:
+                    if t.changing:
+                        g, d, x = *t.scale, v[1]
+                        t.value = t.range[0] if x<g else t.range[1] if x>d else diff(g, x)/2
+                        t.changing = False
+                t.draw()
         if destroy == True: cv2.destroyWindow(self.name)
         elif built_in_functs:
             match wk:
-                case 65470 | 269025062: self.move((0, 0)) #f1 | ->
-                case 65471 | 269025063: self.move((screen[0], 0)) #f2 | <-
-                case 65472 | 269025139: self.fullscreen() #f3 | ⟳
+                case 65470: self.move((0, 0)) #f1
+                case 65471: self.move((screen[0], 0)) #f2
+                case 65472: self.toggleFullscreen() #f3
                 case 65473: RES.update() # f4
                 case 65481 | 27: self.close() # f12 | esc
         return wk
     def move(self, pos) -> None:
         cv2.moveWindow(self.name, *pos)
-    def fullscreen(self) -> None:
+    def toggleFullscreen(self) -> None:
         self.fullscreen = not self.fullscreen
     def setFullscreen(self, fullscreen:bool) -> None:
         self.fullscreen = fullscreen
