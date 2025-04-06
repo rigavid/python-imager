@@ -6,6 +6,8 @@
 
 [ ] Implement Alignement in Text.draw() (Left, right, center)
 
+[ ] Implement ligatures in Text() and draw them
+
 [ ] Create sliders on images as buttons (dont just use cv2.CreateTrackBar() and so)
 
 [ ] Voir pour implémenter ce code :
