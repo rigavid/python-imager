@@ -1,8 +1,7 @@
 # Pyimager
  Pyimager is a python package for creating, editing and showing images with python.  
- It can be used to create videogames (that's why I use it for) and to many other uses.
 
- As it is based on opencv-python but not all of these functions are implemented here, you can still use their functions with this library to get the best result of them. But still, open an issue on [GitHub](https://github.com/T-Sana/python-imager/issues) so I can add the functions you need.
+ As it is based on opencv-python but not all of these functions are implemented here, you can still use their functions with this library to get the best result of them. But still, open an issue on [GitHub](https://github.com/rigavid/python-imager/issues) so I can add the functions you need.
 
 # Tutorial
 ## Creating an image

@@ -2,6 +2,7 @@ class colour:
     def new(hexadecimal='000000', tipe=False):
         '''Hexadecimal colour in RGB'''
         if type(hexadecimal) == int: hexadecimal = f'{hexadecimal:x}'
+        elif type(hexadecimal) == list and len(hexadecimal)==3: return hexadecimal
         hexadecimal = hexadecimal.replace('#','')
         if tipe: b, g, r = int(hexadecimal[0:2],base=16), int(hexadecimal[2:4],base=16), int(hexadecimal[4:6],base=16)
         else: r, g, b = int(hexadecimal[0:2],base=16), int(hexadecimal[2:4],base=16), int(hexadecimal[4:6],base=16)
