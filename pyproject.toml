@@ -1,0 +1,35 @@
+# python3 -m build
+# twine upload  dist/* --verbose
+# pip install --upgrade python-imager
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-imager"
+version = "1.2.42"
+description = "Python image program"
+readme = "README.md"
+requires-python = ">=3.6"
+license = { file = "LICENCE" }
+authors = [
+    {
+        name = "Rigavid",
+        email = "tsana.code@gmail.com"
+    }
+]
+keywords = ["python", "image"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+dependencies = [
+    "numpy",
+    "opencv-python",
+    "screeninfo"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
