@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 
 # python3 -m build
 # twine upload  dist/* --verbose
+# pip install --upgrade python-imager
 
 VERSION = '1.2.40'
 DESCRIPTION = 'Python image program'
