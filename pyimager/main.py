@@ -67,7 +67,7 @@ class image:
                 self.img.line(*self.pnts(g, d, i, y, 2 if n%5==0 else 4), self.col2, self.tk, self.lt)
             self.img.line(*self.pnts(g, d, self.value, y, 3), self.col3, self.tk, self.lt)
             self.scale = g[0], d[0]
-        def get(self) -> number: return self.val
+        def get(self) -> number: return self.value
     def trackbar(self, name="TrackBar", coos=[[100, 200], [500, 300]], min=0, max=100, val=0, *args, **kwargs) -> trackbar_:
         trkb = self.trackbar_(name, coos, min, max, val)
         trkb.defImg(self)
