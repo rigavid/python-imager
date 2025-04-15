@@ -689,6 +689,15 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             p, d = [ct[0], ct[1]-dist(ct, ch)+y], (dist(ct, cd), y)
             img.ellipse(p, d, col, tk, lt, a, b, an)
             LINES += [[p3, pbg], [coosEllipse(p, d, a, an), pbg], [coosEllipse(p, d, b, an), pbd], [pbd, p4]]
+        case "A95": ## Ϙ
+            d = dist(ctb, cb)/2
+            img.ellipse(coosCircle(ct, d, ang(-90)), (dist(ct, cd), dist(ct, ch)-d), col, tk, lt, angle=an)
+            LINES += [[ctb, cb]]
+        case "A96": ## Ϡ
+            a, b = ch, p4
+            LINES += [[a, b], [pt_sg(a, b, 4), p3], [pt_sg(a, b, 3, 4), cb]]
+        case "A97": ## ͳ
+            LINES += [[p1, p2], [p1, pgh], [p2, pdh], [ch, cb]]
         ########################################################
         case "B00": # a
             a1, a2 = [ang(90), ang(270)], [ang(180), ang(360)]
@@ -1097,6 +1106,16 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             if "HM" in sty: a2[1 if "VM" in sty else 0] += 360
             img.ellipse(ct3, r, col, tk, lt, *a1, an)
             img.ellipse(ct4, r, col, tk, lt, *a2, an)
+        case "B95": # ϙ
+            d = dist(ctb, cb)/4
+            img.ellipse(coosCircle(ctb, d, ang(-90)), (dist(cb, p3), dist(ctb, cb)-d), col, tk, lt, angle=an)
+            LINES += [[ct_sg(cb, ctb), cb]]
+        case "B96": # ϡ
+            e = p3, (dist(p3, p4), dist(p1, p3))
+            img.ellipse(*e, col, tk, lt, ang(-90), ang(0), angle=an)
+            LINES += [[coosEllipse(*e, ang(-45), an), p3], [coosEllipse(*e, ang(-25), an), cb]]
+        case "B97": # ͳ
+            LINES += [[ct, coosCircle(cb, dist(p4, pts[-1]), ang(90)+an)], [cg, cd], [cg, pgb], [cd, pdb]]
         ### Emojis ######################################
         case "A000": ...
     #################################################
