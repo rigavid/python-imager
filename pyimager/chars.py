@@ -1116,14 +1116,24 @@ def draw_char(img, char, pts, colour=COL.red, fontSize=1, thickness=1, lineType=
             LINES += [[coosEllipse(*e, ang(-45), an), p3], [coosEllipse(*e, ang(-25), an), cb]]
         case "B97": # ͳ
             LINES += [[ct, coosCircle(cb, dist(p4, pts[-1]), ang(90)+an)], [cg, cd], [cg, pgb], [cd, pdb]]
+        #################################################
+        case "C00": # א ## TODO Fix char
+            LINES += [[p1, p4], [cd, ct_sg(ct1, p4)], [cg, ct_sg(p1, ct4)], [p2, cd], [cg, p3]]
+        case "C01": # ב
+            LINES += [[p3, p4], [cg, ctd], [ctd, ct_sg(pbd, p4)]]
+        #################################################
+        case "D00": # あ ## TODO Fix char
+            LINES += [[pgh, pdh]]
+            img.ellipse(ct, (dist(ct, ctg)/3, dist(ct, ch)), col, tk, lt, ang(90), ang(270), an)
         ### Emojis ######################################
         case "A000": ...
     #################################################
-        case _: ## Other chars
-            if "<" in str(char): ## Unknown character ##
-                char.char = "00"
+        case _: ## Unmapped pattern ##
+            if "<" in str(char): ## Unmmapped character ##
+                char_save, char.char = char.char, "00"
                 draw_char(img, char, points, col, fs, tk, lt, an, False)
-            else: ## Unassigned pattern character ##
+                char.char = char_save
+            else: ## Patternless mapped character ##
                 LINES += [[p1, p4], [p2, p3], [p1, p2], [p1, p3], [p2, p4], [p3, p4]]
     for a, b in LINES: img.line(a, b, col, tk, lt)
     #################################################

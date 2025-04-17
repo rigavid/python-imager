@@ -62,7 +62,7 @@ CHARACTERS = {
         "א":"C00", "ב":"C01", "ג":"C02", "ד":"C03", "ה":"C04", "ו":"C05", "ז":"C06", "ח":"C07", "ט":"C08", "י":"C09",
         "כ":"C10", "ך":"C11", "ל":"C12", "מ":"C13", "ם":"C14", "נ":"C15", "ן":"C16", "ס":"C17", "ע":"C18", "פ":"C19",
         "ף":"C20", "צ":"C21", "ץ":"C22", "ק":"C23", "ר":"C24", "ש":"C25", "ת":"C26", "בּ":"C27", "גּ":"C28", "דּ":"C29",
-        "כּ":"C30", "ךּ":"C31", "פּ":"C32", "ףּ":"C33", "שׁ":"C34", "שׂ":"C35", "תּ":"C36", "ו":"C37", "וּ":"C38", "וֹ":"C39"},
+        "כּ":"C30", "ךּ":"C31", "פּ":"C32", "ףּ":"C33", "שׁ":"C34", "שׂ":"C35", "תּ":"C36", "וּ":"C37", "וֹ":"C38"},
     "GEORGIAN"    : {## Mkhedruli ##
         'ა':'C40', 'ბ':'C41', 'გ':'C42', 'დ':'C43', 'ე':'C44', 'ვ':'C45', 'ზ':'C46', 'თ':'C47', 'ი':'C48', 'კ':'C49',
         'ლ':'C50', 'მ':'C51', 'ნ':'C52', 'ო':'C53', 'პ':'C54', 'ჟ':'C55', 'რ':'C56', 'ს':'C57', 'ტ':'C58', 'უ':'C59',
@@ -91,20 +91,20 @@ CHARACTERS = {
         'յ':'E60', 'ն':'E61', 'շ':'E62', 'ո':'E63', 'չ':'E64', 'պ':'E65', 'ջ':'E66', 'ռ':'E67', 'ս':'E68', 'վ':'E69',
         'տ':'E70', 'ր':'E71', 'ց':'E72', 'ւ':'E73', 'փ':'E74', 'ք':'E75', 'օ':'E76', 'ֆ':'E77'},
     "sitelen_o"   : {## Official toki pona words ##
-        'a':     'F00', 'akesi': 'F01', 'ala':   'F02', 'alasa': 'F03', 'ale':    'F04', 'anpa':   'F05', 'ante':  'F06', 'anu':   'F07', 'awen':'F08', 'e':     'F09',
+        'TPa':   'F00', 'akesi': 'F01', 'ala':   'F02', 'alasa': 'F03', 'ale':    'F04', 'anpa':   'F05', 'ante':  'F06', 'anu':   'F07', 'awen':'F08', 'TPe':   'F09',
         'en':    'F10', 'esun':  'F11', 'ijo':   'F12', 'ike':   'F13', 'ilo':    'F14', 'insa':   'F15', 'jaki':  'F16', 'jan':   'F17', 'jelo':'F18', 'jo':    'F19',
         'kala':  'F20', 'kalama':'F21', 'kama':  'F22', 'kasi':  'F23', 'ken':    'F24', 'kepeken':'F25', 'kili':  'F26', 'kiwen': 'F27', 'ko':  'F28', 'kon':   'F29',
         'kule':  'F30', 'kulupu':'F31', 'kute':  'F32', 'la':    'F33', 'lape':   'F34', 'laso':   'F35', 'lawa':  'F36', 'len':   'F37', 'lete':'F38', 'li':    'F39',
         'lili':  'F40', 'linja': 'F41', 'lipu':  'F42', 'loje':  'F43', 'lon':    'F44', 'luka':   'F45', 'lukin': 'F46', 'lupa':  'F47', 'ma':  'F48', 'mama':  'F49',
         'mani':  'F50', 'mi':    'F51', 'moku':  'F52', 'moli':  'F53', 'monsi':  'F54', 'mu':     'F55', 'mun':   'F56', 'musi':  'F57', 'mute':'F58', 'nanpa': 'F59',
-        'nasa':  'F60', 'nasin': 'F61', 'nena':  'F62', 'ni':    'F63', 'nimi':   'F64', 'noka':   'F65', 'o':     'F66', 'olin':  'F67', 'ona': 'F68', 'open':  'F69',
+        'nasa':  'F60', 'nasin': 'F61', 'nena':  'F62', 'ni':    'F63', 'nimi':   'F64', 'noka':   'F65', 'TPo':   'F66', 'olin':  'F67', 'ona': 'F68', 'open':  'F69',
         'pakala':'F70', 'pali':  'F71', 'palisa':'F72', 'pan':   'F73', 'pana':   'F74', 'pi':     'F75', 'pilin': 'F76', 'pimeja':'F77', 'pini':'F78', 'pipi':  'F79',
         'poka':  'F80', 'poki':  'F81', 'pona':  'F82', 'pu':    'F83', 'sama':   'F84', 'seli':   'F85', 'selo':  'F86', 'seme':  'F87', 'sewi':'F88', 'sijelo':'F89',
         'sike':  'F90', 'sin':   'F91', 'sina':  'F92', 'sinpin':'F93', 'sitelen':'F94', 'sona':   'F95', 'soweli':'F96', 'suli':  'F97', 'suno':'F98', 'supa':  'F99',
         'suwi':  'G00', 'tan':   'G01', 'taso':  'G02', 'tawa':  'G03', 'telo':   'G04', 'tenpo':  'G05', 'toki':  'G06', 'tomo':  'G07', 'tu':  'G08', 'unpa':  'G09',
         'uta':   'G10', 'utala': 'G11', 'walo':  'G12', 'wan':   'G13', 'waso':   'G14', 'wawa':   'G15', 'weka':  'G16', 'wile':  'G17'},
     "sitelen_c"   : {## Common toki pona words ##
-        'kijetesantakalu':'G20', 'kin': 'G21', 'kipisi':'G22', 'ku': 'G23', 'leko': 'G24', 'meli': 'G25', 'mije': 'G26', 'misikeke': 'G27', 'monsuta': 'G28', 'n': 'G29',
+        'kijetesantakalu':'G20', 'kin': 'G21', 'kipisi':'G22', 'ku': 'G23', 'leko': 'G24', 'meli': 'G25', 'mije': 'G26', 'misikeke': 'G27', 'monsuta': 'G28', 'TPn': 'G29',
         'namako':         'G30', 'soko':'G31', 'tonsi': 'G32'},
     "sitelen_r"   : {## Rare toki pona words ##
         'ali': 'G40', 'epiku': 'G41', 'jasima': 'G42', 'lanpan': 'G43', 'linluwi': 'G44', 'majuna': 'G45', 'meso': 'G46', 'nimisin': 'G47', 'oko': 'G48', 'su': 'G49'},

@@ -2,12 +2,17 @@ import pyimager as pyi
 
 test_letters = ""
 n = 3
-for l in ("A", "B"):
+for l in "ABCD":
     for i in range(10):
         for j in range(10):
             test_letters += f"^{l}{i}{j}^"
-        if int(f"{i}{j}")<99 or l=="A": test_letters += "\n" if l == "A" else "\n"+"\t"*n
-    if l == "A": test_letters += "\b\r"+"\t"*n
+        if int(f"{i}{j}")<99 or l=="A": test_letters += "\n" if l == "A" or l == "C" else "\n"+"\t"*n
+    if l == "A" or l == "C": test_letters += "\b\r"+"\t"*n
+    if l == "B":
+        test_letters_a_b = test_letters
+        test_letters = ""
+test_letters_c_d = test_letters
+
 test_symbols = ""
 for n in range(10):
     for l in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
@@ -15,7 +20,7 @@ for n in range(10):
     test_symbols += "\n"
 
 strs = [
-    test_symbols, test_letters,
+    test_symbols, test_letters_a_b, test_letters_c_d,
     "ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎^54^A^80^A^62^A^63^A\nàáâäǎåăȁa̋ȧāãa̍a̎^54^a^80^a^62^a^63^a",
     "Dès Noël, où un zéphyr haï me vêt de\nglaçons würmiens, je dîne d’exquis\nrôtis de bœuf au kir, à l’aÿ\nd’âge mûr, &cætera.",
     "Ξεσκεπάζω τὴν ψυχοφθόρα βδελυγμία.",
