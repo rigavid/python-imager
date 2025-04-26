@@ -28,8 +28,8 @@
 | B98-B99   | 2     | o.greek   |
 | C00-C39   | 40    | hebrew    |
 | C40-C72   | 33    | mkhedruli |
-| D00-D47   | 48    | hiragana  |
-| D50-D97   | 48    | katakana  |
+| D00-D49   | 50    | hiragana  |
+| D50-D99   | 50    | katakana  |
 | E00-E37   | 38    | ARMENIAN  |
 | E40-E77   | 38    | armenian  |
 | F00-G17   | 118   | si po of  |
@@ -51,8 +51,6 @@
 | A64-A69   | 6     |           |
 | B64-B69   | 6     |           |
 | C73-C99   | 27    |           |
-| D48-D49   | 2     |           |
-| D98-D99   | 2     |           |
 | E38-E39   | 2     |           |
 | E78-E99   | 22    |           |
 | G18-G19   | 2     |           |
