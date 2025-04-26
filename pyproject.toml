@@ -14,10 +14,7 @@ readme = "README.md"
 requires-python = ">=3.6"
 license = { file = "LICENCE" }
 authors = [
-    {
-        name = "Rigavid",
-        email = "tsana.code@gmail.com"
-    }
+    {name = "Rigavid", email = "tsana.code@gmail.com"}
 ]
 keywords = ["python", "image"]
 classifiers = [
