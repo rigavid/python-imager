@@ -80,10 +80,9 @@ class Text:
                                 elif n < 100: ## GREEK ##
                                     XD *= 0.9 if u else 0.6
                             case self.TypeSymbol:
-                                ...
-                                # c, l, n = self.char, self.char[0], self.char[1]
-                                # if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.1
-                                # if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
+                                c, l, n = self.char, self.char[0], self.char[1]
+                                if (l=="B" and not n in "4579")or(l=="C"and n in "02"): XD *= 0.3
+                                if (l=="C" and n=="1")or(l=="D"and not n in "6789")or(l=="G"and n in "012"): XD *= 0.3
                 return XD, YD
         def __init__(self, string="", monospace=False):
             string = string.replace("\r", "^05^").replace("\v", "^04^").replace("\n", "^05^^04^") \
