@@ -31,12 +31,13 @@ def new_img(dimensions=None, background=COL.white, name="NewImg") -> np.array:
 class image:
     class mouse:
         new = False
-        event = x = y = flags = None
+        event = x = y = flags = pos = None
         def get(event, x, y, flags, _):
             image.mouse.new = True
             image.mouse.event = event
             image.mouse.x, image.mouse.y = x, y
             image.mouse.flags = flags
+            image.mouse.pos = x, y
             return event, x, y, flags
     class trackbar_:
         def defImg(self, img) -> None: self.img = img
@@ -118,6 +119,7 @@ class image:
         self.name, self.fullscreen = name, False
         self.buttons, self.trackbars, self.callbacks = [], [], []
         self.disable_callback = disable_callback
+        self.new_res = False
     def __str__(self) -> str: return self.name
     def show_(self, wait=1, destroy=False, built_in_functs=True, QtGui=False) -> int:
         '''Show image in a window'''
@@ -156,7 +158,9 @@ class image:
                 case 65470: self.move((0, 0)) #f1
                 case 65471: self.move((screen[0], 0)) #f2
                 case 65472: self.toggleFullscreen() #f3
-                case 65473: RES.update() # f4
+                case 65473:
+                    RES.update() # f4
+                    self.new_res = True
                 case 65481 | 27: self.close() # f12 | esc
         return wk
     def move(self, pos) -> None:
