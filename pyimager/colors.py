@@ -1,3 +1,5 @@
+import random as rd
+
 class colour:
     def new(hexadecimal='000000', tipe=False):
         '''Hexadecimal colour in RGB'''
@@ -10,6 +12,9 @@ class colour:
     def compl(colour):
         if type(colour) == str: colour = self.new(colour)
         return [255 - i for i in colour]
+    def rand(seed=None):
+        if seed: rd.seed(seed)
+        return [rd.randint(0, 255) for _ in range(3)]
     aliceBlue = new("#F0F8FF")
     antiqueWhite = new("#FAEBD7")
     aqua = new("#00FFFF")
