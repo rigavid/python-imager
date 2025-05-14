@@ -246,6 +246,7 @@ class Text:
         PT = pt[0]-x/2, pt[1]-y/2
         return coosCircle(pt, dist(pt, PT), angle+angleInterPoints(pt, PT))
     def draw(self, img, pt, colour, thickness=1, fontSize=1, interligne=0, lineType=0, angle=0, centered=True, help=False):
+        if self.text.chain == []: return
         interligne *= self.Chain.Char.Y*fontSize
         origin = self.get_center(pt, fontSize, angle, interligne) if centered else pt
         cases = self.get_cases(origin, fontSize, angle, interligne)

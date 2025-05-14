@@ -19,7 +19,7 @@ for n in range(10):
         test_symbols += f"^{l}{n}^"
     test_symbols += "\n"
 
-strs = [
+strs = ["",
     test_symbols, test_letters_a_b, test_letters_c_d,
     "ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎^54^A^80^A^62^A^63^A\nàáâäǎåăȁa̋ȧāãa̍a̎^54^a^80^a^62^a^63^a",
     "Dès Noël, où un zéphyr haï me vêt de\nglaçons würmiens, je dîne d’exquis\nrôtis de bœuf au kir, à l’aÿ\nd’âge mûr, &cætera.",
