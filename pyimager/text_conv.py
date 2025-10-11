@@ -119,6 +119,7 @@ CHARACTERS = {
 ### ···
 
 CONV = {k:CHARACTERS[i][k] for i in CHARACTERS for k in CHARACTERS[i]}
+RECONV = {CONV[k]:k for k in CONV}
 CHARS = {CONV[k] for k in CONV}
 
 if __name__ == "__main__":

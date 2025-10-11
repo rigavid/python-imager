@@ -3,6 +3,7 @@ try: from pyimager.__vars__ import *
 except: from __vars__ import *
 try: from pyimager.text import Text
 except: from text import Text
+from PIL import Image, ImageDraw, ImageFont
 
 # Mandatory for Fedora, works on Windows too # TEST see if it works on other distros
 try: os.environ["XDG_SESSION_TYPE"] = "xcb"
@@ -231,6 +232,25 @@ class image:
         cv2.putText(self.img, text, [round(i) for i in pt], font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
     def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, angle=0, lineType=0, centered=True, help=False, monospace=False, interligne=0):
         Text(text=txt, monospace=monospace).draw(img=self, pt=pt, colour=colour, thickness=thickness, fontSize=fontSize, interligne=interligne, lineType=lineType, angle=angle, centered=centered, help=help)
+    def Text(self, text, pt, col=COL.red, thickness=1, fontSize=1, angle=0, anchor="mm", police="default", **kwargs) -> None:
+        """
+        The anchor is a string 'XY'
+        For X: use l for left, m for middle and r for.
+        For Y: use t for top, m for middle and b for bottom.
+        For more information, cf. https://hugovk-pillow.readthedocs.io/en/stable/handbook/text-anchors.html (20251011)
+        """
+        font = ImageFont.truetype(f"{f"{fonts_path}/"if police=="default"else""}{police}.ttf", fontSize)
+        img = Image.fromarray(self.img)
+        xa, ya, xb, yb = ImageDraw.Draw(img).multiline_textbbox((0,0), text, font, anchor, **kwargs)
+        a = fontSize*10
+        mask_size = (width:=round(diff(xa, xb)+a), height:=round(diff(ya, yb)+a))
+        width = height = max(mask_size) ; mask_size = (width, height)
+        dr = ImageDraw.Draw(im:=Image.new('RGBA', mask_size, (0,0,0,0)))
+        dr.text((width/2, height/2), text, font=font, fill=tuple(col), anchor="mm")
+        im = im.rotate(-angle)
+        img.paste(im, [round(pt[0]-width/2), round(pt[1]-height/2)], im)
+        self.img = np.array(img)
+
     def copy(self):
         '''Returns a copy of itself'''
         return image(self.nom, copy.deepcopy(self.img))

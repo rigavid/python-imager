@@ -65,5 +65,6 @@ def moyenne(elementA:number, elementB:number, mult_elementA:number=1, mult_eleme
     return ((elementA * mult_elementA) + (elementB * mult_elementB)) / (mult_elementA + mult_elementB)
 
 def clicked_in(pos:point, button:list[point]) -> bool:
-    """ Is pos[x, y] in button[[x, y]x[x, y]] """
-    return pos[0] >= button[0][0] and pos[0] <= button[1][0] and pos[1] >= button[0][1] and pos[1] <= button[1][1]
+    """ Is pos[x, y] in button[[x, y]-[x, y]] """
+    (x1, y1), (x2, y2) = button
+    return min(x1, x2) <= pos[0] <= max(x1, x2) and min(y1, y2) <= pos[1] <= max(y1, y2)

@@ -6,8 +6,6 @@ try: import pyimager.terminal_colors as TCOL
 except: import terminal_colors as TCOL
 try: from pyimager.calculs import *
 except: from calculs import *
-try: from pyimager.fonts import *
-except: from fonts import *
 import cv2
 
 
@@ -28,3 +26,4 @@ ch = ct_sg(p1, p2)
 cb = ct_sg(p3, p4)
 ct = ct_cr(p1, p2, p3, p4)
 lineTypes = [cv2.LINE_4, cv2.LINE_8, cv2.LINE_AA]
+fonts_path = "/".join(i for i in __file__.split("/")[:-1])+"/fonts/"

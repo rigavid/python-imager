@@ -1,11 +1,13 @@
 import pyimager as pyi
+from pyimager.text_conv import *
 
 test_letters = ""
 n = 3
 for l in "ABCD":
     for i in range(10):
         for j in range(10):
-            test_letters += f"^{l}{i}{j}^"
+            try: test_letters += RECONV[str(l)+str(i)+str(j)]
+            except Exception as e: pass
         if int(f"{i}{j}")<99 or l=="A": test_letters += "\n" if l == "A" or l == "C" else "\n"+"\t"*n
     if l == "A" or l == "C": test_letters += "\b\r"+"\t"*n
     if l == "B":
@@ -16,10 +18,11 @@ test_letters_c_d = test_letters
 test_symbols = ""
 for n in range(10):
     for l in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-        test_symbols += f"^{l}{n}^"
+        try: test_symbols += RECONV[str(l)+str(n)]
+        except: pass
     test_symbols += "\n"
 
-strs = ["",
+strs = [
     test_symbols, test_letters_a_b, test_letters_c_d,
     "ÀÁÂÄǍÅĂȀA̋ȦĀÃA̍A̎^54^A^80^A^62^A^63^A\nàáâäǎåăȁa̋ȧāãa̍a̎^54^a^80^a^62^a^63^a",
     "Dès Noël, où un zéphyr haï me vêt de\nglaçons würmiens, je dîne d’exquis\nrôtis de bœuf au kir, à l’aÿ\nd’âge mûr, &cætera.",
@@ -37,6 +40,7 @@ strs = ["",
 def update(img, help=False, a=0, ind=0, m=False, il=0):
     i:pyi.image = pyi.new_img(background=pyi.COL.black)
     i.text(strs[ind%len(strs)], [i/2 for i in pyi.RES.resolution], fontSize=10, lineType=2, thickness=2, help=help, angle=a, monospace=m, interligne=il)
+    i.Text(strs[ind%len(strs)], [i/2 for i in pyi.RES.resolution], fontSize=40, thickness=2, anchor="mm", angle=a)
     img.img = i.img
     img.line([0, pyi.RES.resolution[1]/2], [pyi.RES.resolution[0], pyi.RES.resolution[1]/2], pyi.COL.green, 1, 2)
     img.line([pyi.RES.resolution[0]/2, 0], [pyi.RES.resolution[0]/2, pyi.RES.resolution[1]], pyi.COL.green, 1, 2)
@@ -51,7 +55,7 @@ def main():
         update(img, help, a, i, m, il)
         wk = img.show_()
         if wk == 32: help = not help
-        if wk == ord("r"): a += 30
+        if wk == ord("r"): a += 10
         if wk == ord("c"): i += 1
         if wk == ord("x"): i -= 1
         if wk == ord("h"):
