@@ -1,9 +1,7 @@
+from PIL import Image, ImageDraw, ImageFont
 import os, copy, numpy as np, random as rd
 try: from pyimager.__vars__ import *
 except: from __vars__ import *
-try: from pyimager.text import Text
-except: from text import Text
-from PIL import Image, ImageDraw, ImageFont
 
 # Mandatory for Fedora, works on Windows too # TEST see if it works on other distros
 try: os.environ["XDG_SESSION_TYPE"] = "xcb"
@@ -12,8 +10,7 @@ except: ...
 class unreachableImage(Exception):...
 def fusionImages(img, base_img, pos=[0, 0]):
     '''Place an image over another'''
-    pos = [round(v) for v in pos]
-    x_offset, y_offset = pos
+    x_offset, y_offset = pos = [round(v) for v in pos]
     try:
         base_img[y_offset:y_offset + img.shape[0], x_offset:x_offset + img.shape[1]] = img
         return base_img
@@ -27,7 +24,7 @@ def fusionImages(img, base_img, pos=[0, 0]):
                 if y<0 or y>=len(base_img): continue
                 base_img[y,x] = img[y_,x_]
         return base_img
-def new_img(dimensions=None, background=COL.white, name="NewImg") -> np.array:
+def new_img(dimensions=None, background=COL.white, name="NewImg"):
     return image(name, image.new_image(dimensions=dimensions if dimensions!=None else RES.resolution, background=background))
 class image:
     class mouse:
@@ -42,38 +39,36 @@ class image:
             return event, x, y, flags
     class trackbar_:
         def defImg(self, img) -> None: self.img = img
-        def __init__(self, name, coos, min=0, max=100, val=0) -> None:
+        def __init__(self, name, coos, min=0, max=100, val=0, col1=COL.red, col2=COL.darkRed, col3=COL.green, police=None, thickness=3, lineType=2, fontSize=1) -> None:
             self.name, self.coos = name, coos
-            self.value = val
+            self.police = police
+            self.value = val if min<=val and max>=val else min if val<min else max
             self.range = (min, max)
             self.changing = False
-        def is_clicked(self, coos) -> bool: return clicked_in(coos, self.coos)
-        def pnts(self, g, d, i, y, n):
-            return (coosCircle(coosCircle(g, dist(g, d)*(i/100), 0), y/n/2, a) for a in (90, 270))
-        def set_vars(self, col1=COL.red, col2=COL.darkRed, col3=COL.green, thickness=3, lineType=2, fontSize=1, interligne=0) -> None:
             self.col1, self.col2, self.col3 = col1, col2, col3
-            self.tk, self.lt, self.fs, self.il = thickness, lineType, fontSize, interligne
-        def draw(self) -> None: ## TODO Write value, minimum and maximum
+            self.tk, self.lt, self.fs, self.police = thickness, lineType, fontSize, police
+        def is_clicked(self, coos) -> bool: return clicked_in(coos, self.coos)
+        def pnts(self, g, d, i, y, n): # Gauche, droite
+            return (coosCircle(coosCircle(g, dist(g, d)*(i/diff(*self.range)), 0), y/n/2, a) for a in (90, 270))
+        def draw(self) -> None: ## TODO Write value, minimum and maximum somewhere
             self.img.rectangle(*self.coos, self.col1, 0, self.lt)
             self.img.rectangle(*self.coos, self.col2, self.tk, self.lt)
             p1, p4 = self.coos
             x, y = diff(p4[0], p1[0]), diff(p4[1], p1[1])
             dx = x/50
-            t = Text(self.name, False)
-            X, Y = t.get_size(self.fs, self.il)
-            t.draw(self.img, (p1[0]+dx, p1[1]+y/2-Y/2), self.col2, self.tk, self.fs, self.il, self.lt, 0, False, False)
+            self.img.text(self.name, (p1[0]+dx, p1[1]+y/2), self.col2, self.tk, self.fs, police=self.police, anchor="lm")
+            X, Y = self.img.textSize(self.name, self.police, fontSize=self.fs)
             g, d = (p1[0]+X+dx*2, p1[1]+y/2), (p4[0]-dx, p4[1]-y/2)
             self.img.line(g, d, self.col2, self.tk, self.lt)
             m = diff(*self.range)
             for n, i in enumerate(range(0, m+1, 5)):
                 self.img.line(*self.pnts(g, d, i, y, 2 if n%5==0 else 4), self.col2, self.tk, self.lt)
-            self.img.line(*self.pnts(g, d, self.value, y, 3), self.col3, self.tk, self.lt)
+            self.img.line(*self.pnts(g, d, self.value-self.range[0], y, 3), self.col3, self.tk, self.lt)
             self.scale = g[0], d[0]
         def get(self) -> number: return self.value
-    def trackbar(self, name="TrackBar", coos=[[100, 200], [500, 300]], min=0, max=100, val=0, *args, **kwargs) -> trackbar_:
-        trkb = self.trackbar_(name, coos, min, max, val)
+    def trackbar(self, name="TrackBar", coos=[[100, 200], [500, 300]], *args, **kwargs) -> trackbar_:
+        trkb = self.trackbar_(name, coos, *args, **kwargs)
         trkb.defImg(self)
-        trkb.set_vars(*args, **kwargs)
         trkb.draw()
         self.trackbars.append(trkb)
         return trkb
@@ -85,13 +80,13 @@ class image:
             self.name, self.coos = name, coos
             self.functs = []
         def defImg(self, img) -> None: self.img = img
-        def set_vars(self, col1=COL.red, col2=COL.darkRed, thickness=3, lineType=2, fontSize=1, interligne=0) -> None:
+        def set_vars(self, col1=COL.red, col2=COL.darkRed, thickness=3, lineType=2, fontSize=1) -> None:
             self.col1, self.col2 = col1, col2
-            self.tk, self.lt, self.fs, self.il = thickness, lineType, fontSize, interligne
+            self.tk, self.lt, self.fs = thickness, lineType, fontSize
         def draw(self) -> None:
             self.img.rectangle(*self.coos, self.col1, 0, 2)
             self.img.rectangle(*self.coos, self.col2, self.tk, 2)
-            self.img.text(self.name, ct_sg(*self.coos), self.col2, self.tk, self.fs, 0, self.lt, True, False, False, self.il)
+            self.img.text(self.name, ct_sg(*self.coos), self.col2, self.tk, self.fs, anchor="mm")
         def on_click(self, funct, params=None) -> None:
             '''To add a function to execute when clicked'''
             self.functs.append([funct, params])
@@ -112,6 +107,7 @@ class image:
     def setMouseCallback(self, funct, params=None) -> None:
         '''event, x, y, flags, params -> None'''
         self.callbacks.append([funct, params])
+    #########################################################################################
     def new_image(self=None, dimensions=RES.resolution, background=COL.white) -> np.array:
         '''New image'''
         return np.full([round(v) for v in dimensions[::-1]]+[3], background[::-1], np.uint8)
@@ -142,17 +138,19 @@ class image:
                     b.clicked(v)
             for t in self.trackbars:
                 if v[0] == cv2.EVENT_LBUTTONDOWN:
-                    if not t.changing and t.is_clicked(pos):
-                        t.changing = True
+                    if not t.changing and t.is_clicked(pos): t.changing = True
                 elif v[0] == cv2.EVENT_MOUSEMOVE and t.changing:
                     g, d, x = *t.scale, v[1]
-                    t.value = t.range[0] if x<g else t.range[1] if x>d else diff(g, x)/2
+                    t.value = t.range[0] if x<=g else t.range[1] if x>=d else t.range[0]+diff(*t.range)/diff(g, d)*diff(g, x)
+                    print(g, d, x, t.value)
+                    t.draw()
                 elif v[0] == cv2.EVENT_LBUTTONUP:
                     if t.changing:
                         g, d, x = *t.scale, v[1]
-                        t.value = t.range[0] if x<g else t.range[1] if x>d else diff(g, x)/2
+                        t.value = t.range[0] if x<=g else t.range[1] if x>=d else t.range[0]+diff(*t.range)/diff(g, d)*diff(g, x)
                         t.changing = False
-                t.draw()
+                        t.draw()
+                
         if destroy == True: cv2.destroyWindow(self.name)
         elif built_in_functs:
             match wk:
@@ -220,7 +218,7 @@ class image:
     def set_img(self, img) -> None:
         '''Sets the actual image to img'''
         self.img = np.array(img, np.uint8)
-    def write_centered(self, text, ct, colour=COL.red, thickness=1, fontSize=1, font=cv2.FONT_HERSHEY_SCRIPT_COMPLEX, lineType=0) -> None:
+    def write_centered(self, text, ct, font, colour=COL.red, thickness=1, fontSize=1, lineType=0) -> None:
         '''Write over the image'''
         thickness = round(thickness)
         texts = list(enumerate(str(text).split('\n')))
@@ -228,36 +226,43 @@ class image:
         for i, line in texts:
             tailles = cv2.getTextSize(line, font, fontSize, thickness)
             cv2.putText(self.img, line, (round(x-tailles[0][0]/2), round(y+tailles[1]/2) + i*tailles[0][1]*2), font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
-    def write(self, text, pt, colour=COL.red, thickness=1, fontSize=1, font=cv2.FONT_HERSHEY_SCRIPT_COMPLEX, lineType=0) -> None:
+    def write(self, text, pt, font, colour=COL.red, thickness=1, fontSize=1, lineType=0) -> None:
         cv2.putText(self.img, text, [round(i) for i in pt], font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
-    def text(self, txt, pt, colour=COL.red, thickness=1, fontSize=1, angle=0, lineType=0, centered=True, help=False, monospace=False, interligne=0):
-        Text(text=txt, monospace=monospace).draw(img=self, pt=pt, colour=colour, thickness=thickness, fontSize=fontSize, interligne=interligne, lineType=lineType, angle=angle, centered=centered, help=help)
-    def Text(self, text, pt, col=COL.red, thickness=1, fontSize=1, angle=0, anchor="mm", police="default", **kwargs) -> None:
+    def textSize(self, text, police="default", thickness=1, fontSize=1, **kwargs) -> tuple:
+        if police in ["", None]: police = "default"
+        try: font = ImageFont.truetype(f"{f"{fonts_path}/"if police=="default"else""}{police}.ttf", fontSize)
+        except OSError as e:
+            print(f"Couldn't load font: <{police}>")
+            raise e
+        xa, ya, xb, yb = ImageDraw.Draw(Image.fromarray(self.img)).multiline_textbbox((0,0), text, font, **kwargs)
+        return (round(diff(xa, xb)),round(diff(ya, yb)))
+    def text(self, text, pt, col=COL.red, thickness=1, fontSize=1, angle=0, anchor="mm", police="default", **kwargs) -> None:
         """
         The anchor is a string 'XY'
         For X: use l for left, m for middle and r for.
         For Y: use t for top, m for middle and b for bottom.
         For more information, cf. https://hugovk-pillow.readthedocs.io/en/stable/handbook/text-anchors.html (20251011)
         """
-        font = ImageFont.truetype(f"{f"{fonts_path}/"if police=="default"else""}{police}.ttf", fontSize)
-        img = Image.fromarray(self.img)
-        xa, ya, xb, yb = ImageDraw.Draw(img).multiline_textbbox((0,0), text, font, anchor, **kwargs)
-        a = fontSize*10
-        mask_size = (width:=round(diff(xa, xb)+a), height:=round(diff(ya, yb)+a))
-        width = height = max(mask_size) ; mask_size = (width, height)
-        dr = ImageDraw.Draw(im:=Image.new('RGBA', mask_size, (0,0,0,0)))
-        dr.text((width/2, height/2), text, font=font, fill=tuple(col), anchor="mm")
+        if police in ["", None]: police = "default"
+        try: font = ImageFont.truetype(f"{f"{fonts_path}/"if police=="default"else""}{police}.ttf", fontSize)
+        except OSError as e:
+            print(f"Couldn't load font: <{police}>")
+            raise e
+        xa, ya, xb, yb = ImageDraw.Draw(img:=Image.fromarray(self.img)).multiline_textbbox((0,0), text, font, anchor, **kwargs)
+        mask_size = (width:=round(diff(xa, xb)+fontSize*10), height:=round(diff(ya, yb)+fontSize*10))
+        width = height = max(mask_size)
+        mask_size = (width, height)
+        ImageDraw.Draw(im:=Image.new('RGBA', mask_size, (0,0,0,0))).text((width/2, height/2), text, font=font, fill=tuple(col), anchor=anchor)
         im = im.rotate(-angle)
         img.paste(im, [round(pt[0]-width/2), round(pt[1]-height/2)], im)
         self.img = np.array(img)
-
     def copy(self):
         '''Returns a copy of itself'''
         return image(self.nom, copy.deepcopy(self.img))
     def size(self, rev=False) -> [int, int]:
         '''Returns image's size (reverse True means [y,x] whereas False means [x,y])'''
         return [len(self.img[0]), len(self.img)][::-1 if rev else 1]
-class layout:
+class layout: ## TODO Check that it still works and update it if necessary ##
     class Frame:
         def __init__(self, img=new_img(background=COL.white), pos=[0,0], name='frame0') -> None:
             self.name, self.img, self.pos = name, img.copy(), pos
