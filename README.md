@@ -4,13 +4,6 @@
 import pyimager
 ```
 
-# Setup
-For now, I still have to resolve an issue to install a ttf with the rest of the package.
-So if you want to use `image.text()`, you'll have to figure out where the package is located on your computer.
-Then, you create a folder named `fonts` and you drop `default.ttf` there.
-
-Otherwise, you can still import a ttf using a path to your file.
-
 # Pyimager
  Pyimager is a python package for creating, editing, showing and saving images with python.
 
