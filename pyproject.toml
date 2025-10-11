@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-imager"
-version = "1.4.6"
+version = "1.4.8"
 description = "Python image program"
 readme = "README.md"
 requires-python = ">=3.6"
@@ -28,6 +28,11 @@ dependencies = [
     "screeninfo",
     "pillow"
 ]
+
+[project.urls]
+Repository = "https://github.com/rigavid/python-imager"
+Issues = "https://github.com/rigavid/python-imager/issues"
+
 
 [tool.setuptools.packages.find]
 where = ["."]

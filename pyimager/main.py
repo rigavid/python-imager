@@ -223,9 +223,10 @@ class image:
         else: cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
     def textSize(self, text, police="default", thickness=1, fontSize=1) -> tuple:
         if police in ["", None]: police = "default"
-        try: font = ImageFont.truetype(f"{f"{fonts_path}/"if police=="default"else""}{police}.ttf", fontSize)
+        fontPath = f"{fonts_path}/default.ttf" if police=="default" else police
+        try: font = ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
-            print(f"Couldn't load font: <{police}>")
+            print(f"Couldn't load font: <{fontPath}>")
             raise e
         xa, ya, xb, yb = ImageDraw.Draw(Image.fromarray(self.img)).multiline_textbbox((0,0), text, font)
         return (round(diff(xa, xb)),round(diff(ya, yb)))
@@ -237,9 +238,10 @@ class image:
         For more information, cf. https://hugovk-pillow.readthedocs.io/en/stable/handbook/text-anchors.html (20251011)
         """
         if police in ["", None]: police = "default"
-        try: font = ImageFont.truetype(f"{f"{fonts_path}/"if police=="default"else""}{police}.ttf", fontSize)
+        fontPath = f"{fonts_path}/default.ttf" if police=="default" else police
+        try: font = ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
-            print(f"Couldn't load font: <{police}>")
+            print(f"Couldn't load font: <{fontPath}>")
             raise e
         xa, ya, xb, yb = ImageDraw.Draw(img:=Image.fromarray(self.img)).multiline_textbbox((0,0), text, font, anchor)
         mask_size = (width:=round(diff(xa, xb)+fontSize*10), height:=round(diff(ya, yb)+fontSize*10))
