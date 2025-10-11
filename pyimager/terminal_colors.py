@@ -1,5 +1,5 @@
 new_line = '\n'
-espace = ' '
+space = ' '
 BLACK        = "\033[30m"
 RED          = "\033[31m"
 GREEN        = "\033[32m"
@@ -18,7 +18,7 @@ LIGHT_CYAN   = "\033[36m"
 LIGHT_WHITE  = "\033[37m"
 BOLD         = '\033[1m'
 UNDERLINED   = '\033[4m'
-NORMAL       = '\033[00m' # @@ Always append to the end, else: terminal = BUG @@
+NORMAL       = '\033[00m' # Append at the end of the message to clear the format
 BOLD_RED     = f'{RED}{BOLD}'
 BOLD_GREEN   = f'{GREEN}{BOLD}'
 BOLD_BLUE    = f'{BLUE}{BOLD}'

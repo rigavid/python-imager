@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-imager"
-version = "1.2.62"
+version = "1.4.6"
 description = "Python image program"
 readme = "README.md"
 requires-python = ">=3.6"
@@ -25,7 +25,8 @@ classifiers = [
 dependencies = [
     "numpy",
     "opencv-python",
-    "screeninfo"
+    "screeninfo",
+    "pillow"
 ]
 
 [tool.setuptools.packages.find]
