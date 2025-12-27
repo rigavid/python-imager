@@ -59,8 +59,8 @@ class image:
             p1, p4 = self.coos
             x, y = diff(p4[0], p1[0]), diff(p4[1], p1[1])
             dx = x/50
-            self.img.text(self.name, (p1[0]+dx, p1[1]+y/2), self.col2, self.tk, self.fs, police=self.police, anchor="lm")
-            X, Y = self.img.textSize(self.name, self.police, fontSize=self.fs)
+            self.img.text(self.name, (p1[0]+dx, p1[1]+y/2), self.col2, self.tk, self.fs, anchor="lm")
+            X, Y = self.img.textSize(self.name, fontSize=self.fs)
             g, d = (p1[0]+X+dx*2, p1[1]+y/2), (p4[0]-dx, p4[1]-y/2)
             self.img.line(g, d, self.col2, self.tk, self.lt)
             m = diff(*self.range)
