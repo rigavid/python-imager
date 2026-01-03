@@ -221,24 +221,27 @@ class image:
         couleur = couleur[::-1]; thickness = round(thickness)
         if thickness > 0: cv2.polylines(self.img, [np.array(pts, dtype=np.int32)], True, couleur, thickness, lineType)
         else: cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
-    def textSize(self, text, police="default", thickness=1, fontSize=1) -> tuple:
-        if police in ["", None]: police = "default"
-        fontPath = f"{fonts_path}/default.ttf" if police=="default" else police
+    def textSize(self, text, font="default", thickness=1, fontSize=1) -> tuple:
+        if font in ["", None]: font = "default"
+        fontPath = f"{fonts_path}/default.ttf" if font=="default" else font
         try: font = ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
             print(f"Couldn't load font: <{fontPath}>")
             raise e
         xa, ya, xb, yb = ImageDraw.Draw(Image.fromarray(self.img)).multiline_textbbox((0,0), text, font)
         return (round(diff(xa, xb)),round(diff(ya, yb)))
-    def text(self, text, pt, col=COL.red, thickness=1, fontSize=1, angle=0, anchor="mm", police="default") -> None:
+    ## TODO Create a centered form of the function image.text() or adapt it so it's possible
+    ## Multiline text is centered based on the final box, not for each line. Would be great to have a justification on the text.
+    def text(self, text, pt, col=COL.red, thickness=1, fontSize=1, angle=0, anchor="mm", font="default") -> None:
         """
         The anchor is a string 'XY'
-        For X: use l for left, m for middle and r for.
+        For X: use l for left, m for middle and r for right.
         For Y: use t for top, m for middle and b for bottom.
         For more information, cf. https://hugovk-pillow.readthedocs.io/en/stable/handbook/text-anchors.html (20251011)
+        If anchor="lt", then `pt` is at the top left of the text, whereas "mm" is at the center of the text (for the entire text, not for each line)
         """
-        if police in ["", None]: police = "default"
-        fontPath = f"{fonts_path}/default.ttf" if police=="default" else police
+        if font in ["", None]: font = "default"
+        fontPath = f"{fonts_path}/default.ttf" if font=="default" else font
         try: font = ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
             print(f"Couldn't load font: <{fontPath}>")
