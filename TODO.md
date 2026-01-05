@@ -3,7 +3,3 @@
 [ ] Fix monospace drawing problems as commas getting the full witdh of the char resulting of long meaningless lines
 
 [ ] Update README.md
-
-[ ] Implement Alignement in Text.draw() (Left, right, center)
-
-[ ] Implement ligatures in Text() and draw them
