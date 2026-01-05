@@ -24,6 +24,6 @@ cg = ct_sg(p1, p3)
 cd = ct_sg(p2, p4)
 ch = ct_sg(p1, p2)
 cb = ct_sg(p3, p4)
-ct = ct_cr(p1, p2, p3, p4)
+ct = ct_sg(ct_sg(p1, p4), ct_sg(p2, p3))
 lineTypes = [LINE_4, LINE_8, LINE_AA]
 fonts_path = "/".join(i for i in __file__.split("/")[:-1])+"/fonts/"

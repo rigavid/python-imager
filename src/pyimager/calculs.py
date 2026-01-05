@@ -11,10 +11,6 @@ def ct_sg(p1:point, p2:point) -> point:
     '''Get the center of a segment'''
     return [(p1[0]+p2[0])/2, (p1[1]+p2[1])/2]
 
-def ct_cr(p1:point, p2:point, p3:point, p4:point) -> point:
-    '''Get the center of a parallelogram'''
-    return ct_sg(ct_sg(p1, p2), ct_sg(p3, p4))
-
 def pt_sg(p1:point, p2:point, m1:number=1, m2:number=1) -> point:
     '''Get a point in a segment'''
     return [(p1[n] * m1 + p2[n] * m2) / (m1+m2) for n in [0, 1]]

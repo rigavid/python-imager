@@ -1,8 +1,8 @@
-from PIL import Image, ImageDraw, ImageFont
-import os, copy, numpy as np, random as rd
 try: from pyimager.__vars__ import *
 except: from __vars__ import *
+import os, copy, numpy as np
 import cv2
+from PIL import Image as PIL_Image, ImageFont as PIL_ImageFont, ImageDraw as PIL_ImageDraw
 
 # Mandatory for Fedora (Wayland?), works on Windows too # TEST see if it works on other distros
 try: os.environ["XDG_SESSION_TYPE"] = "xcb"
@@ -10,7 +10,7 @@ except: pass
 
 class unreachableImage(Exception): pass
 def fusionImages(img, base_img, pos=[0, 0]):
-    '''Place an image over another'''
+    '''Place an Image over another'''
     x_offset, y_offset = pos = [round(v) for v in pos]
     try:
         base_img[y_offset:y_offset + img.shape[0], x_offset:x_offset + img.shape[1]] = img
@@ -26,22 +26,22 @@ def fusionImages(img, base_img, pos=[0, 0]):
                 base_img[y,x] = img[y_,x_]
         return base_img
 def new_img(dimensions=None, background=COL.white, name="NewImg"):
-    return image(name, image.new_image(dimensions=dimensions if dimensions!=None else RES.resolution, background=background))
-class image:
-    class mouse:
+    return Image(name, Image.new_image(dimensions=dimensions if dimensions!=None else RES.resolution, background=background))
+class Image:
+    class Mouse:
         new = False
         event = x = y = flags = pos = None
         def get(event, x, y, flags, _):
-            image.mouse.new = True
-            image.mouse.event = event
-            image.mouse.x, image.mouse.y = x, y
-            image.mouse.flags = flags
-            image.mouse.pos = x, y
+            Image.Mouse.new = True
+            Image.Mouse.event = event
+            Image.Mouse.x, Image.Mouse.y = x, y
+            Image.Mouse.flags = flags
+            Image.Mouse.pos = x, y
             return event, x, y, flags
     def setMouseCallback(self, funct, params=None) -> None:
         '''event, x, y, flags, params -> None'''
         self.callbacks.append([funct, params])
-    class trackbar_:
+    class Trackbar:
         def defImg(self, img) -> None: self.img = img
         def __init__(self, name="TrackBar", coos=[[100, 200], [500, 300]], min=0, max=100, val=0, col1=COL.red, col2=COL.darkRed, col3=COL.green, font=None, thickness=3, lineType=2, fontSize=1) -> None:
             self.name, self.coos = name, coos
@@ -69,21 +69,23 @@ class image:
             self.img.line(*self.pnts(g, d, self.value-self.range[0], y, 3), self.col3, self.tk, self.lt)
             self.scale = g[0], d[0]
         def get(self) -> number: return self.value
-    def trackbar(self, *args, **kwargs) -> trackbar_:
-        trkb = self.trackbar_(*args, **kwargs)
+    def trackbar(self, *args, **kwargs) -> Trackbar:
+        trkb:Image.Trackbar = self.Trackbar(*args, **kwargs)
         trkb.defImg(self)
         trkb.draw()
         self.trackbars.append(trkb)
         return trkb
-    def remove_trackbar(self, trkb) -> trackbar_ | int:
+    def remove_trackbar(self, trkb) -> Trackbar | int:
         try: return self.trackbars.pop(self.trackbars.index(trkb))
         except: return -1
-    class button_:
+    class Button:
         def __init__(self, name="Button", coos=[[100,100], [300, 200]], font=None, col1=COL.red, col2=COL.darkRed, thickness=3, lineType=2, fontSize=1) -> None:
             self.name, self.coos = name, coos
             self.col1, self.col2 = col1, col2
             self.tk, self.lt, self.fs, self.font = thickness, lineType, fontSize, font
             self.functs = []
+        def remove(self, img):
+            return img.remove_button(self)
         def defImg(self, img) -> None: self.img = img
         def draw(self) -> None:
             self.img.rectangle(*self.coos, self.col1, 0, 2)
@@ -96,21 +98,21 @@ class image:
             '''Execute each function'''
             for f, p in self.functs: f(*vars_get, p)
         def is_clicked(self, coos) -> bool: return clicked_in(coos, self.coos)
-    def button(self, *args, **kwargs) -> button_:
-        bttn = self.button_(*args, **kwargs)
+    def button(self, *args, **kwargs) -> Button:
+        bttn:Image.Button = self.Button(*args, **kwargs)
         bttn.defImg(self)
         bttn.draw()
         self.buttons.append(bttn)
         return bttn
-    def remove_button(self, bttn) -> button_ | int:
+    def remove_button(self, bttn) -> Button | int:
         try: return self.buttons.pop(self.buttons.index(bttn))
         except: return -1
     ################################################################
     def new_image(self=None, dimensions=RES.resolution, background=COL.white) -> np.array:
-        '''New image'''
+        '''New Image'''
         return np.full([round(v) for v in dimensions[::-1]]+[3], background[::-1], np.uint8)
-    def __init__(self, name="python-image", img=None, disable_callback=False) -> None:
-        self.img = np.array(self.new_image() if type(img) == type(None) else img.img if type(img) == image else img)
+    def __init__(self, name="python-Image", img=None, disable_callback=False) -> None:
+        self.img = np.array(self.new_image() if type(img) == type(None) else img.img if type(img) == Image else img)
         self.name, self.fullscreen = name, False
         self.buttons, self.trackbars, self.callbacks = [], [], []
         self.disable_callback = disable_callback
@@ -118,21 +120,21 @@ class image:
     def __str__(self) -> str: return self.name
     def copy(self):
         '''Returns a copy of itself'''
-        return image(self.nom, copy.deepcopy(self.img))
-    def size(self, rev=False) -> [int, int]:
-        '''Returns image's size (reverse True means [y,x] whereas False means [x,y])'''
+        return Image(self.nom, copy.deepcopy(self.img))
+    def size(self, rev=False) -> list[int]:
+        '''Returns Image's size (reverse True means [y,x] whereas False means [x,y])'''
         return [len(self.img[0]), len(self.img)][::-1 if rev else 1]
     def build(self):
-        if self.show_(1, False, False) == -1:
+        if self.Show(1, False, False) == -1:
             if not self.disable_callback:
-                cv2.setMouseCallback(self.name, self.mouse.get)
+                cv2.setMouseCallback(self.name, self.Mouse.get)
             return self
-        else: raise unreachableImage("An error has occurred while building the image!")
+        else: raise unreachableImage("An error has occurred while building the Image!")
     def close(self) -> None:
         '''Closes window'''
         if not self.is_closed(): cv2.destroyWindow(self.name)
     def open_img(self, path) -> None:
-        '''Opens local file as image'''
+        '''Opens local file as Image'''
         self.img = cv2.imdecode(np.asarray(bytearray(open(f'{path}', "rb").read()), dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     def save_img(self, path='', fileName=None) -> None:
         '''Saves file'''
@@ -141,10 +143,10 @@ class image:
         cv2.imwrite(fileName, self.img)
         if path != '': os.chdir(currentWorkingDirPath)
     def set_img(self, img) -> None:
-        '''Sets the actual image to img'''
+        '''Sets the actual Image to img'''
         self.img = np.array(img, np.uint8)
-    def show_(self, wait=1, destroy=False, built_in_functs=True, QtGui=False) -> int:
-        '''Show image in a window'''
+    def Show(self, wait=1, destroy=False, built_in_functs=True, QtGui=False) -> int:
+        '''Show Image in a window'''
         props = cv2.WND_PROP_FULLSCREEN | (cv2.WINDOW_GUI_EXPANDED if QtGui else cv2.WINDOW_GUI_NORMAL)
         cv2.namedWindow(self.name, props)
         if self.fullscreen:
@@ -153,10 +155,10 @@ class image:
         else: cv2.setWindowProperty(self.name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_KEEPRATIO)
         cv2.imshow(self.name, cv2.resize(np.array(self.img, np.uint8), RES.resolution))
         wk = cv2.waitKeyEx(wait)
-        if not self.disable_callback and self.mouse.new:
-            self.mouse.new = False
-            pos = self.mouse.x, self.mouse.y
-            v = self.mouse.event, *pos, self.mouse.flags
+        if not self.disable_callback and self.Mouse.new:
+            self.Mouse.new = False
+            pos = self.Mouse.x, self.Mouse.y
+            v = self.Mouse.event, *pos, self.Mouse.flags
             for f, p in self.callbacks: f(*v, p)
             for b in self.buttons:
                 if b.is_clicked(pos):
@@ -187,8 +189,8 @@ class image:
                 case 65481 | 27: self.close() # f12 | esc
         return wk
     def show(self, *args, **kwargs) -> int:
-        if self.is_opened(): return self.show_(*args, **kwargs)
-        else: raise unreachableImage("Maybe you forgot to build the image?")
+        if self.is_opened(): return self.Show(*args, **kwargs)
+        else: raise unreachableImage("Maybe you forgot to build the Image?")
     def move(self, pos) -> None:
         cv2.moveWindow(self.name, *pos)
     def toggleFullscreen(self) -> None:
@@ -203,19 +205,19 @@ class image:
         '''Detect if the window is currently opened'''
         return not self.is_closed()
     def line(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
-        '''Draws a line on the image'''
+        '''Draws a line on the Image'''
         cv2.line(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness), lineTypes[lineType%len(lineTypes)])
     def rectangle(self, p1, p2, colour=COL.black, thickness=1, lineType=0) -> None:
-        '''Draws a rectangle on the image'''
+        '''Draws a rectangle on the Image'''
         cv2.rectangle(self.img, [round(p) for p in p1], [round(p) for p in p2], colour[::-1], round(thickness) if thickness != 0 else -1, lineTypes[lineType%len(lineTypes)])
     def circle(self, ct, radius=10, colour=COL.black, thickness=1, lineType=0) -> None:
-        '''Draws a circle on the image'''
+        '''Draws a circle on the Image'''
         cv2.circle(self.img, [round(p) for p in ct], round(radius), colour[::-1], round(thickness) if thickness != 0 else -1, lineTypes[lineType%len(lineTypes)])
     def ellipse(self, ct, radiuses=[10, 10], colour=COL.black, thickness=1, lineType=0, startAngle=0, endAngle=360, angle=0) -> None:
-        '''Draws an ellipse on the image'''
+        '''Draws an ellipse on the Image'''
         cv2.ellipse(self.img, [round(p) for p in ct], [round(radius) for radius in radiuses], angle, startAngle, endAngle, colour[::-1], round(thickness) if thickness != 0 else -1, lineTypes[lineType%len(lineTypes)])
     def polygon(self, pts=[ct_sg(p3, ct), ct_sg(p4, ct), ct_sg(ct, ch)], couleur=COL.black, thickness=1, lineType=0):
-        '''Draws a polygon on the image'''
+        '''Draws a polygon on the Image'''
         pts = [[round(i) for i in pt] for pt in pts]
         lineType = lineTypes[lineType%len(lineTypes)]
         couleur = couleur[::-1]; thickness = round(thickness)
@@ -224,40 +226,41 @@ class image:
     def textSize(self, text, font="default", thickness=1, fontSize=1) -> tuple:
         if font in ["", None]: font = "default"
         fontPath = f"{fonts_path}/default.ttf" if font=="default" else font
-        try: font = ImageFont.truetype(fontPath, fontSize)
+        try: font = PIL_ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
             print(f"Couldn't load font: <{fontPath}>")
             raise e
-        xa, ya, xb, yb = ImageDraw.Draw(Image.fromarray(self.img)).multiline_textbbox((0,0), text, font)
+        xa, ya, xb, yb = PIL_ImageDraw.Draw(PIL_Image.fromarray(self.img)).multiline_textbbox((0,0), text, font)
         return (round(diff(xa, xb)),round(diff(ya, yb)))
-    ## TODO Create a centered form of the function image.text() or adapt it so it's possible
+    ## TODO Create a centered form of the function Image.text() or adapt it so it's possible
     ## Multiline text is centered based on the final box, not for each line. Would be great to have a justification on the text.
-    def text(self, text, pt, col=COL.red, thickness=1, fontSize=1, angle=0, anchor="mm", font="default") -> None:
+    def text(self, text, pt, col=COL.black, thickness=1, fontSize=1, angle=0, font="default", anchor="mm", align="center") -> None:
         """
         The anchor is a string 'XY'
         For X: use l for left, m for middle and r for right.
         For Y: use t for top, m for middle and b for bottom.
         For more information, cf. https://hugovk-pillow.readthedocs.io/en/stable/handbook/text-anchors.html (20251011)
         If anchor="lt", then `pt` is at the top left of the text, whereas "mm" is at the center of the text (for the entire text, not for each line)
+        
         """
         if font in ["", None]: font = "default"
         fontPath = f"{fonts_path}/default.ttf" if font=="default" else font
-        try: font = ImageFont.truetype(fontPath, fontSize)
+        try: font = PIL_ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
             print(f"Couldn't load font: <{fontPath}>")
             raise e
-        xa, ya, xb, yb = ImageDraw.Draw(img:=Image.fromarray(self.img)).multiline_textbbox((0,0), text, font, anchor)
+        xa, ya, xb, yb = PIL_ImageDraw.Draw(img:=PIL_Image.fromarray(self.img)).multiline_textbbox((0,0), text, font, anchor)
         mask_size = (width:=round(diff(xa, xb)+fontSize*10), height:=round(diff(ya, yb)+fontSize*10))
         width = height = max(mask_size)
         mask_size = (width, height)
-        ImageDraw.Draw(im:=Image.new('RGBA', mask_size, (0,0,0,0))).text((width/2, height/2), text, font=font, fill=tuple(col), anchor=anchor)
+        PIL_ImageDraw.Draw(im:=PIL_Image.new('RGBA', mask_size, (0,0,0,0))).multiline_text((width/2, height/2), text, font=font, fill=tuple(col), anchor=anchor, align=align, stroke_width=thickness)
         im = im.rotate(-angle)
         img.paste(im, [round(pt[0]-width/2), round(pt[1]-height/2)], im)
         self.img = np.array(img)
     def write(self, text, pt, font, colour=COL.red, thickness=1, fontSize=1, lineType=0) -> None:
         cv2.putText(self.img, text, [round(i) for i in pt], font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
     def write_centered(self, text, ct, font, colour=COL.red, thickness=1, fontSize=1, lineType=0) -> None:
-        '''Write over the image'''
+        '''Write over the Image'''
         thickness = round(thickness)
         texts = list(enumerate(str(text).split('\n')))
         x, y = ct[0], ct[1] - round(cv2.getTextSize('Agd', font, fontSize, thickness)[0][1]*(len(texts)-1))
@@ -295,8 +298,8 @@ class layout:
     def is_opened(self) -> bool:
         '''Detect if the layout is currently opened'''
         return self.img.is_opened()
-    def size(self) -> [int, int]:
+    def size(self) -> list[int]:
         return self.img.size()
 if __name__ == "__main__":
-    img = image().build()
+    img = Image().build()
     img.show(0)
