@@ -120,7 +120,7 @@ class Image:
     def __str__(self) -> str: return self.name
     def copy(self):
         '''Returns a copy of itself'''
-        return Image(self.nom, copy.deepcopy(self.img))
+        return Image(self.name, copy.deepcopy(self.img))
     def size(self, rev=False) -> list[int]:
         '''Returns Image's size (reverse True means [y,x] whereas False means [x,y])'''
         return [len(self.img[0]), len(self.img)][::-1 if rev else 1]
@@ -232,16 +232,14 @@ class Image:
             raise e
         xa, ya, xb, yb = PIL_ImageDraw.Draw(PIL_Image.fromarray(self.img)).multiline_textbbox((0,0), text, font)
         return (round(diff(xa, xb)),round(diff(ya, yb)))
-    ## TODO Create a centered form of the function Image.text() or adapt it so it's possible
-    ## Multiline text is centered based on the final box, not for each line. Would be great to have a justification on the text.
     def text(self, text, pt, col=COL.black, thickness=1, fontSize=1, angle=0, font="default", anchor="mm", align="center") -> None:
         """
         The anchor is a string 'XY'
-        For X: use l for left, m for middle and r for right.
-        For Y: use t for top, m for middle and b for bottom.
+        For X: use "l" for left, "m" for middle and "r" for right.
+        For Y: use "t" for top, "m" for middle and "b" for bottom.
         For more information, cf. https://hugovk-pillow.readthedocs.io/en/stable/handbook/text-anchors.html (20251011)
         If anchor="lt", then `pt` is at the top left of the text, whereas "mm" is at the center of the text (for the entire text, not for each line)
-        
+        Align can be setted to "left" "center" and "right".
         """
         if font in ["", None]: font = "default"
         fontPath = f"{fonts_path}/default.ttf" if font=="default" else font
@@ -267,20 +265,18 @@ class Image:
         for i, line in texts:
             tailles = cv2.getTextSize(line, font, fontSize, thickness)
             cv2.putText(self.img, line, (round(x-tailles[0][0]/2), round(y+tailles[1]/2) + i*tailles[0][1]*2), font, fontSize, colour[::-1], thickness, lineTypes[lineType%len(lineTypes)])
-## TODO Check that layouts still works and update it if necessary ##
-class layout:
+## TODO Check that layouts still work and update them if necessary ##
+class Layout:
     class Frame:
-        def __init__(self, img=new_img(background=COL.white), pos=[0,0], name='frame0') -> None:
+        def __init__(self, name, img=new_img(background=COL.white), pos=[0,0]) -> None:
             self.name, self.img, self.pos = name, img.copy(), pos
-        def __str__(self) -> str:
-            return self.name
+        def __str__(self) -> str: return self.name
     def __init__(self, img=new_img(), frames=[], name="Layout") -> None:
         self.name, self.img, self.frames = name, img.copy(), frames
     def frame(self, img=new_img([100, 100], COL.white), pos=[0,0], name=None):
-        if name == None: name = 'Unnamed_frame'
-        frame_ = self.Frame(img=img, pos=pos, name=name)
-        self.frames.append(frame_)
-        return frame_
+        frame = self.Frame(img=img, pos=pos, name='Unnamed_frame' if name==None else name)
+        self.frames.append(frame)
+        return frame
     def show(self, borders=False, frames=None, except_frames=[], fullscreen=True, build_in_functs=False):
         img = self.img.copy()
         if frames == None: frames = copy.deepcopy(self.frames)
