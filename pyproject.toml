@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-imager"
-version = "1.4.47"
+version = "1.4.48"
 description = "Python image program"
 readme = "README.md"
 requires-python = ">=3.12"
