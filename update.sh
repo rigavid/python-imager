@@ -2,16 +2,19 @@
 # python3 -m pip install --upgrade build twine
 
 Version() {
-    while read l; do
-    if [[ $l == *"version"* ]]; then
+    while read l
+    do if [[ $l == *"version"* ]]; then
         prf="${l%%\"*}"
         if [ "$prf" != "$l" ]
         then ind=${#prf}
-        else ind=-1 ; fi
+        else ind=-1
+        fi
         version=${l:$ind+1:-1}
     fi done < pyproject.toml
-    if $verbose; then echo "python-imager==$version"
-    else echo $version ; fi
+    if $verbose
+    then VERSION="python-imager==$version"
+    else VERSION=$version
+    fi
 }
 
 Help() { # Display Help
@@ -32,13 +35,22 @@ eval set -- "$TEMP"
 verbose=false
 local=false
 while true; do
-  case "$1" in
-      -h | --help ) Help; exit 0 ;;
-      -v | --verbose ) verbose=true; shift ;;
-      -V | --version ) Version; exit 0 ;;
-      -l | --local ) local=true; break ;;
-      * ) break ;;
-  esac
+    case "$1" in
+        -h | --help )
+            Help
+            exit 0;;
+        -v | --verbose )
+            verbose=true
+            shift ;;
+        -V | --version )
+            Version
+            echo $VERSION
+            exit 0 ;;
+        -l | --local )
+            local=true
+            break ;;
+        * ) break ;;
+    esac
 done
 
 
@@ -47,25 +59,31 @@ then
     echo Local installation
     echo "Building last version"
     if v=`df -h | python3 -m build`
-        then echo "Last version builded"
-        else
-            echo "Couldn't build the package"
-            exit 2
+    then echo "Last version builded"
+    else
+        echo "Couldn't build the package"
+        exit 2
     fi
 else
     echo "Building last version"
     if v=`df -h | python3 -m build`
     then echo "Uploading last version to PyPI"
         if v=`df -h | twine upload dist/*`
-        then echo Successfully uploaded to PyPI
-        else echo "Couldn't upload to PyPI. Maybe you forgot to change the version number?"
+        then Version; echo Successfully uploaded python-imager==$VERSION to PyPI
+        else
+            echo "Couldn't upload to PyPI. Maybe you forgot to change the version number?"
+            exit 2
         fi
-    else echo "Couldn't build the package" ; fi
+    else
+        echo "Couldn't build the package"
+        exit 2
+    fi
 fi
 
 ls dist | tail -$N | while read file
 do if [[ ${file:${#file}-7} == ".tar.gz" ]]
 then pip install dist/$file
 fi done
-rm dist/*; rmdir dist;
+rm dist/*
+rmdir dist
 exit 0
