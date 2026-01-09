@@ -1,11 +1,11 @@
 # Installation and importation
 > `pip install python-imager`
 ```
-import pyimager
+import pythonImager
 ```
 
-# Pyimager
- Pyimager is a python package for creating, editing, showing and saving images with python.
+# pythonImager
+ pythonImager is a python package for creating, editing, showing and saving images with python.
 
  As it is based on opencv-python but not all of these functions are implemented here, you can still use their functions with this library to get the best result of them. But still, open an issue on [GitHub](https://github.com/rigavid/python-imager/issues) if you would like me to implement functions you need.
 

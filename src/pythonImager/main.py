@@ -1,4 +1,4 @@
-try: from pyimager.__vars__ import *
+try: from pythonImager.__vars__ import *
 except: from __vars__ import *
 import os, copy, numpy as np
 import cv2
@@ -273,21 +273,22 @@ class Layout:
         def __str__(self) -> str: return self.name
     def __init__(self, img=new_img(), frames=[], name="Layout") -> None:
         self.name, self.img, self.frames = name, img.copy(), frames
+        self.img.name = self.name
     def frame(self, img=new_img([100, 100], COL.white), pos=[0,0], name=None):
         frame = self.Frame(img=img, pos=pos, name='Unnamed_frame' if name==None else name)
         self.frames.append(frame)
         return frame
-    def show(self, borders=False, frames=None, except_frames=[], fullscreen=True, build_in_functs=False):
+    def show(self, borders=False, frames=None, except_frames=[]):
         img = self.img.copy()
         if frames == None: frames = copy.deepcopy(self.frames)
         for frm in except_frames:
-            ind = [i.name for i in frames].index(frm.name)
+            ind: int = [i.name for i in frames].index(frm.name)
             if ind != -1: frames.pop(ind)
         for frame in frames:
-            img.img = fusionImages(frame.img.img, img.img, frame.pos)
+            self.img.img = fusionImages(frame.img.img, img.img, frame.pos)
             if type(borders) in [int, float]:
-                img.rectangle(frame.pos, [frame.pos[0]+len(frame.img.img[0]), frame.pos[1]+len(frame.img.img)], borders, 3, 2)
-        return img.show(1, build_in_functs=build_in_functs)
+                self.img.rectangle(frame.pos, [frame.pos[0]+len(frame.img.img[0]), frame.pos[1]+len(frame.img.img)], borders, 3, 2)
+        return self.img.show(1)
     def is_closed(self) -> bool:
         '''Detect if the layout is currently closed'''
         return self.img.is_closed()

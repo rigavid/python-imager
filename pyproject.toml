@@ -11,7 +11,7 @@ requires-python = ">=3.12"
 license = "MIT"
 license-files = ["LICENCE"]
 authors = [
-    {name = "Rigavid", email = "tsana.code@gmail.com"}
+    {name = "Rigavid", email = "rigavid.code@gmail.com"}
 ]
 keywords = ["python", "image"]
 classifiers = [
@@ -29,7 +29,7 @@ dependencies = [
 include-package-data = true
 
 [tool.setuptools.package-data]
-pyimager = ["fonts/*.ttf"]
+pythonImager = ["fonts/*.ttf"]
 
 [project.urls]
 Repository = "https://github.com/rigavid/python-imager"

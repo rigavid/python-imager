@@ -1,10 +1,10 @@
-try: from pyimager.resolution import resolution as RES
+try: from pythonImager.resolution import resolution as RES
 except: from resolution import resolution as RES
-try: from pyimager.colors import colour as COL
+try: from pythonImager.colors import colour as COL
 except: from colors import colour as COL
-try: import pyimager.terminal_colors as TCOL
+try: import pythonImager.terminal_colors as TCOL
 except: import terminal_colors as TCOL
-try: from pyimager.calculs import *
+try: from pythonImager.calculs import *
 except: from calculs import *
 from cv2 import LINE_4, LINE_8, LINE_AA
 
