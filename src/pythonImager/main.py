@@ -232,7 +232,7 @@ class Image:
             raise e
         xa, ya, xb, yb = PIL_ImageDraw.Draw(PIL_Image.fromarray(self.img)).multiline_textbbox((0,0), text, font)
         return (round(diff(xa, xb)),round(diff(ya, yb)))
-    def text(self, text, pt, col=COL.black, thickness=1, fontSize=1, angle=0, font="default", anchor="mm", align="center") -> None:
+    def text(self, text, pt, col=COL.black, thickness=1, fontSize=1, angle=0, font="default", anchor="mm", align="center", fillBackround=None) -> None:
         """
         The anchor is a string 'XY'
         For X: use "l" for left, "m" for middle and "r" for right.
@@ -248,10 +248,12 @@ class Image:
             print(f"Couldn't load font: <{fontPath}>")
             raise e
         xa, ya, xb, yb = PIL_ImageDraw.Draw(img:=PIL_Image.fromarray(self.img)).multiline_textbbox((0,0), text, font, anchor)
-        mask_size = (width:=round(diff(xa, xb)+fontSize*10), height:=round(diff(ya, yb)+fontSize*10))
+        mask_size = (width:=round(diff(xa, xb)+fontSize), height:=round(diff(ya, yb)+fontSize))
         width = height = max(mask_size)
         mask_size = (width, height)
-        PIL_ImageDraw.Draw(im:=PIL_Image.new('RGBA', mask_size, (0,0,0,0))).multiline_text((width/2, height/2), text, font=font, fill=tuple(col), anchor=anchor, align=align, stroke_width=thickness)
+        i = PIL_ImageDraw.Draw(im:=PIL_Image.new('RGBA', mask_size, (0,0,0,0)))
+        if fillBackround != None: i.rectangle([yb, xb, *[mask_size[0]-yb, mask_size[1]-xb]], fill=tuple(fillBackround[::-1]))
+        i.multiline_text((width/2, height/2), text, font=font, fill=tuple(col[::-1]), anchor=anchor, align=align, stroke_width=thickness)
         im = im.rotate(-angle)
         img.paste(im, [round(pt[0]-width/2), round(pt[1]-height/2)], im)
         self.img = np.array(img)
