@@ -60,6 +60,7 @@ You have 5 inner functions to draw shapes:
 
 And you an inner function to write text:  
 - `Image.text(text, ct, col, thickness, fontsize, ...)`
+> This function uses the unicode.ttf font (cf. https://www.unifoundry.com/unifont/index.html)
 
 To draw a diagonal line accross the image, you could proceed as it follows:
 ```

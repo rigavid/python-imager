@@ -225,7 +225,7 @@ class Image:
         else: cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
     def textSize(self, text, font="default", thickness=1, fontSize=1) -> tuple:
         if font in ["", None]: font = "default"
-        fontPath = f"{fonts_path}/default.ttf" if font=="default" else font
+        fontPath = f"{fonts_path}/unicode.ttf" if font=="default" else font
         try: font = PIL_ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
             print(f"Couldn't load font: <{fontPath}>")
@@ -242,7 +242,7 @@ class Image:
         Align can be setted to "left" "center" and "right".
         """
         if font in ["", None]: font = "default"
-        fontPath = f"{fonts_path}/default.ttf" if font=="default" else font
+        fontPath = f"{fonts_path}/unicode.ttf" if font=="default" else font
         try: font = PIL_ImageFont.truetype(fontPath, fontSize)
         except OSError as e:
             print(f"Couldn't load font: <{fontPath}>")
