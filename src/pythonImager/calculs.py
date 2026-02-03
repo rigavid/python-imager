@@ -45,7 +45,7 @@ def angleInterPoints(p1:point, p2:point) -> float:
     '''Calculate the angle between p1 and p2'''
     return math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
 
-def equation2dDegre(a:number, b:number, c:number):
+def equation2dDegre(a:number, b:number, c:number) -> None | number | tuple[number]:
     '''a, b², 2c'''
     try: y1 = (-b + square_root(b**2 - 4*a*c)) / (2*a)
     except: y1 = 'r'

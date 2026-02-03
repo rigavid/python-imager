@@ -1,29 +1,19 @@
-try: from pythonImager.resolution import resolution as RES
-except: from resolution import resolution as RES
-try: from pythonImager.colors import colour as COL
-except: from colors import colour as COL
-try: import pythonImager.terminal_colors as TCOL
-except: import terminal_colors as TCOL
-try: from pythonImager.calculs import *
-except: from calculs import *
+try:
+    from pythonImager.resolution import resolution as RES
+    from pythonImager.colors import colour as COL
+    import pythonImager.terminal_colors as TCOL
+    from pythonImager.calculs import *
+except:
+    from resolution import resolution as RES
+    from colors import colour as COL
+    import terminal_colors as TCOL
+    from calculs import *
 from cv2 import LINE_4, LINE_8, LINE_AA
 
 
-screen = RES.resolution
-long, haut = screen
-hg = [0, 0]
-hd = [long, 0]
-bg = [0, haut]
-bd = [long, haut]
-ct = [round(long/2), round(haut/2)]
-p1 = [round((long-haut)/2), 0]
-p2 = [round((long-haut)/2)+haut, 0]
-p3 = [round((long-haut)/2), haut]
-p4 = [round((long-haut)/2)+haut, haut]
-cg = ct_sg(p1, p3)
-cd = ct_sg(p2, p4)
-ch = ct_sg(p1, p2)
-cb = ct_sg(p3, p4)
-ct = ct_sg(ct_sg(p1, p4), ct_sg(p2, p3))
+long, haut = screen = RES.resolution
+hg, hd, bg, bd = [0, 0], [long, 0], [0, haut], [long, haut]
+ct, p1, p2, p3, p4 = [round(long/2), round(haut/2)], [round((long-haut)/2), 0], [round((long-haut)/2)+haut, 0], [round((long-haut)/2), haut], [round((long-haut)/2)+haut, haut]
+cg, cd, ch, cb = ct_sg(p1, p3), ct_sg(p2, p4), ct_sg(p1, p2), ct_sg(p3, p4)
 lineTypes = [LINE_4, LINE_8, LINE_AA]
 fonts_path = "/".join(i for i in __file__.split("/")[:-1])+"/fonts/"

@@ -1,20 +1,17 @@
 import random as rd
 
 class colour:
-    def new(hexadecimal='000000', tipe=False):
-        '''Hexadecimal colour in RGB'''
+    def new(hexadecimal='000000', tipe:bool=False):
+        '''Hexadecimal colour in RGB (if tipe False, else BGR color)'''
         if type(hexadecimal) == int: hexadecimal = f'{hexadecimal:x}'
         elif type(hexadecimal) == list and len(hexadecimal)==3: return hexadecimal
         hexadecimal = hexadecimal.replace('#','')
-        if tipe: b, g, r = int(hexadecimal[0:2],base=16), int(hexadecimal[2:4],base=16), int(hexadecimal[4:6],base=16)
-        else: r, g, b = int(hexadecimal[0:2],base=16), int(hexadecimal[2:4],base=16), int(hexadecimal[4:6],base=16)
-        return[r,g,b]
-    def compl(colour):
-        if type(colour) == str: colour = self.new(colour)
-        return [255 - i for i in colour]
+        c = [int(hexadecimal[i:i+2],base=16) for i in (0, 2, 4)]
+        return c[::-1] if tipe else c
+    def compl(color):
+        return [255 - i for i in (colour.new(color) if type(color) == str else color)]
     def rand(seed=None):
-        if seed: rd.seed(seed)
-        return [rd.randint(0, 255) for _ in range(3)]
+        return rd.seed(seed) if seed else [rd.randint(0, 255) for _ in range(3)]
     aliceBlue = new("#F0F8FF")
     antiqueWhite = new("#FAEBD7")
     aqua = new("#00FFFF")
