@@ -1,3 +1,4 @@
+from linesegmentintersections import bentley_ottman
 import math
 
 type number = float | int
@@ -61,3 +62,8 @@ def clicked_in(pos:point, button:list[point]) -> bool:
     """ Is pos[x, y] in button[[x, y]-[x, y]] """
     (x1, y1), (x2, y2) = button
     return min(x1, x2) <= pos[0] <= max(x1, x2) and min(y1, y2) <= pos[1] <= max(y1, y2)
+
+def getIntersectionPoint(sg1, sg2):
+    '''Get point of intersection of two secant segments'''
+    pt = bentley_ottman((sg1, sg2))[0]
+    return (float(pt.x), float(pt.y))
