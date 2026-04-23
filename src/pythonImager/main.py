@@ -212,6 +212,10 @@ class Image:
     def ellipse(self, ct:point, radiuses:list[number]=[10, 10], colour:COL=COL.black, thickness=1, lineType:int=0, startAngle=0, endAngle=360, angle=0) -> None:
         '''Draws an ellipse on the Image'''
         cv2.ellipse(self.img, [round(p) for p in ct], [round(radius) for radius in radiuses], angle, startAngle, endAngle, colour[::-1], round(thickness) if thickness != 0 else -1, lineTypes[lineType%len(lineTypes)])
+    def arc(self, ct:point, radius:number=10, col:COL=COL.black, thickness=1, startAngle=0, endAngle=180):
+        ## TODO improve accuracy
+        PIL_ImageDraw.Draw(img:=PIL_Image.fromarray(self.img)).arc([[ct[0]-radius, ct[1]-radius], [ct[0]+radius, ct[1]+radius] if isinstance(radius, (float, int)) else [ct[i]+radius[i] for i in (0,1)]], startAngle, endAngle, tuple(col[::-1]), thickness)
+        self.img = np.array(img)
     def polygon(self, pts:list[point]=[ct_sg(p3, ct), ct_sg(p4, ct), ct_sg(ct, ch)], couleur:COL=COL.black, thickness=1, lineType:int=0):
         '''Draws a polygon on the Image'''
         pts = [[round(i) for i in pt] for pt in pts]
