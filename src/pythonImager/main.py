@@ -222,6 +222,9 @@ class Image:
         lineType = lineTypes[lineType%len(lineTypes)]
         couleur = couleur[::-1]; thickness = round(thickness)
         if thickness > 0: cv2.polylines(self.img, [np.array(pts, dtype=np.int32)], True, couleur, thickness, lineType)
+        elif thickness < 0:
+            cv2.polylines(self.img, [np.array(pts, dtype=np.int32)], True, couleur, abs(thickness), lineType)
+            cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
         else: cv2.fillPoly(self.img, [np.array(pts, np.int32)], couleur, lineType)
     def textSize(self, text:str, font:str="default", thickness=1, fontSize=1) -> tuple:
         fontPath = f"{fonts_path}/unifont.ttf" if font in ["default", "", None] else font
