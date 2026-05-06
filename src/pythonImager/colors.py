@@ -1,6 +1,9 @@
 import random as rd
 
 class colour:
+    class gradient: ## TODO Modify the functions so the gradients are taken into account by the color functions ##
+        def __init__(self, a, b) -> None: self.a, self.b = a, b
+        def __str__(self) -> str: return f"<Gradient «{self.a}» «{self.b}»>"
     def new(hexadecimal='000000', tipe:bool=False):
         '''Hexadecimal colour in RGB (if tipe False, else BGR color)'''
         if type(hexadecimal) == int: hexadecimal = f'{hexadecimal:x}'
@@ -161,3 +164,7 @@ class colour:
     yellow = new("#FFFF00")
     yellowGreen = new("#9ACD32")
     help = red
+
+if __name__ == "__main__":
+    a = colour.gradient(colour.black, colour.blue)
+    print(a)
